@@ -1,0 +1,311 @@
+.tournament-bracket {
+  overflow-x: auto;
+  font-size: 0;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket {
+    white-space: nowrap;
+  }
+}
+.tournament-bracket .round {
+  display: inline-block;
+  vertical-align: middle;
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket .round {
+    margin-top: 2rem;
+  }
+}
+.tournament-bracket .round .round-label {
+  font-size: 1rem;
+  font-variant: small-caps;
+  font-weight: bold;
+}
+.tournament-bracket .round .single-bracket > div {
+  display: inline-block;
+  vertical-align: middle;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup:last-child {
+  margin-bottom: 0 !important;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants {
+  overflow: hidden;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant {
+  box-sizing: border-box;
+  color: #000000;
+  background: #ffffff;
+  width: 27rem;
+  height: 3rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  white-space: normal;
+  border: solid 2px #000000;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant:first-child {
+  border-bottom: 1px;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.winner {
+  color: #000000;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.loser {
+  color: #888888;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant span {
+  line-height: 3rem;
+  font-size: 1rem;
+  font-family: "EKC Font";
+  margin-left: 1rem;
+  display: inline-block;
+  overflow: hidden;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant .label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 20rem;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant .score {
+  float: right;
+  padding-right: 1em;
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket .round .single-bracket > div.connector {
+    display: none;
+  }
+}
+.tournament-bracket .round .single-bracket > div.connector.filled .line, .tournament-bracket .round .single-bracket > div.connector.filled.bottom .merger:after, .tournament-bracket .round .single-bracket > div.connector.filled.top .merger:before {
+  border-color: #000000;
+}
+.tournament-bracket .round .single-bracket > div.connector .line, .tournament-bracket .round .single-bracket > div.connector .merger {
+  box-sizing: border-box;
+  width: 2rem;
+  display: inline-block;
+  vertical-align: top;
+}
+.tournament-bracket .round .single-bracket > div.connector .line {
+  border-bottom: solid 2px #000000;
+  height: 4rem;
+}
+.tournament-bracket .round .single-bracket > div.connector .merger {
+  position: relative;
+  height: 8rem;
+}
+.tournament-bracket .round .single-bracket > div.connector .merger:before, .tournament-bracket .round .single-bracket > div.connector .merger:after {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 50%;
+  border: 0 solid;
+  border-color: #000000;
+}
+.tournament-bracket .round .single-bracket > div.connector .merger:before {
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.tournament-bracket .round .single-bracket > div.connector .merger:after {
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+.tournament-bracket.participants-8 .round.quarterfinals .single-bracket:not(:last-child) {
+  margin-bottom: 2rem;
+}
+.tournament-bracket.participants-8 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+  margin-bottom: 2rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-8 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-8 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-8 .round.semifinals .single-bracket .connector .merger {
+  height: 16rem;
+}
+.tournament-bracket.participants-8 .round.semifinals .single-bracket .connector .line {
+  height: 8rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-8 .round.finals .single-bracket {
+    margin-top: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-8 .round.finals .single-bracket {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-8 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 4rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-8 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-16 .round.round-of-16 .single-bracket:not(:last-child) {
+  margin-bottom: 2rem;
+}
+.tournament-bracket.participants-16 .round.round-of-16 .single-bracket .matchups .matchup:not(:last-child) {
+  margin-bottom: 2rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-16 .round.quarterfinals .single-bracket:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-16 .round.quarterfinals .single-bracket:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-16 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-16 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-16 .round.quarterfinals .single-bracket .connector .merger {
+  height: 16rem;
+}
+.tournament-bracket.participants-16 .round.quarterfinals .single-bracket .connector .line {
+  height: 8rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-16 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 26rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-16 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-16 .round.semifinals .single-bracket .connector .merger {
+  height: 32rem;
+}
+.tournament-bracket.participants-16 .round.semifinals .single-bracket .connector .line {
+  height: 16rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-16 .round.finals {
+    margin-top: 10rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-16 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 4rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-16 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-32 .round.round-of-32 .single-bracket:not(:last-child) {
+  margin-bottom: 2rem;
+}
+.tournament-bracket.participants-32 .round.round-of-32 .single-bracket .matchups .matchup:not(:last-child) {
+  margin-bottom: 2rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.round-of-16 .single-bracket:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.round-of-16 .single-bracket:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.round-of-16 .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.round-of-16 .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-32 .round.round-of-16 .single-bracket .connector .merger {
+  height: 16rem;
+}
+.tournament-bracket.participants-32 .round.round-of-16 .single-bracket .connector .line {
+  height: 8rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.quarterfinals .single-bracket:not(:last-child) {
+    margin-bottom: 26rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.quarterfinals .single-bracket:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 26rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-32 .round.quarterfinals .single-bracket .connector .merger {
+  height: 32rem;
+}
+.tournament-bracket.participants-32 .round.quarterfinals .single-bracket .connector .line {
+  height: 16rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 58rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-32 .round.semifinals .single-bracket .connector .merger {
+  height: 64rem;
+}
+.tournament-bracket.participants-32 .round.semifinals .single-bracket .connector .line {
+  height: 32rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.finals .single-bracket {
+    margin-top: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.finals .single-bracket {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-32 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 4rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-32 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+
+/*# sourceMappingURL=bracket.ekc.css.map */

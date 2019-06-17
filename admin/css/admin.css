@@ -1,0 +1,45 @@
+
+/* general */ 
+.ekc-button {
+  margin-top: 0.8em;
+}
+ 
+ /* elimination bracket */
+.columns::after {
+  clear: both;
+}
+
+.columns .column {
+  float:left;
+}
+
+/* combobox */
+.ekc-combobox-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-right: 3em;
+}
+
+.ekc-combobox-input {
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.ekc-combobox-button {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin-left: -1px;
+  padding: 0;
+}
+
+/* swiss system */
+.ekc-result-missing input {
+  border-color: #fd0;
+  background-color: #fe9;
+}
+
+.ekc-duplicate-teams span input {
+  border-color: #a00;
+  background-color: #fbb;
+}
