@@ -21,23 +21,35 @@ class Ekc_Swiss_System_Helper {
 
 		$virtual_matchups = array();
 		if ( $is_additional_round ) {
-			// FIXME implement
 			// special handling for additional ranking rounds, where the top players/teams
 			// are taken out for an alimination bracket.
 			// Add 'virtual' results and score points. We need those virtual results so that teams
 			// that played against the top teams can still improve their buchholz score and are
 			// not punished for having played against a top team.
-			// $team1 = null;
-			// $team2 = null;
-			// foreach( $current_ranking as $team ) {
-			// 	if ( $team->is_excluded_top_team ) {
-			// 		if ( $team1 == null ) {
-			// 			$team1 = $team;
-			// 			$current_ranking->remove
-			// 		}
-			// 	}
-			// }
-
+			$current_ranking_without_top_teams = array();
+			$team1 = null;
+			$team2 = null;
+			
+			foreach( $current_ranking as $team ) {
+				if ( intval( $team->get_virtual_rank() ) !== 0  ) {
+					if ( $team1 == null ) {
+						$team1 = $team;
+					}
+					elseif ( $team2 == null ) {
+						$team2 = $team;
+					}
+					if ( $team1 != null && $team2 != null ) {
+						$matchup = array( $team1, $team2 );
+						$virtual_matchups[] = $matchup;
+						$team1 = null;
+						$team2 = null;
+					}
+				}
+				else {
+					$current_ranking_without_top_teams[] = $team;
+				}
+			}
+			$current_ranking = $current_ranking_without_top_teams;
 		}
 		
 		
@@ -54,27 +66,40 @@ class Ekc_Swiss_System_Helper {
 			$matchups = $helper->match_top( $current_ranking, $all_results );
 		}
 
-		$helper->store_matchups( $tournament_id, $next_round, $matchups );
+		$helper->store_matchups( $tournament_id, $next_round, $matchups, $virtual_matchups );
 	}
 
-	private function store_matchups( $tournament_id, $next_round, $matchups ) {
+	private function store_matchups( $tournament_id, $next_round, $matchups, $virtual_matchups ) {
 		$db = new Ekc_Database_Access();
+
+		foreach ( $virtual_matchups as $matchup ) {
+			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
+			$result->set_virtual_result( true );
+			$result->set_team1_score( 1 );
+			$result->set_team2_score( 1 );
+			
+			$db->insert_tournament_result( $result );
+		}
+
 		$pitch = 1;
 		foreach ( $matchups as $matchup ) {
-			$team1 = $matchup[0];
-			$team2 = $matchup[1];
-			$result = new Ekc_Result();
-			$result->set_tournament_id( $tournament_id );
-			$result->set_team1_id( $team1->get_team_id() );
-			$result->set_team2_id( $team2->get_team_id() );
-			$result->set_pitch( strval($pitch) );
-			$result->set_tournament_round( $next_round );
-			$result->set_stage( Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS);
+			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
+			$result->set_virtual_result( false );
+			$result->set_pitch( strval( $pitch ) );
 
 			$db->insert_tournament_result( $result );
-
 			$pitch++;
 		}
+	}
+	
+	private function create_result( $tournament_id, $round, $team1, $team2 ) {
+		$result = new Ekc_Result();
+		$result->set_tournament_id( $tournament_id );
+		$result->set_team1_id( $team1->get_team_id() );
+		$result->set_team2_id( $team2->get_team_id() );
+		$result->set_tournament_round( $round );
+		$result->set_stage( Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS);
+		return $result;
 	}
 
 

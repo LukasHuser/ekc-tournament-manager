@@ -149,11 +149,11 @@ class Ekc_Shortcode_Helper {
 		return $this->html_table( $html_header . $html_body );
 	}
 
-	private function html_table($inner) {
+	private function html_table( $inner ) {
 		return '<table class="ekc-table ekc-team-table">' . $inner . '</table>';
 	}
 
-	private function html_table_head($header_row) {
+	private function html_table_head( $header_row ) {
 		$result = '<colgroup class="ekc-colgroup">';
 		foreach( $header_row as $header ) {
 			$result .= '<col class="ekc-col ' . $header[1] . '" />';
@@ -166,20 +166,34 @@ class Ekc_Shortcode_Helper {
 		return $result . '</tr></thead>';
 	}
 
-	private function html_table_body($inner) {
+	private function html_table_body( $inner ) {
 		return '<tbody class="ekc-tbody">' . $inner . '</tbody>';
 	}
 
-	private function html_table_row($row, $id = '' ) {
+	private function html_table_row( $row, $id = '', $is_excluded = false, $rowspan = '' ) {
 		$id_part = $id ? ' id="' . esc_html( $id ) . '" ' : '';
-		$result = '<tr' . $id_part .  ' class="ekc-tr">';
+		$excluded_part = $is_excluded ? ' ekc-excluded-team' : '';
+		$result = '<tr' . $id_part .  ' class="ekc-tr' . $excluded_part . '">';
+		$counter = 0;
 		foreach( $row as $data ) {
+			if ( $counter === 0) { // rowspan option is always for first column
+				if ( $rowspan === 'rowspan' ) {
+					$result .= '<td class="ekc-td" rowspan="2">' . $data . '</td>';
+					$counter++;
+					continue;
+				}
+				elseif ( $rowspan === 'rowspan-omit' ) {
+					$counter++;
+					continue;
+				}
+			}
 			$result .= '<td class="ekc-td">' . $data . '</td>';
+			$counter++;
 		}
 		return $result . '</tr>';
 	}
 
-	private function html_flag($country_code) {
+	private function html_flag( $country_code ) {
 		if ( $country_code ) {
 			return '<span class="flag-icon flag-icon-' . $country_code . '"></span>';
 		}
@@ -1223,7 +1237,7 @@ class Ekc_Shortcode_Helper {
 		return $html;
 	}
 
-	private function create_swiss_ranking_table ( $tournament ) {
+	private function create_swiss_ranking_table( $tournament ) {
 		$db = new Ekc_Database_Access();
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$counter = 1;
@@ -1244,12 +1258,13 @@ class Ekc_Shortcode_Helper {
 
 		foreach ( $current_ranking as $ranking ) {
 			$team = $db->get_team_by_id( $ranking->get_team_id() );
+			$is_excluded = intval( $team->get_virtual_rank() ) !== 0;
 			$row = array();
 			$row[] = $counter;
 			$row[] = $this->html_flag( esc_html($team->get_country()) );
 			$row[] = esc_html($team->get_name());
-			$row[] = strval( $ranking->get_score() ) . '.' . strval( $ranking->get_opponent_score() );
-			$html_body .= $this->html_table_row( $row, 'rank-' . $counter );
+			$row[] = strval( $ranking->get_total_score() ) . ' / ' . strval( $ranking->get_opponent_score() );
+			$html_body .= $this->html_table_row( $row, 'rank-' . $counter, $is_excluded );
 			$counter++;
 		}
 		$html_body = $this->html_table_body($html_body);
@@ -1260,6 +1275,8 @@ class Ekc_Shortcode_Helper {
 	private function create_swiss_round_table( $tournament, $results_for_round, $round ) {
 		$db = new Ekc_Database_Access();
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
+		$is_additional_round = $round > $tournament->get_swiss_system_rounds();
+
 		$header = array();
 		$header[] = array('Pitch', 'ekc-column-pitch');
 		$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
@@ -1276,6 +1293,14 @@ class Ekc_Shortcode_Helper {
 		foreach ( $results_for_round as $result ) {
 			$team1 = $db->get_team_by_id( $result->get_team1_id() );
 			$team2 = $db->get_team_by_id( $result->get_team2_id() );
+
+			if ( $is_additional_round && $team1 && $team2 ) {
+				$is_team1_excluded = intval( $team1->get_virtual_rank() ) !== 0;
+				$is_team2_excluded = intval( $team2->get_virtual_rank() ) !== 0;
+				if ( $is_team1_excluded && $is_team2_excluded ) {
+					continue;
+				}
+			}
 
 			// row for team1
 			$row = array();
@@ -1295,7 +1320,7 @@ class Ekc_Shortcode_Helper {
 				$team1_score = $result->get_team1_score();
 			}
 			$row[] = $team1_score;
-			$html_body .= $this->html_table_row( $row, 'pitch-' . $result->get_pitch() );
+			$html_body .= $this->html_table_row( $row, 'pitch-' . $result->get_pitch(), false, 'rowspan' );
 
 			// row for team2
 			$row = array();
@@ -1315,7 +1340,7 @@ class Ekc_Shortcode_Helper {
 				$team2_score = $result->get_team2_score();
 			}
 			$row[] = $team2_score;
-			$html_body .= $this->html_table_row( $row );
+			$html_body .= $this->html_table_row( $row, '', false, 'rowspan-omit' );
 		}
 		$html_body = $this->html_table_body($html_body);
 		

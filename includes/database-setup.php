@@ -58,9 +58,10 @@ class Ekc_Database_Setup {
 			registration_date datetime,
 			camping_count integer(10), 
 			breakfast_count integer(10),
-			seeding_score double precision,
 			is_on_wait_list bit(1),
-			is_swiss_system_top_team bit(1),
+			seeding_score double precision,
+			initial_score double precision,
+			virtual_rank integer(10),
 			PRIMARY KEY  (team_id),
 			KEY i_tournament_id (tournament_id)
 		) $charset_collate;";

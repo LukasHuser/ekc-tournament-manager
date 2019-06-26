@@ -6,8 +6,13 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys)  
 
+## Version 1.2.4
+[x] swiss system: ranking page in admin view, allows updating initial score, seeding score and virtual rank
+[x] swiss system: allow initial score (for an accelerated swiss system)
+[x] swiss system: additional ranking rounds after start of elimination bracket, aka virtual results (Part II)
+
 ## Version 1.2.3
-[1] swiss system: additional ranking rounds after start of elimination bracket
+[x] swiss system: additional ranking rounds after start of elimination bracket, aka virtual results (Part I)
 
 ## Version 1.2.2
 [x] backup concept: Export / import of tournaments in JSON format. Auto backup option for tournaments

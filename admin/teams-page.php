@@ -76,6 +76,12 @@ class Ekc_Teams_Admin_Page {
 		}
 		if ( isset($_POST['seedingscore'] ) ) {
 			$team->set_seeding_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['seedingscore'] ) ) ) );
+    }
+    if ( isset($_POST['initialscore'] ) ) {
+			$team->set_initial_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['initialscore'] ) ) ) );
+    }
+    if ( isset($_POST['virtualrank'] ) ) {
+			$team->set_virtual_rank( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['virtualrank'] ) ) ) );
 		}
 		if ( isset( $_POST['player1first'] ) && trim( $_POST['player1first'] ) !== '' ) {
 			$player = $this->extract_player( 'player1first', 'player1last', 'player1country' );
@@ -194,8 +200,16 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php if ( $tournament->get_swiss_system_rounds() > 0 ) { ?>
           <div class="ekc-control-group">
-            <label for="seedingscore">Seeding score (for Swiss System)</label>
+            <label for="seedingscore">Swiss System: Seeding score</label>
             <input id="seedingscore" name="seedingscore" type="number" step="any" placeholder="7.43" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="initialscore">Swiss System: Initial score (for an accelerated system)</label>
+            <input id="initialscore" name="initialscore" type="number" step="any" placeholder="2.5" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="virtualrank">Swiss System: Virtual Rank (for a top team which is excluded in addational ranking rounds)</label>
+            <input id="virtualrank" name="virtualrank" type="number" step="any" placeholder="1" />
           </div>
 <?php }
       if ( $tournament->is_player_names_required() ) { ?>
@@ -308,8 +322,16 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php if ( $tournament->get_swiss_system_rounds() > 0 ) { ?>
           <div class="ekc-control-group">
-            <label for="seedingscore">Seeding score (for Swiss System)</label>
+            <label for="seedingscore">Swiss System: Seeding score</label>
             <input id="seedingscore" name="seedingscore" type="number" step="any" placeholder="7.43" value="<?php esc_html_e( $team->get_seeding_score() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="initialscore">Swiss System: Initial score (for an accelerated system)</label>
+            <input id="initialscore" name="initialscore" type="number" step="any" placeholder="2.5" value="<?php esc_html_e( $team->get_initial_score() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="virtualrank">Swiss System: Virtual Rank (for a top team which is excluded in addational ranking rounds)</label>
+            <input id="virtualrank" name="virtualrank" type="number" step="any" placeholder="1" value="<?php esc_html_e( $team->get_virtual_rank() ) ?>" />
           </div>
 <?php }
       if ( $tournament->is_player_names_required() ) { ?>

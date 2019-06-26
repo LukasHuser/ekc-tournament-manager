@@ -17,9 +17,10 @@ class Ekc_Team implements JsonSerializable {
 	private $registration_date;
 	private $camping_count;
 	private $breakfast_count;
-	private $seeding_score;
 	private $is_on_wait_list;
-	private $is_swiss_system_top_team;
+	private $seeding_score;
+	private $initial_score;
+	private $virtual_rank;
 	private $players = array();
 
 
@@ -103,14 +104,6 @@ class Ekc_Team implements JsonSerializable {
 		$this->breakfast_count = $breakfast_count;
 	}
 
-	public function get_seeding_score() {
-		return $this->seeding_score;
-	}
-
-	public function set_seeding_score(?float $seeding_score) {
-		$this->seeding_score = $seeding_score;
-	}
-
 	public function is_on_wait_list() {
 		return $this->is_on_wait_list;
 	}
@@ -119,12 +112,28 @@ class Ekc_Team implements JsonSerializable {
 		$this->is_on_wait_list = $is_on_wait_list;
 	}
 
-	public function is_swiss_system_top_team() {
-		return $this->is_swiss_system_top_team;
+	public function get_seeding_score() {
+		return $this->seeding_score;
 	}
 
-	public function set_swiss_system_top_team(bool $is_swiss_system_top_team) {
-		$this->is_swiss_system_top_team = $is_swiss_system_top_team;
+	public function set_seeding_score(?float $seeding_score) {
+		$this->seeding_score = $seeding_score;
+	}
+
+	public function get_initial_score() {
+		return $this->initial_score;
+	}
+
+	public function set_initial_score(?float $initial_score) {
+		$this->initial_score = $initial_score;
+	}
+
+	public function get_virtual_rank() {
+		return $this->virtual_rank;
+	}
+
+	public function set_virtual_rank(?int $virtual_rank) {
+		$this->virtual_rank = $virtual_rank;
 	}
 
 	public function get_players() {

@@ -9,10 +9,18 @@ class Ekc_Swiss_System_Admin_Page {
 	
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
     $tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
+    $team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
     $tournament_round = ( isset($_GET['round'] ) ) ? sanitize_key( wp_unslash( $_GET['round'] ) ) : null;
 		if ( $action === 'swiss-system' ) {
 			$this->show_swiss_system( $tournament_id, $tournament_round );
-		}
+    }
+    elseif ( $action === 'swiss-system-ranking' ) {
+      $this->show_swiss_system( $tournament_id, null, true );
+    }
+    elseif ( $action === 'remove-team' ) {
+      $this->remove_team_from_tournament( $team_id );
+      $this->show_swiss_system( $tournament_id, null, true );
+    }
 		else {
 			// handle POST
       $db = new Ekc_Database_Access();
@@ -33,7 +41,11 @@ class Ekc_Swiss_System_Admin_Page {
         Ekc_Swiss_System_Helper::calculate_and_store_next_round( $tournament, $tournament_round );
         $this->show_swiss_system( $tournament_id, $tournament_round );
       }
-		}
+      elseif ( $action === 'swiss-system-store-ranking' ) {
+        $this->store_ranking( $tournament_id );
+        $this->show_swiss_system( $tournament_id, null, true );
+      }
+    }
   }
   
   private function update_results( $existing_results ) {
@@ -78,7 +90,7 @@ class Ekc_Swiss_System_Admin_Page {
   }
 
 
-  public function show_swiss_system( $tournament_id, $tournament_round ) {
+  public function show_swiss_system( $tournament_id, $tournament_round, $show_ranking = false ) {
     $db = new Ekc_Database_Access();
     $current_round = $db->get_current_swiss_system_round( $tournament_id );
     if ( empty( $tournament_round ) or $tournament_round > $current_round ) {
@@ -96,15 +108,20 @@ class Ekc_Swiss_System_Admin_Page {
 
 ?>
   <div class="wrap">
-    <h2><?php esc_html_e( $tournament->get_name() ) ?> Swiss rounds</h2>
+    <h2><?php esc_html_e( $tournament->get_name() ) ?> Swiss System</h2>
 <?php
+    // show a link to the current ranking, also allows to change initial score and virtual rank
+    $this->show_ranking_link( $tournament_id );
 
     // show a link to the results of each round that has already been played
     for ( $round = 1; $round <= $current_round; $round++ ) {
-      $this->show_round_link( $tournament_id, $round );
+      $this->show_round_link( $tournament, $round );
     }
 
-    if ( count( $results ) > 0) { // is the tournament already started?
+    if ( $show_ranking ) {
+      $this->show_swiss_system_ranking( $tournament_id );
+    }
+    elseif ( count( $results ) > 0) { // is the tournament already started?
       if ( intval( $current_round ) === intval( $tournament_round ) and $max_number_of_rounds > $tournament_round ) {
         // show a button to start the next round (if this is not the very last round)
         $this->show_start_round_button( $tournament, $tournament_round + 1 );
@@ -120,14 +137,27 @@ class Ekc_Swiss_System_Admin_Page {
 <?php
   }
 
-  private function show_round_link( $tournament_id, $round ) {
+  private function show_round_link( $tournament, $round ) {
+    $display_round = 'round ' . $round;
+    if ( $round > $tournament->get_swiss_system_rounds() ) {
+      $display_round = 'additional round ' . ($round - $tournament->get_swiss_system_rounds() );
+    }
     ?>
-    <a href="?page=ekc-swiss&amp;action=swiss-system&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;round=<?php esc_html_e( $round ) ?>">round <?php esc_html_e( $round ) ?></a> &nbsp;
+    <a href="?page=ekc-swiss&amp;action=swiss-system&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $round ) ?>"><?php esc_html_e( $display_round ) ?></a> &nbsp;
     <?php
+  }
+
+  private function show_ranking_link( $tournament_id ) {
+    ?>
+    <a href="?page=ekc-swiss&amp;action=swiss-system-ranking&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>">ranking</a> &nbsp;
+    <?php    
   }
 
   private function show_start_round_button( $tournament, $next_round ) {
     $button_label = 'Start round ' . $next_round;
+    if ( $next_round > $tournament->get_swiss_system_rounds() ) {
+      $button_label = 'Start additional round ' . ($next_round - $tournament->get_swiss_system_rounds() );
+    }
     if ( intval( $next_round ) === 1 ) {
       $button_label = 'Start tournament!';
       ?><p>When starting the tournament, all <i>active</i> players/teams are considered.
@@ -212,6 +242,104 @@ class Ekc_Swiss_System_Admin_Page {
 </tr>
 
 <?php
+  }
+
+  private function show_swiss_system_ranking( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $tournament = $db->get_tournament_by_id( $tournament_id );
+    $is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
+    $counter = 1;
+    $current_ranking = $db->get_current_swiss_system_ranking( $tournament_id );
+    if ( ! $current_ranking ) {
+      $current_ranking = $db->get_initial_swiss_system_ranking( $tournament_id );
+    }
+
+
+?>
+<form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+  <fieldset>
+    <legend><h3>Current ranking</h3></legend>
+    <table>
+      <thead>
+        <tr><th>Rank</th><th><?php $is_single_player ? _e('Player') : _e('Team') ?></th><th>Total score</th><th>Opponent score</th><th>Seeding score</th><th>Initial score</th><th>Virtual rank</th><th></th></tr>
+      </thead>
+      <tbody>
+    <?php
+        foreach ( $current_ranking as $ranking ) {
+          $team = $db->get_team_by_id( $ranking->get_team_id() );
+          $this->show_ranking_row( $ranking, $team, $counter );
+          $counter++;
+        }
+    ?>
+      </tbody>
+    </table>
+    <div class="ekc-controls">
+        <button type="submit" class="ekc-button ekc-button-primary">Save data</button>
+        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
+        <input id="action" name="action" type="hidden" value="swiss-system-store-ranking" />
+    </div>
+  </fieldset>
+</form>
+    <?php
+  }
+
+  private function show_ranking_row( $ranking, $team, $rank ) {
+?>
+<tr>
+  <td><?php _e( $rank ) ?></td>
+  <td><?php esc_html_e( $team->get_name() ) ?></td>
+  <td><?php _e( $ranking->get_total_score() ) ?></td>
+  <td><?php _e( $ranking->get_opponent_score() ) ?></td>
+  <td><div class="ekc-control-group"><input id="seeding-score-<?php esc_html_e( $team->get_team_id() ) ?>" name="seeding-score-<?php esc_html_e( $team->get_team_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $team->get_seeding_score() ) ?>" /></div></td>
+  <td><div class="ekc-control-group"><input id="initial-score-<?php esc_html_e( $team->get_team_id() ) ?>" name="initial-score-<?php esc_html_e( $team->get_team_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $team->get_initial_score() ) ?>" /></div></td>
+  <td><div class="ekc-control-group"><input id="virtual-rank-<?php esc_html_e( $team->get_team_id() ) ?>" name="virtual-rank-<?php esc_html_e( $team->get_team_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $team->get_virtual_rank() ) ?>" /></div></td>
+  <td><a href="?page=ekc-swiss&amp;action=remove-team&amp;tournamentid=<?php esc_html_e( $team->get_tournament_id() ) ?>&amp;teamid=<?php esc_html_e( $team->get_team_id() ) ?>">Remove from tournament</a></td>
+</tr>
+<?php
+  }
+
+  private function store_ranking( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $teams = $db->get_active_teams( $tournament_id );
+    foreach( $teams as $team ) {
+      $extracted_team = $this->extract_team( $team->get_team_id() );
+      if ( $extracted_team 
+          && ($extracted_team->get_initial_score() !== $team->get_initial_score()
+              || $extracted_team->get_seeding_score() !== $team->get_seeding_score()
+              || $extracted_team->get_virtual_rank() !== $team->get_virtual_rank() ) ) {
+          $team->set_virtual_rank( $extracted_team->get_virtual_rank() );
+          $team->set_initial_score( $extracted_team->get_initial_score() );
+          $team->set_seeding_score( $extracted_team->get_seeding_score() );
+          $db->update_team( $team );
+      }
+    }
+  }
+
+  private function extract_team( $team_id ) {
+    $initial_score_id = 'initial-score-' . $team_id;
+    $seeding_score_id = 'seeding-score-' . $team_id;
+    $virtual_rank_id = 'virtual-rank-' . $team_id;
+    if ( ! isset($_POST[$initial_score_id]) && ! isset($_POST[$seeding_score_id]) && ! isset($_POST[$virtual_rank_id]) ) {
+      return null;
+    }
+
+    $team = new Ekc_Team();
+    if ( isset($_POST[$initial_score_id] ) ) {
+      $team->set_initial_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST[$initial_score_id] ) ) ) );
+    }
+    if ( isset($_POST[$seeding_score_id] ) ) {
+      $team->set_seeding_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST[$seeding_score_id] ) ) ) );
+    }
+    if ( isset($_POST[$virtual_rank_id] ) ) {
+      $team->set_virtual_rank( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST[$virtual_rank_id] ) ) ) );
+    }
+    return $team;
+  }
+
+  private function remove_team_from_tournament( $team_id ) {
+    $db = new Ekc_Database_Access();
+    $db->set_team_active( $team_id, false );
+    $db->delete_results_for_team( $team_id );
   }
 
   private function compare_results($result1, $result2) {

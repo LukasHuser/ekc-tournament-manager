@@ -9,7 +9,8 @@ class Ekc_Swiss_System_Team {
 	private $score;
 	private $opponent_score;
 	private $seeding_score;
-	private $is_excluded_top_team;
+	private $initial_score;
+	private $virtual_rank;
 
 	public function get_team_id() {
 		return $this->team_id;
@@ -43,12 +44,24 @@ class Ekc_Swiss_System_Team {
 		$this->seeding_score = $seeding_score;
 	}
 
-	public function is_excluded_top_team() {
-		return $this->is_excluded_top_team;
+	public function get_initial_score() {
+		return $this->initial_score;
 	}
 
-	public function set_excluded_top_team($is_excluded_top_team) {
-		$this->is_excluded_top_team = $is_excluded_top_team;
+	public function set_initial_score($initial_score) {
+		$this->initial_score = $initial_score;
+	}
+
+	public function get_virtual_rank() {
+		return $this->virtual_rank;
+	}
+
+	public function set_virtual_rank($virtual_rank) {
+		$this->virtual_rank = $virtual_rank;
+	}
+
+	public function get_total_score() {
+		return floatval( $this->score ) + floatval( $this->initial_score );
 	}
 }
 

@@ -244,7 +244,7 @@ class Ekc_Database_Access {
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list, t.is_swiss_system_top_team
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
 			FROM   {$wpdb->prefix}ekc_team t
 			INNER JOIN (
 				SELECT x.team_id
@@ -285,9 +285,10 @@ class Ekc_Database_Access {
 		$team->set_registration_date( strval( $row->registration_date ) );
 		$team->set_camping_count( $row->camping_count );
 		$team->set_breakfast_count( $row->breakfast_count );
-		$team->set_seeding_score( $row->seeding_score );
 		$team->set_on_wait_list( boolval( $row->is_on_wait_list ) );
-		$team->set_swiss_system_top_team( boolval( $row->is_swiss_system_top_team ) );
+		$team->set_seeding_score( $row->seeding_score );
+		$team->set_initial_score( $row->initial_score );
+		$team->set_virtual_rank( $row->virtual_rank );
 		return $team;
 	}
 
@@ -321,7 +322,7 @@ class Ekc_Database_Access {
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list, t.is_swiss_system_top_team
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank 
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE  COALESCE(t.is_active, 0) = 1
 			AND    t.tournament_id = %d
@@ -348,7 +349,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list, t.is_swiss_system_top_team
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE  t.tournament_id = %d
 			ORDER BY t.team_id",
@@ -389,15 +390,15 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT  'team_id', 'name', 'country', 'active', 'email', 'phone', 'registration_date', 'camping', 'breakfast', 'seeding_score', 'wait_list', 'players'
+			SELECT  'team_id', 'name', 'country', 'active', 'email', 'phone', 'registration_date', 'camping', 'breakfast', 'wait_list', 'seeding_score', 'initial_score', 'virtual_rank', 'players'
 			UNION ALL
-			SELECT	t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list,
+			SELECT	t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank,
                                GROUP_CONCAT( CONCAT(p.first_name, ' ', p.last_name, ' (', p.country, ')') SEPARATOR ', ') as players
 			FROM   {$wpdb->prefix}ekc_team t
 			LEFT OUTER JOIN {$wpdb->prefix}ekc_player p
 			ON t.team_id = p.team_id
 			WHERE t.tournament_id = %d
-			GROUP BY t.team_id, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list
+			GROUP BY t.team_id, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
 			",
 			$tournament_id),
 		ARRAY_A );
@@ -419,11 +420,12 @@ class Ekc_Database_Access {
 				'registration_date'	=> $team->get_registration_date(),
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
-				'seeding_score'	=> $team->get_seeding_score(),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list() ),
-				'is_swiss_system_top_team' => intval( $team->is_swiss_system_top_team() ),
+				'seeding_score'	=> $team->get_seeding_score(),
+				'initial_score'	=> $team->get_initial_score(),
+				'virtual_rank'	=> $team->get_virtual_rank(),
 			), 
-			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%f', '%d', '%d' ) 
+			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%d' ) 
 		);
 
 		$team_id = $wpdb->insert_id;
@@ -446,12 +448,13 @@ class Ekc_Database_Access {
 				'registration_date'	=> $team->get_registration_date(),
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
-				'seeding_score'	=> $team->get_seeding_score(),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list() ),
-				'is_swiss_system_top_team' => intval( $team->is_swiss_system_top_team() ),
+				'seeding_score'	=> $team->get_seeding_score(),
+				'initial_score'	=> $team->get_initial_score(),
+				'virtual_rank'	=> $team->get_virtual_rank(),
 			),
 			array( 'team_id'		=> $team->get_team_id() ),
-			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%f', '%d', '%d' ),
+			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%d' ),
 			array( '%d' )
 		);
 
@@ -463,7 +466,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, seeding_score, is_on_wait_list, is_swiss_system_top_team
+			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, is_on_wait_list, seeding_score, initial_score, virtual_rank 
 			FROM   {$wpdb->prefix}ekc_team
 			WHERE  team_id = %d
 			",
@@ -707,6 +710,16 @@ class Ekc_Database_Access {
 		return $tournament_result->get_result_id();
 	}
 
+	public function delete_results_for_team( $team_id ) {
+		if ( ! $team_id ) {
+			return;
+		}
+
+		global $wpdb;
+		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'team1_id' => $team_id ) );
+		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'team2_id' => $team_id ) );
+	}
+
 	/***************************************************************************************************************************
 	 * Swiss System
 	 ***************************************************************************************************************************/
@@ -782,16 +795,17 @@ class Ekc_Database_Access {
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT	t.team_id AS team_id, 
-        			COALESCE(t.seeding_score, 0) AS seeding_score,
+        			t.seeding_score AS seeding_score,
         			s.score as score,
-							o.opponent_score as opponent_score,
-							t.is_swiss_system_top_team excluded_top_team
+					o.opponent_score as opponent_score,
+					t.initial_score as initial_score,
+					t.virtual_rank as virtual_rank
 			FROM    {$wpdb->prefix}ekc_team t
 			JOIN    {$wpdb->prefix}ekc_temp_score1 s on s.team_id = t.team_id
 			JOIN    {$wpdb->prefix}ekc_temp_opponent_score o on o.team_id = t.team_id
 			WHERE   t.tournament_id = %d
 			AND     t.is_active = 1
-			ORDER BY score desc, opponent_score desc, seeding_score desc
+			ORDER BY -virtual_rank desc, (coalesce(score,0) + coalesce(initial_score,0)) desc, coalesce(opponent_score,0) desc, coalesce(seeding_score,0) desc
 			",
 			$tournament_id
 		));
@@ -814,7 +828,8 @@ class Ekc_Database_Access {
 		$team->set_score( $row->score );
 		$team->set_opponent_score( $row->opponent_score );
 		$team->set_seeding_score( $row->seeding_score );
-		$team->set_excluded_top_team( boolval( $row->excluded_top_team ) );
+		$team->set_initial_score( $row->initial_score );
+		$team->set_virtual_rank( $row->virtual_rank );
 		return $team;
 	}
 
@@ -822,11 +837,11 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id AS team_id, 0 AS score, 0 AS opponent_score, COALESCE(t.seeding_score) AS seeding_score
+			SELECT t.team_id AS team_id, 0 AS score, 0 AS opponent_score, t.seeding_score AS seeding_score, t.initial_score as initial_score, t.virtual_rank as virtual_rank
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE t.tournament_id = %d
 			AND   t.is_active = 1
-			ORDER BY COALESCE(t.seeding_score) desc
+			ORDER BY -t.virtual_rank desc, coalesce(t.initial_score, 0) desc, coalesce(t.seeding_score, 0) desc, t.team_id asc
 			",
 			$tournament_id
 		));
