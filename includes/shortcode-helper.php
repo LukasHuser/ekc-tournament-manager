@@ -1263,7 +1263,7 @@ class Ekc_Shortcode_Helper {
 			$row[] = $counter;
 			$row[] = $this->html_flag( esc_html($team->get_country()) );
 			$row[] = esc_html($team->get_name());
-			$row[] = strval( $ranking->get_total_score() ) . ' / ' . strval( $ranking->get_opponent_score() );
+			$row[] = strval( $ranking->get_total_score() ) . '&nbsp;/&nbsp;' . strval( $ranking->get_opponent_score() );
 			$html_body .= $this->html_table_row( $row, 'rank-' . $counter, $is_excluded );
 			$counter++;
 		}
