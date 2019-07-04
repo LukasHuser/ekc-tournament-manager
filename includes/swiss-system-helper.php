@@ -71,17 +71,19 @@ class Ekc_Swiss_System_Helper {
 
 	private function store_matchups( $tournament_id, $next_round, $matchups, $virtual_matchups ) {
 		$db = new Ekc_Database_Access();
+		$pitch = 1;
 
 		foreach ( $virtual_matchups as $matchup ) {
 			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
 			$result->set_virtual_result( true );
+			$result->set_pitch( strval( $pitch ) );
 			$result->set_team1_score( 1 );
 			$result->set_team2_score( 1 );
 			
 			$db->insert_tournament_result( $result );
+			$pitch++;
 		}
 
-		$pitch = 1;
 		foreach ( $matchups as $matchup ) {
 			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
 			$result->set_virtual_result( false );
