@@ -1246,12 +1246,7 @@ class Ekc_Shortcode_Helper {
 		$header = array();
 		$header[] = array('<span class="dashicons dashicons-awards"></span>', 'ekc-column-rank');
 		$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
-		if ( ! $is_single_player ) {
-			$header[] = array('Team', 'ekc-column-team');
-		}
-		if ( $tournament->is_player_names_required() || $is_single_player ) {	
-			$header[] = array($is_single_player ? 'Player' : 'Players', 'ekc-column-player');
-		}
+		$header[] = array($is_single_player ? 'Player' : 'Team', 'ekc-column-team');
 		$header[] = array('Score', 'ekc-column-score');
 		$html_header = $this->html_table_head($header);
 		$html_body = '';
@@ -1280,12 +1275,7 @@ class Ekc_Shortcode_Helper {
 		$header = array();
 		$header[] = array('Pitch', 'ekc-column-pitch');
 		$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
-		if ( ! $is_single_player ) {
-			$header[] = array('Team', 'ekc-column-team');
-		}
-		if ( $tournament->is_player_names_required() || $is_single_player ) {	
-			$header[] = array($is_single_player ? 'Player' : 'Players', 'ekc-column-player');
-		}
+		$header[] = array($is_single_player ? 'Player' : 'Team', 'ekc-column-team');
 		$header[] = array('Score', 'ekc-column-score');
 		$html_header = $this->html_table_head($header);
 		$html_body = '';
