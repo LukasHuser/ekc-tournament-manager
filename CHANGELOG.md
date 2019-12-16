@@ -6,6 +6,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys)  
 
+## Version 1.2.5
+[x] team registration: extension for elementor forms to directly insert form content do database
+
 ## Version 1.2.4
 [x] swiss system: ranking page in admin view, allows updating initial score, seeding score and virtual rank
 [x] swiss system: allow initial score (for an accelerated swiss system)

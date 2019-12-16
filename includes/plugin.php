@@ -52,6 +52,7 @@ class Ekc_Tournament_Registration {
 		$this->load_libs();
 		$this->add_shortcodes();
 		$this->add_elementor_widgets();
+		$this->elementor_module_extensions();
 	}
 
 	private function check_database_version() {
@@ -121,12 +122,18 @@ class Ekc_Tournament_Registration {
 		$this->loader->add_action( 'elementor/widgets/widgets_registered', $widget_helper, 'register_elementor_widgets' );
 	}
 
+	private function elementor_module_extensions() {	
+		$module_helper = new Ekc_Module_Helper();
+		$this->loader->add_action( 'elementor_pro/init', $module_helper, 'elementor_forms_module_extension' );
+	}
+
 	private function load_model() {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/type-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database-access.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/drop-down-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcode-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/widget-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/module-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/tournament.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/team.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/player.php';
