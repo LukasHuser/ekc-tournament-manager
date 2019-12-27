@@ -8,6 +8,8 @@ CHANGELOG ekc-tournament
 
 ## Version 1.2.5
 [x] team registration: extension for elementor forms to directly insert form content do database
+[x] team registration: new attribute 'registration order' to manually control order in registration list and waiting list
+[x] team registration: new menu on teams table to directly put a team on the waiting list (or remove it)
 
 ## Version 1.2.4
 [x] swiss system: ranking page in admin view, allows updating initial score, seeding score and virtual rank

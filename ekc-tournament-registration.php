@@ -32,7 +32,7 @@ under the License.
 if ( ! defined( 'WPINC' ) ) die;
 
 define( 'EKC_PLUGIN_VERSION', '1.2.5' );
-define( 'EKC_DATABASE_VERSION', '1.2.4' );
+define( 'EKC_DATABASE_VERSION', '1.2.5' );
 
 // Load database setup class
 require_once plugin_dir_path( __FILE__ ) . 'includes/database-setup.php';

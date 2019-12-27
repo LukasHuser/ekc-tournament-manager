@@ -17,6 +17,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 			'email'			=> 'E-Mail',
 			'phone'			=> 'Phone',
 			'registration_date'	=> 'Registration date',
+			'registration_order' => 'Order',
 			'is_on_wait_list'	=> 'Waiting list',
 			'camping_count' => 'Camping',
 			'breakfast_count'	=> 'Breakfast',
@@ -34,28 +35,43 @@ class Ekc_Teams_Table extends WP_List_Table {
 		$this->items = $this->teams_data;
 	}
 
-	function column_name($item) {
-		$actions = array(
-			'edit' => sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', $_REQUEST['page'], 'edit', $item['team_id'], $_REQUEST['tournamentid']),
-		);
+	function column_name( $item ) {
+		$actions = array();
+		$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', $_REQUEST['page'], 'edit', $item['team_id'], $_REQUEST['tournamentid']);
+
+		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
+	}
+
+	function column_is_active( $item ) {
+		$actions = array();
 		if ( filter_var($item['is_active'], FILTER_VALIDATE_BOOLEAN) ) {
 			$actions['inactivate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Inactivate</a>', $_REQUEST['page'], 'inactivate', $item['team_id'], $_REQUEST['tournamentid']);
 		}
 		else {
 			$actions['activate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Activate</a>', $_REQUEST['page'], 'activate', $item['team_id'], $_REQUEST['tournamentid']);
 		}
+		return sprintf('%s %s', $item['is_active'], $this->row_actions($actions) );
+	}
 
-		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
+	function column_is_on_wait_list( $item ) {
+		$actions = array();
+		if ( filter_var($item['is_on_wait_list'], FILTER_VALIDATE_BOOLEAN) ) {
+			$actions['offwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Remove</a>', $_REQUEST['page'], 'offwaitlist', $item['team_id'], $_REQUEST['tournamentid']);
+		}
+		else {
+			$actions['onwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Add</a>', $_REQUEST['page'], 'onwaitlist', $item['team_id'], $_REQUEST['tournamentid']);
+		}
+
+		return sprintf('%s %s', $item['is_on_wait_list'], $this->row_actions($actions) );
 	}
 
 	function column_default( $item, $column_name ) {
 		switch( $column_name ) { 
-			case 'is_active':
 			case 'country':
 			case 'email':
 			case 'phone':
 			case 'registration_date':
-			case 'is_on_wait_list':
+			case 'registration_order':
 			case 'camping_count':
 			case 'breakfast_count':
 			case 'seeding_score':

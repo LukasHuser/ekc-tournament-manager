@@ -23,6 +23,14 @@ class Ekc_Teams_Admin_Page {
 		elseif ( $action === 'inactivate' ) {
 			$this->set_team_active( $team_id, false );
 			$this->show_teams( $tournament_id );
+    }
+		elseif ( $action === 'onwaitlist' ) {
+			$this->set_team_on_wait_list($team_id, true);
+			$this->show_teams($tournament_id);
+		}
+		elseif ( $action === 'offwaitlist' ) {
+			$this->set_team_on_wait_list( $team_id, false );
+			$this->show_teams( $tournament_id );
 		}
 		else {
 			$this->handle_post( $tournament_id );
@@ -61,6 +69,9 @@ class Ekc_Teams_Admin_Page {
     }
     if ( isset($_POST['waitlist'] ) ) {
 			$team->set_on_wait_list( filter_var( $_POST['waitlist'], FILTER_VALIDATE_BOOLEAN ) );
+    }
+    if ( isset($_POST['registrationorder'] ) ) {
+			$team->set_registration_order( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['registrationorder'] ) ) ) );
 		}
 		if ( isset($_POST['email'] ) ) {
 			$team->set_email( sanitize_text_field( wp_unslash( $_POST['email'] ) ) );
@@ -181,6 +192,10 @@ class Ekc_Teams_Admin_Page {
           <div class="ekc-control-group">
             <label for="waitlist">Is on waiting list</label>
             <input id="waitlist" name="waitlist" type="checkbox" value="true" />
+          </div>
+          <div class="ekc-control-group">
+          <label for="registrationorder">Order (used in registration list / waiting list)</label>
+            <input id="registrationorder" name="registrationorder" type="number" step="any" placeholder="1.0" />
           </div>
           <div class="ekc-control-group">
             <label for="email">E-mail</label>
@@ -305,6 +320,10 @@ class Ekc_Teams_Admin_Page {
             <input id="waitlist" name="waitlist" type="checkbox" value="true" <?php $team->is_on_wait_list() ? _e( "checked" ) : _e('') ?>/>
           </div>
           <div class="ekc-control-group">
+            <label for="registrationorder">Order (used in registration list / waiting list)</label>
+            <input id="registrationorder" name="registrationorder" type="number" step="any" placeholder="1.0" value="<?php esc_html_e( $team->get_registration_order() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
             <label for="email">E-mail</label>
             <input id="email" name="email" type="email" placeholder="my.name@mail.com" maxlength="500" value="<?php esc_html_e( $team->get_email() ) ?>" />
           </div>
@@ -412,6 +431,11 @@ class Ekc_Teams_Admin_Page {
 	public function set_team_active( $team_id, $is_active ) {
 		$db = new Ekc_Database_Access();
 		$db->set_team_active( $team_id, $is_active );
+	}
+
+	public function set_team_on_wait_list( $team_id, $is_on_wait_list ) {
+		$db = new Ekc_Database_Access();
+		$db->set_team_on_wait_list( $team_id, $is_on_wait_list );
 	}
 
 	public function export_teams_as_csv() {

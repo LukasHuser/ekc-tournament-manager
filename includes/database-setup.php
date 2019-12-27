@@ -59,6 +59,7 @@ class Ekc_Database_Setup {
 			camping_count integer(10), 
 			breakfast_count integer(10),
 			is_on_wait_list bit(1),
+			registration_order double precision,
 			seeding_score double precision,
 			initial_score double precision,
 			virtual_rank integer(10),

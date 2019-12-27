@@ -244,7 +244,7 @@ class Ekc_Database_Access {
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank
 			FROM   {$wpdb->prefix}ekc_team t
 			INNER JOIN (
 				SELECT x.team_id
@@ -252,11 +252,11 @@ class Ekc_Database_Access {
 				WHERE  x.tournament_id = %d
 				AND    COALESCE(x.is_active, 0) = 1
 				AND    COALESCE(x.is_on_wait_list, 0) <> 1
-				ORDER BY x.team_id ASC
+				ORDER BY COALESCE(x.registration_order, x.team_id) ASC
 				{$sql_teams_limit}
 			) as t2
 			ON t.team_id = t2.team_id
-			ORDER BY t.team_id {$sql_sort}
+			ORDER BY COALESCE(t.registration_order, t.team_id) {$sql_sort}
 			{$sql_limit}",
 			$tournament_id
 		));
@@ -286,6 +286,7 @@ class Ekc_Database_Access {
 		$team->set_camping_count( $row->camping_count );
 		$team->set_breakfast_count( $row->breakfast_count );
 		$team->set_on_wait_list( boolval( $row->is_on_wait_list ) );
+		$team->set_registration_order( $row->registration_order );
 		$team->set_seeding_score( $row->seeding_score );
 		$team->set_initial_score( $row->initial_score );
 		$team->set_virtual_rank( $row->virtual_rank );
@@ -315,6 +316,7 @@ class Ekc_Database_Access {
 			WHERE  x.tournament_id = %d
 			AND    COALESCE(x.is_active, 0) = 1
 			AND    COALESCE(x.is_on_wait_list, 0) <> 1
+			ORDER BY COALESCE(x.registration_order, x.team_id) ASC
 			{$sql_teams_limit}
 			",
 			$tournament_id
@@ -322,14 +324,14 @@ class Ekc_Database_Access {
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank 
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank 
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE  COALESCE(t.is_active, 0) = 1
 			AND    t.tournament_id = %d
 			AND    t.team_id NOT IN (
 				SELECT x.team_id 
 				FROM   {$wpdb->prefix}ekc_temp_active_teams x)
-			ORDER BY t.team_id {$sql_sort}",
+			ORDER BY COALESCE(t.registration_order, t.team_id) {$sql_sort}",
 			$tournament_id
 		));
 
@@ -349,10 +351,10 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE  t.tournament_id = %d
-			ORDER BY t.team_id",
+			ORDER BY t.team_id ASC",
 			$tournament_id
 		));
 
@@ -372,13 +374,14 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list,
+			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.registration_order, t.camping_count, t.breakfast_count, t.seeding_score, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list,
                                GROUP_CONCAT( CONCAT(p.first_name, ' ', p.last_name, ' (', p.country, ')') SEPARATOR ', ') as players
 			FROM   {$wpdb->prefix}ekc_team t
 			LEFT OUTER JOIN {$wpdb->prefix}ekc_player p
 			ON t.team_id = p.team_id
 			WHERE t.tournament_id = %d
-			GROUP BY t.team_id, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list
+			GROUP BY t.team_id, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.registration_order, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list
+			ORDER BY t.team_id ASC
 			",
 			$tournament_id),
 		ARRAY_A );
@@ -390,15 +393,15 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT  'team_id', 'name', 'country', 'active', 'email', 'phone', 'registration_date', 'camping', 'breakfast', 'wait_list', 'seeding_score', 'initial_score', 'virtual_rank', 'players'
+			SELECT  'team_id', 'name', 'country', 'active', 'email', 'phone', 'registration_date', 'order', 'camping', 'breakfast', 'wait_list', 'seeding_score', 'initial_score', 'virtual_rank', 'players'
 			UNION ALL
-			SELECT	t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank,
+			SELECT	t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.registration_order, t.camping_count, t.breakfast_count, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank,
                                GROUP_CONCAT( CONCAT(p.first_name, ' ', p.last_name, ' (', p.country, ')') SEPARATOR ', ') as players
 			FROM   {$wpdb->prefix}ekc_team t
 			LEFT OUTER JOIN {$wpdb->prefix}ekc_player p
 			ON t.team_id = p.team_id
 			WHERE t.tournament_id = %d
-			GROUP BY t.team_id, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
+			GROUP BY t.team_id, t.registration_order, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
 			",
 			$tournament_id),
 		ARRAY_A );
@@ -421,14 +424,28 @@ class Ekc_Database_Access {
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list() ),
+				'registration_order' => $team->get_registration_order(),
 				'seeding_score'	=> $team->get_seeding_score(),
 				'initial_score'	=> $team->get_initial_score(),
 				'virtual_rank'	=> $team->get_virtual_rank(),
 			), 
-			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%d' ) 
+			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ) 
 		);
 
 		$team_id = $wpdb->insert_id;
+		// set team_id as initial registration_order, if not manually set
+		if ( is_null( Ekc_Type_Helper::opt_floatval( $team->get_registration_order() ) ) ) {
+			$wpdb->update( 
+				$wpdb->prefix . 'ekc_team', 
+				array( 
+					'registration_order' => $team_id,
+				),
+				array( 'team_id'		=> $team_id ),
+				array( '%f' ),
+				array( '%d' )
+			);
+		}
+
 		$this->insert_players( $team_id, $team->get_players() );
 
 		return $team_id;
@@ -449,12 +466,13 @@ class Ekc_Database_Access {
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list() ),
+				'registration_order' => $team->get_registration_order(),
 				'seeding_score'	=> $team->get_seeding_score(),
 				'initial_score'	=> $team->get_initial_score(),
 				'virtual_rank'	=> $team->get_virtual_rank(),
 			),
 			array( 'team_id'		=> $team->get_team_id() ),
-			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%d' ),
+			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ),
 			array( '%d' )
 		);
 
@@ -466,7 +484,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, is_on_wait_list, seeding_score, initial_score, virtual_rank 
+			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, is_on_wait_list, registration_order, seeding_score, initial_score, virtual_rank 
 			FROM   {$wpdb->prefix}ekc_team
 			WHERE  team_id = %d
 			",
@@ -483,12 +501,25 @@ class Ekc_Database_Access {
 		return $team;
 	}
 
-	public function set_team_active($team_id, $is_active) {
+	public function set_team_active( $team_id, $is_active ) {
 		global $wpdb;
 		$wpdb->update( 
 			$wpdb->prefix . 'ekc_team', 
 			array( 
 				'is_active'		=> intval( $is_active ),
+			),
+			array( 'team_id'		=> $team_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+	}
+
+	public function set_team_on_wait_list( $team_id, $is_on_wait_list ) {
+		global $wpdb;
+		$wpdb->update( 
+			$wpdb->prefix . 'ekc_team', 
+			array( 
+				'is_on_wait_list'	=> intval( $is_on_wait_list ),
 			),
 			array( 'team_id'		=> $team_id ),
 			array( '%d' ),

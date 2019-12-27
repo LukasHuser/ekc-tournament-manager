@@ -18,6 +18,7 @@ class Ekc_Team implements JsonSerializable {
 	private $camping_count;
 	private $breakfast_count;
 	private $is_on_wait_list;
+	private $registration_order;
 	private $seeding_score;
 	private $initial_score;
 	private $virtual_rank;
@@ -110,6 +111,14 @@ class Ekc_Team implements JsonSerializable {
 
 	public function set_on_wait_list(bool $is_on_wait_list) {
 		$this->is_on_wait_list = $is_on_wait_list;
+	}
+
+	public function get_registration_order() {
+		return $this->registration_order;
+	}
+
+	public function set_registration_order(?float $registration_order) {
+		$this->registration_order = $registration_order;
 	}
 
 	public function get_seeding_score() {
