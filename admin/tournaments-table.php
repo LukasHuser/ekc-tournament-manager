@@ -2,13 +2,6 @@
 
 class Ekc_Tournaments_Table extends WP_List_Table {
 
-	protected $tournaments_data;
-
-	public function __construct($tournaments_data) {
-		parent::__construct();
-		$this->tournaments_data = $tournaments_data;
-	}
-
 	function get_columns(){
 		$columns = array(
 			'code_name'			=> 'Code Name',
@@ -20,7 +13,21 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 			'is_player_names_required'	=> 'Player names required',
 			'tournament_system'	=> 'Tournament system',
 			'elimination_rounds'	=> 'Elimination rounds',
-			'swiss_system_rounds'	=> 'Swiss System rounds',
+			'swiss_system_rounds'	=> 'Swiss rounds',
+		);
+		return $columns;
+	}
+
+	function get_sortable_columns(){
+		$columns = array(
+			'code_name'			=> array( 'code_name', false ),
+			'name'				=> array( 'name', false ),
+			'team_size'			=> array( 'team_size', false ),
+			'tournament_date'	=> array( 'tournament_date', false ),
+			'max_teams'			=> array( 'max_teams', false ),
+			'tournament_system'	=> array( 'tournament_system', false ),
+			'elimination_rounds'	=> array( 'elimination_rounds', false ),
+			'swiss_system_rounds'	=> array( 'swiss_system_rounds', false )
 		);
 		return $columns;
 	}
@@ -28,9 +35,13 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 	function prepare_items() {
 		$columns = $this->get_columns();
 		$hidden = array();
-		$sortable = array();
+		$sortable = $this->get_sortable_columns();
 		$this->_column_headers = array($columns, $hidden, $sortable);
-		$this->items = $this->tournaments_data;
+
+		$db = new Ekc_Database_Access();
+		$tournaments_data = $db->get_all_tournaments_as_table( $_REQUEST['orderby'], $_REQUEST['order'] );
+
+		$this->items = $tournaments_data;
 	}
 
 	function column_code_name( $item ) {
@@ -74,6 +85,25 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 			default:
 			return print_r( $item, true ) ; // Show the whole array for troubleshooting purposes
 		}
+	}
+
+	function no_items() {
+		esc_html_e("No tournaments available yet.");
+	}
+
+	/**
+	 * Complete override of pagination method of super class.
+	 * We dont use pagination, but simply display the total number of items.
+	 */
+	protected function pagination( $which ) {
+		$total_items = count( $this->items );
+?>
+		<div class='tablenav-pages one-page'><span class='displaying-num'>
+		<?php esc_html_e( sprintf(
+			_n( '%s item', '%s items', $total_items ),
+			number_format_i18n( $total_items ))) ?>
+		</span></div>
+<?php
 	}
 }
 

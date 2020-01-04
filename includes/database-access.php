@@ -9,8 +9,9 @@ class Ekc_Database_Access {
 	 * Tournament
 	 ***************************************************************************************************************************/
 
-	public function get_all_tournaments_as_table() {
+	public function get_all_tournaments_as_table( $sort_column = 'tournament_date', $sort = 'desc' ) {
 		global $wpdb;
+		$sql_sort = $this->validate_tournament_table_sort_column( $sort_column ) . ' ' . ($sort === 'asc' ? 'ASC' : 'DESC');
 		$results = $wpdb->get_results( 
 			"
 			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, 
@@ -18,11 +19,22 @@ class Ekc_Database_Access {
 					case when is_player_names_required = 1 then 'yes' else 'no' end as is_player_names_required,
 					tournament_system, elimination_rounds, swiss_system_rounds   
 			FROM   {$wpdb->prefix}ekc_tournament
-			ORDER BY tournament_id DESC
+			ORDER BY {$sql_sort}
 			",
 		ARRAY_A );
 
 		return $results;
+	}
+
+	private function validate_tournament_table_sort_column( $column ) {
+		$valid_columns = array(
+			'code_name', 'name', 'team_size', 'tournament_date', 'max_teams',
+			'tournament_system', 'elimination_rounds', 'swiss_system_rounds'
+		);
+		if ( in_array( $column, $valid_columns, true) ) {
+			return $column;
+		}
+		return 'tournament_date'; // default sort column
 	}
 
 	public function insert_tournament($tournament) {
@@ -370,8 +382,10 @@ class Ekc_Database_Access {
 		return $teams;
 	}
 
-	public function get_all_teams_as_table( $tournament_id ) {
+	public function get_all_teams_as_table( $tournament_id, $sort_column = 'registration_date', $sort = 'asc', $filter ) {
 		global $wpdb;
+		$sql_sort = $this->create_team_table_sort_column_sql( $sort_column, 't') . ' ' . ($sort === 'desc' ? 'DESC' : 'ASC');
+		$sql_filter = $this->create_team_table_filter( $filter, 't' );
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email, t.phone, t.registration_date, t.registration_order, t.camping_count, t.breakfast_count, t.seeding_score, case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list,
@@ -380,13 +394,44 @@ class Ekc_Database_Access {
 			LEFT OUTER JOIN {$wpdb->prefix}ekc_player p
 			ON t.team_id = p.team_id
 			WHERE t.tournament_id = %d
+			      {$sql_filter} 
 			GROUP BY t.team_id, t.name, t.country, t.is_active, t.email, t.phone, t.registration_date, t.registration_order, t.camping_count, t.breakfast_count, t.seeding_score, t.is_on_wait_list
-			ORDER BY t.team_id ASC
+			ORDER BY {$sql_sort}
 			",
 			$tournament_id),
 		ARRAY_A );
 
 		return $results;
+	}
+
+	private function create_team_table_sort_column_sql( $column, $table_alias ) {
+		$sql_alias = $table_alias ? $table_alias . '.' : '';
+		$valid_columns = array(
+		  'name', 'is_active', 'country', 'registration_date', 'registration_order',
+		  'is_on_wait_list', 'camping_count', 'breakfast_count', 'seeding_score'
+		);
+		if ( in_array( $column, $valid_columns, true) ) {
+			return $sql_alias . $column;
+		}
+		return $sql_alias . 'registration_date'; // default sort column
+	}
+
+	private function create_team_table_filter( $filter, $table_alias ) {
+		$sql_alias = $table_alias ? $table_alias . '.' : '';
+		$sql_filter = '';
+		foreach ( $filter as $key => $value ) {
+			if ( $key === 'is_active' || $key === 'is_on_wait_list' ) {
+				if ( $value === '1' || $value === '0') {
+					$sql_filter .= ' AND ' . $sql_alias . $key . ' = ' . $value;
+				}
+			}
+			elseif ( $key === 'country' ) {
+				if ( in_array( $value, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
+					$sql_filter .= ' AND ' . $sql_alias . $key . " = '" . $value . "'";
+				}
+			}
+		}
+		return $sql_filter;
 	}
 
 	public function get_all_teams_as_csv( $tournament_id ) {
@@ -462,7 +507,6 @@ class Ekc_Database_Access {
 				'is_active'		=> intval( $team->is_active() ),
 				'email'			=> $this->truncate_string( $team->get_email(), 500 ),
 				'phone'			=> $this->truncate_string( $team->get_phone(), 50 ),
-				'registration_date'	=> $team->get_registration_date(),
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list() ),
@@ -472,7 +516,7 @@ class Ekc_Database_Access {
 				'virtual_rank'	=> $team->get_virtual_rank(),
 			),
 			array( 'team_id'		=> $team->get_team_id() ),
-			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ),
+			array( '%d', '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ),
 			array( '%d' )
 		);
 

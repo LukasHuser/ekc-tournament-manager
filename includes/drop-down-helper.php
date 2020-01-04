@@ -47,6 +47,16 @@ class Ekc_Drop_Down_Helper {
 	const TOURNAMENT_STAGE_SWISS	= "swiss";
 	const TOURNAMENT_STAGE_GROUP	= "group";
 
+	const FILTER_ALL	= 'all';
+	const FILTER_YES	= 'yes';
+	const FILTER_NO		= 'no';
+
+	const FILTER_ALL_YES_NO = array(
+		Ekc_Drop_Down_Helper::FILTER_ALL,
+		Ekc_Drop_Down_Helper::FILTER_YES,
+		Ekc_Drop_Down_Helper::FILTER_NO
+	);
+
 	public static function empty_if_none( $selected_key ) {
 		if ( $selected_key === Ekc_Drop_Down_Helper::SELECTION_NONE) {
 			return '';
@@ -73,16 +83,21 @@ class Ekc_Drop_Down_Helper {
 		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::ELIMINATION_BRACKET, null, "ekc-selectmenu");
 	}
 
+	public static function filter_yes_no_drop_down( $id, $selected_key, $all_text) {
+		$values = array($all_text, 'Yes', 'No');
+		Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO, $values, '', false );
+	}
 
-	private static function drop_down($id, $selected_key, $all_keys, $all_values, $css_class ) {
+	private static function drop_down($id, $selected_key, $all_keys, $all_values, $css_class, $include_empty = true ) {
 		if ( ! $all_values ) {
 			$all_values = $all_keys;
 		}
-		$is_empty_selected = ! $selected_key or strval( $selected_key ) === Ekc_Drop_Down_Helper::SELECTION_NONE;
+		$is_empty_selected = ! $selected_key || strval( $selected_key ) === Ekc_Drop_Down_Helper::SELECTION_NONE;
 ?>
 <select name="<?php _e($id) ?>" id="<?php _e($id) ?>" class="<?php _e($css_class) ?>" >
+<?php if ( $include_empty ) { ?>
 	<option <?php $is_empty_selected ? _e("selected") : _e("") ?> value="<?php esc_html_e( Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>"></option>
-<?php	
+<?php }	
 	for( $i = 0; $i < count($all_keys); $i++) { 
 		if ( $all_keys[$i] !== Ekc_Drop_Down_Helper::SELECTION_NONE ) { ?>
 	<option <?php strval( $selected_key ) === strval( $all_keys[$i] ) ? _e("selected") : _e("") ?> value="<?php esc_html_e($all_keys[$i]) ?>"><?php esc_html_e($all_values[$i]) ?></option>
@@ -162,6 +177,8 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 		Ekc_Drop_Down_Helper::COUNTRY_FR => 'France',
 		Ekc_Drop_Down_Helper::COUNTRY_DE => 'Germany',
 		Ekc_Drop_Down_Helper::COUNTRY_IT => 'Italy',
+		Ekc_Drop_Down_Helper::COUNTRY_NL => 'Netherlands',
+		Ekc_Drop_Down_Helper::COUNTRY_NO => 'Norway',
 		Ekc_Drop_Down_Helper::COUNTRY_ES => 'Spain',
 		Ekc_Drop_Down_Helper::COUNTRY_SE => 'Sweden',
 		Ekc_Drop_Down_Helper::COUNTRY_CH => 'Switzerland',
@@ -175,8 +192,6 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 		Ekc_Drop_Down_Helper::COUNTRY_IE => 'Ireland',
 		Ekc_Drop_Down_Helper::COUNTRY_LI => 'Liechtenstein',
 		Ekc_Drop_Down_Helper::COUNTRY_LU => 'Luxembourg',
-		Ekc_Drop_Down_Helper::COUNTRY_NL => 'Netherlands',
-		Ekc_Drop_Down_Helper::COUNTRY_NO => 'Norway',
 		Ekc_Drop_Down_Helper::COUNTRY_PL => 'Poland',
 		Ekc_Drop_Down_Helper::COUNTRY_PT => 'Portugal',
 		Ekc_Drop_Down_Helper::COUNTRY_TR => 'Turkey',
@@ -189,7 +204,7 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 
 
 	public static function country_small_drop_down($id, $selected_value = "") {
-		$is_empty_selected = ! $selected_value or strval( $selected_value ) === Ekc_Drop_Down_Helper::SELECTION_NONE;
+		$is_empty_selected = ! $selected_value || strval( $selected_value ) === Ekc_Drop_Down_Helper::SELECTION_NONE;
 ?>
 <select name="<?php _e($id) ?>" id="<?php _e($id) ?>" class="ekc-country-selectmenu f16" >
 	<option <?php $is_empty_selected ? _e("selected") : _e("") ?> ></option>
@@ -205,6 +220,19 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 </select>
 
 <?php
+	}
+
+	public static function filter_country_small_drop_down( $id, $selected_key ) {
+		?>
+		<select name="<?php _e($id) ?>" id="<?php _e($id) ?>" >
+		<option <?php $selected_key === Ekc_Drop_Down_Helper::FILTER_ALL ? _e("selected") : _e("") ?> value="<?php _e(Ekc_Drop_Down_Helper::FILTER_ALL) ?>">All countries</option>
+		<?php 
+		foreach(Ekc_Drop_Down_Helper::COUNTRY_COMMON as $key => $value) { ?>
+			<option <?php $selected_key === $key ? _e("selected") : _e("") ?> value="<?php _e($key) ?>"><?php _e($value) ?></option>
+		<?php
+		} ?>
+		</select>
+		<?php		
 	}
 
 	public static function country_drop_down() {

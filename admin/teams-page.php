@@ -116,9 +116,9 @@ class Ekc_Teams_Admin_Page {
 		}
 		if ($has_data) {
 			$team->set_players($players);
-			$team->set_registration_date(date("Y-m-d H:i:s")); // current date
 			$db = new Ekc_Database_Access();
 			if ( $action === 'new' ) {
+        $team->set_registration_date(date("Y-m-d H:i:s")); // current date
 				$db->insert_team($team);
 			}
 			elseif ( $action === 'edit' ) {
@@ -140,10 +140,9 @@ class Ekc_Teams_Admin_Page {
 
 	public function show_teams($tournament_id) {
 		$db = new Ekc_Database_Access();
-		$teams = $db->get_all_teams_as_table($tournament_id);
 		$tournament = $db->get_tournament_by_id($tournament_id);
 
-		$teams_table = new Ekc_Teams_Table($teams);
+		$teams_table = new Ekc_Teams_Table( $tournament_id );
 ?>
 <div class="wrap">
 
@@ -152,17 +151,14 @@ class Ekc_Teams_Admin_Page {
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
 
   <hr class="wp-header-end">
-
+  <form id="teams-filter" method="get" >
+  <input id="page" name="page" type="hidden" value="<?php esc_html_e( $_REQUEST['page'] ) ?>" />
+  <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament_id ) ?>" />
 <?php 
-	if ( $teams ) {
-		$teams_table->prepare_items();
-		$teams_table->display();
-	} 
-	else {
-		esc_html_e("No teams available yet.");
-	}
+	$teams_table->prepare_items();
+	$teams_table->display();
 ?>
-
+</form>
 </div><!-- .wrap -->
 <?php
 	}	
@@ -281,7 +277,7 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php } ?>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary">Create team</button>
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary">Create team</button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament_id ) ?>" />
             <input id="teamid" name="teamid" type="hidden" />
             <input id="action" name="action" type="hidden" value="new" />
@@ -417,7 +413,7 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php } ?>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary">Save team</button>
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save team</button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
             <input id="teamid" name="teamid" type="hidden" value="<?php esc_html_e( $team_id ) ?>" />
             <input id="action" name="action" type="hidden" value="edit" />

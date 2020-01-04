@@ -93,10 +93,7 @@ class Ekc_Tournaments_Admin_Page {
 	}
 
 	public function show_tournaments() {
-		$db = new Ekc_Database_Access();
-		$tournaments = $db->get_all_tournaments_as_table();
-
-		$tournaments_table = new Ekc_Tournaments_Table($tournaments);
+		$tournaments_table = new Ekc_Tournaments_Table();
 ?>
 <div class="wrap">
 
@@ -107,13 +104,8 @@ class Ekc_Tournaments_Admin_Page {
   <hr class="wp-header-end">
 
 <?php 
-	if ( $tournaments ) {
-		$tournaments_table->prepare_items();
-		$tournaments_table->display();
-	} 
-	else {
-		esc_html_e("No tournaments available yet.");
-	}
+	$tournaments_table->prepare_items();
+	$tournaments_table->display();
 ?>
 
 </div><!-- .wrap -->
@@ -179,7 +171,7 @@ class Ekc_Tournaments_Admin_Page {
             <input id="swissadditionalrounds" name="swissadditionalrounds" type="number" placeholder="2" />
           </div>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary">Create tournament</button>
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary">Create tournament</button>
             <input id="tournamentid" name="tournamentid" type="hidden" />
             <input id="action" name="action" type="hidden" value="new" />
           </div>
@@ -253,7 +245,7 @@ class Ekc_Tournaments_Admin_Page {
             <input id="swissadditionalrounds" name="swissadditionalrounds" type="number" placeholder="2" value="<?php esc_html_e( $tournament->get_swiss_system_additional_rounds() ) ?>" />
           </div>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary">Save tournament</button>
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save tournament</button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
             <input id="action" name="action" type="hidden" value="edit" />
           </div>
