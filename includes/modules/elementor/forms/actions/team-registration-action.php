@@ -109,6 +109,12 @@ class Ekc_Form_Action_Team_Registration extends Action_Base {
 		$last_name2 = $this->get_field_value( $fields, 'lastname2' );
 		$first_name3 = $this->get_field_value( $fields, 'firstname3' );
 		$last_name3 = $this->get_field_value( $fields, 'lastname3' );
+		$first_name4 = $this->get_field_value( $fields, 'firstname4' );
+		$last_name4 = $this->get_field_value( $fields, 'lastname4' );
+		$first_name5 = $this->get_field_value( $fields, 'firstname5' );
+		$last_name5 = $this->get_field_value( $fields, 'lastname5' );
+		$first_name6 = $this->get_field_value( $fields, 'firstname6' );
+		$last_name6 = $this->get_field_value( $fields, 'lastname6' );
 
 		// common fields
 		$email = $this->get_field_value( $fields, 'email' );
@@ -130,6 +136,15 @@ class Ekc_Form_Action_Team_Registration extends Action_Base {
 			$players[] = $this->create_player( $first_name1, $last_name1, $country, true );
 			$players[] = $this->create_player( $first_name2, $last_name2, $country, false );
 			$players[] = $this->create_player( $first_name3, $last_name3, $country, false );
+			if ( $last_name4 ) {
+				$players[] = $this->create_player( $first_name4, $last_name4, $country, false );
+			}
+			if ( $last_name5 ) {
+				$players[] = $this->create_player( $first_name5, $last_name5, $country, false );
+			}
+			if ( $last_name6 ) {
+				$players[] = $this->create_player( $first_name6, $last_name6, $country, false );
+			}
 		}
 		else {
 			$team->set_name( $first_name . ' ' . $last_name );
