@@ -10,7 +10,7 @@ class Ekc_Teams_Admin_Page {
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
 		$team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
-		if ( $action === 'new' ) {
+    if ( $action === 'new' ) {
 			$this->show_new_team($tournament_id);
 		}
 		elseif ( $action === 'edit' ) {
@@ -123,7 +123,7 @@ class Ekc_Teams_Admin_Page {
 			}
 			elseif ( $action === 'edit' ) {
 				$db->update_team($team);
-			}
+      }
 		}
 		$this->show_teams( $tournament_id ? $tournament_id : $team->get_tournament_id() );
 	}
@@ -149,6 +149,7 @@ class Ekc_Teams_Admin_Page {
   <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() ) ?></h1>
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=new" class="page-title-action"><?php _e( 'New team' ) ?></a>
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
+  <a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e($tournament_id) ?>" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
 
   <hr class="wp-header-end">
   <form id="teams-filter" method="get" >
@@ -432,7 +433,7 @@ class Ekc_Teams_Admin_Page {
 	public function set_team_on_wait_list( $team_id, $is_on_wait_list ) {
 		$db = new Ekc_Database_Access();
 		$db->set_team_on_wait_list( $team_id, $is_on_wait_list );
-	}
+  }
 
 	public function export_teams_as_csv() {
 		$page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : false;

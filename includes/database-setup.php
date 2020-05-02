@@ -42,6 +42,8 @@ class Ekc_Database_Setup {
 			swiss_system_rounds integer(10),
 			swiss_system_additional_rounds integer(10),
 			swiss_system_slide_match_rounds integer(10),
+			shareable_link_url_prefix varchar(50),
+			shareable_link_email_text varchar(5000),
 			PRIMARY KEY  (tournament_id),
 			UNIQUE KEY uc_code_name (code_name)
 		) $charset_collate;";
@@ -63,6 +65,7 @@ class Ekc_Database_Setup {
 			seeding_score double precision,
 			initial_score double precision,
 			virtual_rank integer(10),
+			shareable_link_id varchar(50),
 			PRIMARY KEY  (team_id),
 			KEY i_tournament_id (tournament_id)
 		) $charset_collate;";

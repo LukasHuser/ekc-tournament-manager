@@ -110,7 +110,15 @@ class Ekc_Tournament_Registration_Admin {
 	        'manage_options',
 	        'ekc-swiss',
 			array( $this, 'create_swiss_system_page' ) );
-			
+
+	    add_submenu_page(
+	        NULL,
+			'Shareable Links',
+	        'EKC Shareable Links',
+	        'manage_options',
+	        'ekc-links',
+	        array( $this, 'create_shareable_links_page' ) );
+
 	    add_submenu_page(
 	        NULL,
 			'Backup',
@@ -138,6 +146,11 @@ class Ekc_Tournament_Registration_Admin {
 	public function create_swiss_system_page() {
 		$swiss_system_page = new Ekc_Swiss_System_Admin_Page();
 		return $swiss_system_page->create_swiss_system_page();
+	}
+
+	public function create_shareable_links_page() {
+		$links_page = new Ekc_Shareable_Links_Admin_Page();
+		return $links_page->create_shareable_links_page();
 	}
 
 	public function create_tournaments_backup_page() {

@@ -19,6 +19,8 @@ class Ekc_Tournament implements JsonSerializable {
 	private $swiss_system_rounds;
 	private $swiss_system_additional_rounds;
 	private $swiss_system_slide_match_rounds;
+	private $shareable_link_email_text;
+	private $shareable_link_url_prefix;
 
 	public function get_tournament_id() {
 		return $this->tournament_id;
@@ -130,6 +132,22 @@ class Ekc_Tournament implements JsonSerializable {
 
 	public function set_swiss_system_slide_match_rounds(?int $swiss_system_slide_match_rounds) {
 		$this->swiss_system_slide_match_rounds = $swiss_system_slide_match_rounds;
+	}
+
+	public function get_shareable_link_email_text() {
+		return $this->shareable_link_email_text;
+	}
+
+	public function set_shareable_link_email_text(?string $shareable_link_email_text) {
+		$this->shareable_link_email_text = $shareable_link_email_text;
+	}
+
+	public function get_shareable_link_url_prefix() {
+		return $this->shareable_link_url_prefix;
+	}
+
+	public function set_shareable_link_url_prefix(?string $shareable_link_url_prefix) {
+		$this->shareable_link_url_prefix = $shareable_link_url_prefix;
 	}
 
 	public function jsonSerialize(){

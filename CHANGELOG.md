@@ -5,6 +5,11 @@ CHANGELOG ekc-tournament
 [1] swiss system: teams already played -> mark red
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys)  
+[1] 2+vs2+ support for virtual EKC
+
+## Version 1.2.6
+[1] store each result individually. Needed to store results in parallel (two or more users, and for shareable links)
+[1] individual pages for each team via shareable links. All rounds and results per team. Allow to report result of current round.
 
 ## Version 1.2.5
 [x] team registration: extension for elementor forms to directly insert form content do database

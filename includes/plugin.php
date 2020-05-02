@@ -86,6 +86,8 @@ class Ekc_Tournament_Registration {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/swiss-system-page.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/tournaments-backup-page.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/tournaments-backup-table.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-page.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-table.php';
 
 		$plugin_admin = new Ekc_Tournament_Registration_Admin( $this->get_plugin_name(), $this->get_version() );
 
@@ -134,6 +136,7 @@ class Ekc_Tournament_Registration {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcode-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/widget-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/module-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shareable-links-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/tournament.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/team.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/player.php';

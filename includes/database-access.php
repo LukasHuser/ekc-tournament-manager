@@ -109,7 +109,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds, shareable_link_url_prefix, shareable_link_email_text
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  tournament_id = %d
 			",
@@ -127,7 +127,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds, shareable_link_url_prefix, shareable_link_email_text
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  code_name = %s
 			",
@@ -157,6 +157,8 @@ class Ekc_Database_Access {
 		$tournament->set_swiss_system_rounds( $row->swiss_system_rounds );
 		$tournament->set_swiss_system_additional_rounds( $row->swiss_system_additional_rounds );
 		$tournament->set_swiss_system_slide_match_rounds( $row->swiss_system_slide_match_rounds );
+		$tournament->set_shareable_link_url_prefix( $row->shareable_link_url_prefix );
+		$tournament->set_shareable_link_email_text( $row->shareable_link_email_text );
 		return $tournament;
 	}
 
@@ -177,6 +179,26 @@ class Ekc_Database_Access {
 	/***************************************************************************************************************************
 	 * Teams
 	 ***************************************************************************************************************************/
+
+	public function get_active_team_ids( $tournament_id ) {
+		global $wpdb;
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT t.team_id 
+			FROM   {$wpdb->prefix}ekc_team t
+			WHERE  COALESCE(t.is_active, 0) = 1
+			AND    COALESCE(t.is_on_wait_list, 0) <> 1
+			AND    t.tournament_id = %d
+			",
+			$tournament_id
+		));
+
+		$team_ids = array();
+		foreach( $results as $row ) {
+			$team_ids[] = $row->team_id;
+		}
+		return $team_ids;
+	}
 
 	public function get_active_teams_count_by_code_name( $tournament_code_name ) {
 		global $wpdb;
@@ -302,6 +324,7 @@ class Ekc_Database_Access {
 		$team->set_seeding_score( $row->seeding_score );
 		$team->set_initial_score( $row->initial_score );
 		$team->set_virtual_rank( $row->virtual_rank );
+		$team->set_shareable_link_id( $row->shareable_link_id );
 		return $team;
 	}
 
@@ -336,7 +359,7 @@ class Ekc_Database_Access {
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank 
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank, t.shareable_link_id 
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE  COALESCE(t.is_active, 0) = 1
 			AND    t.tournament_id = %d
@@ -363,7 +386,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank
+			SELECT t.team_id, t.tournament_id, t.name, LOWER(t.country) as country, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.registration_order, t.seeding_score, t.initial_score, t.virtual_rank, t.shareable_link_id
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE  t.tournament_id = %d
 			ORDER BY t.team_id ASC",
@@ -528,7 +551,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, is_on_wait_list, registration_order, seeding_score, initial_score, virtual_rank 
+			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, is_on_wait_list, registration_order, seeding_score, initial_score, virtual_rank, shareable_link_id 
 			FROM   {$wpdb->prefix}ekc_team
 			WHERE  team_id = %d
 			",
@@ -669,6 +692,55 @@ class Ekc_Database_Access {
 		);
 
 		return $wpdb->insert_id;
+	}
+
+	/***************************************************************************************************************************
+	 * Shareable links
+	 ***************************************************************************************************************************/
+
+	public function update_shareable_link_data( $tournament ) {
+		global $wpdb;
+		$wpdb->update( 
+			$wpdb->prefix . 'ekc_tournament', 
+			array( 
+				'shareable_link_url_prefix'	=> $this->truncate_string( $tournament->get_shareable_link_url_prefix(), 50 ),
+				'shareable_link_email_text' => $this->truncate_string( $tournament->get_shareable_link_email_text(), 5000 ),
+			),
+			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
+			array( '%s' ),
+			array( '%d' )
+		);
+	}
+
+	public function update_shareable_link_id( $team_id, $shareable_link_id ) {
+		global $wpdb;
+		$wpdb->update( 
+			$wpdb->prefix . 'ekc_team', 
+			array( 
+				'shareable_link_id'	=> $shareable_link_id,
+			),
+			array( 'team_id'		=> $team_id ),
+			array( '%s' ),
+			array( '%d' )
+		);
+	}
+
+	public function get_all_shareable_links_as_table( $tournament_id, $sort_column, $sort = 'asc', $filter ) {
+		global $wpdb;
+		$sql_sort = $this->create_team_table_sort_column_sql( $sort_column, 't') . ' ' . ($sort === 'desc' ? 'DESC' : 'ASC');
+		$sql_filter = $this->create_team_table_filter( $filter, 't' );
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.shareable_link_id
+			FROM   {$wpdb->prefix}ekc_team t
+			WHERE t.tournament_id = %d
+			      {$sql_filter} 
+			ORDER BY {$sql_sort}
+			",
+			$tournament_id),
+		ARRAY_A );
+
+		return $results;
 	}
 
 	/***************************************************************************************************************************

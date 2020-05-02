@@ -22,6 +22,7 @@ class Ekc_Team implements JsonSerializable {
 	private $seeding_score;
 	private $initial_score;
 	private $virtual_rank;
+	private $shareable_link_id;
 	private $players = array();
 
 
@@ -143,6 +144,14 @@ class Ekc_Team implements JsonSerializable {
 
 	public function set_virtual_rank(?int $virtual_rank) {
 		$this->virtual_rank = $virtual_rank;
+	}
+
+	public function get_shareable_link_id() {
+		return $this->shareable_link_id;
+	}
+
+	public function set_shareable_link_id(?string $shareable_link_id) {
+		$this->shareable_link_id = $shareable_link_id;
 	}
 
 	public function get_players() {
