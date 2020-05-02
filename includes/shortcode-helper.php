@@ -250,37 +250,53 @@ class Ekc_Shortcode_Helper {
 		$db = new Ekc_Database_Access();
 		$result_final = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_1);
 		$result_3rd = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_2);
-		$team1 = $db->get_team_by_id ( $result_final->get_team1_id() );
-		$team1_name = $this->get_name_or_placeholder( $result_final->get_team1_placeholder() , $team1 );
+
+		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
-		if ( $team1 ) {
-			$team1_country = $team1->get_country();
-			$team1_score = $result_final->get_team1_score();
+		if ( $result_final ) {
+			$team1 = $db->get_team_by_id ( $result_final->get_team1_id() );
+			if ( $team1 ) {
+				$team1_name = $this->get_name_or_placeholder( $result_final->get_team1_placeholder() , $team1 );
+				$team1_country = $team1->get_country();
+				$team1_score = $result_final->get_team1_score();
+			}
 		}
-		$team2 = $db->get_team_by_id ( $result_final->get_team2_id() );
-		$team2_name = $this->get_name_or_placeholder( $result_final->get_team2_placeholder() , $team2 );
+
+		$team2_name = '';
 		$team2_country = '';
 		$team2_score = '';
-		if ( $team2 ) {
-			$team2_country = $team2->get_country();
-			$team2_score = $result_final->get_team2_score();
+		if ( $result_final ) {
+			$team2 = $db->get_team_by_id ( $result_final->get_team2_id() );
+			if ( $team2 ) {
+				$team2_name = $this->get_name_or_placeholder( $result_final->get_team2_placeholder() , $team2 );
+				$team2_country = $team2->get_country();
+				$team2_score = $result_final->get_team2_score();
+			}	
 		}
-		$team3 = $db->get_team_by_id ( $result_3rd->get_team1_id() );
-		$team3_name = $this->get_name_or_placeholder( $result_3rd->get_team1_placeholder() , $team3 );
+
+		$team3_name = '';
 		$team3_country = '';
 		$team3_score = '';
-		if ( $team3 ) {
-			$team3_country = $team3->get_country();
-			$team3_score = $result_3rd->get_team1_score();
+		if ( $result_3rd ) {
+			$team3 = $db->get_team_by_id ( $result_3rd->get_team1_id() );
+			if ( $team3 ) {
+				$team3_name = $this->get_name_or_placeholder( $result_3rd->get_team1_placeholder() , $team3 );
+				$team3_country = $team3->get_country();
+				$team3_score = $result_3rd->get_team1_score();
+			}
 		}
-		$team4 = $db->get_team_by_id ( $result_3rd->get_team2_id() );
-		$team4_name = $this->get_name_or_placeholder( $result_3rd->get_team2_placeholder() , $team4 );
+
+		$team4_name = '';
 		$team4_country = '';
 		$team4_score = '';
-		if ( $team4 ) {
-			$team4_country = $team4->get_country();
-			$team4_score = $result_3rd->get_team2_score();
+		if ( $result_3rd ) {
+			$team4 = $db->get_team_by_id ( $result_3rd->get_team2_id() );
+			if ( $team4 ) {
+				$team4_name = $this->get_name_or_placeholder( $result_3rd->get_team2_placeholder() , $team4 );
+				$team4_country = $team4->get_country();
+				$team4_score = $result_3rd->get_team2_score();
+			}
 		}
 
 		return
@@ -309,39 +325,54 @@ class Ekc_Shortcode_Helper {
 		$db = new Ekc_Database_Access();
 		$result_semi_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_1);
 		$result_semi_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_2);
-		$team1 = $db->get_team_by_id ( $result_semi_1->get_team1_id() );
-		$team1_name = $this->get_name_or_placeholder( $result_semi_1->get_team1_placeholder() , $team1 );
+		
+		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
-		if ( $team1 ) {
-			$team1_country = $team1->get_country();
-			$team1_score = $result_semi_1->get_team1_score();
-		}
-		$team2 = $db->get_team_by_id ( $result_semi_1->get_team2_id() );
-		$team2_name = $this->get_name_or_placeholder( $result_semi_1->get_team2_placeholder() , $team2 );
-		$team2_country = '';
-		$team2_score = '';
-		if ( $team2 ) {
-			$team2_country = $team2->get_country();
-			$team2_score = $result_semi_1->get_team2_score();
-		}
-		$team3 = $db->get_team_by_id ( $result_semi_2->get_team1_id() );
-		$team3_name = $this->get_name_or_placeholder( $result_semi_2->get_team1_placeholder() , $team3 );
-		$team3_country = '';
-		$team3_score = '';
-		if ( $team3 ) {
-			$team3_country = $team3->get_country();
-			$team3_score = $result_semi_2->get_team1_score();
-		}
-		$team4 = $db->get_team_by_id ( $result_semi_2->get_team2_id() );
-		$team4_name = $this->get_name_or_placeholder( $result_semi_2->get_team2_placeholder() , $team4 );
-		$team4_country = '';
-		$team4_score = '';
-		if ( $team4 ) {
-			$team4_country = $team4->get_country();
-			$team4_score = $result_semi_2->get_team2_score();
+		if ( $result_semi_1 ) {
+			$team1 = $db->get_team_by_id ( $result_semi_1->get_team1_id() );
+			if ( $team1 ) {
+				$team1_name = $this->get_name_or_placeholder( $result_semi_1->get_team1_placeholder() , $team1 );
+				$team1_country = $team1->get_country();
+				$team1_score = $result_semi_1->get_team1_score();
+			}
 		}
 
+		$team2_name = '';
+		$team2_country = '';
+		$team2_score = '';
+		if ( $result_semi_1 ) {
+			$team2 = $db->get_team_by_id ( $result_semi_1->get_team2_id() );
+			if ( $team2 ) {
+				$team2_name = $this->get_name_or_placeholder( $result_semi_1->get_team2_placeholder() , $team2 );
+				$team2_country = $team2->get_country();
+				$team2_score = $result_semi_1->get_team2_score();
+			}
+		}
+
+		$team3_name = '';
+		$team3_country = '';
+		$team3_score = '';
+		if ( $result_semi_2 ) {
+			$team3 = $db->get_team_by_id ( $result_semi_2->get_team1_id() );
+			if ( $team3 ) {
+				$team3_name = $this->get_name_or_placeholder( $result_semi_2->get_team1_placeholder() , $team3 );
+				$team3_country = $team3->get_country();
+				$team3_score = $result_semi_2->get_team1_score();
+			}
+		}
+		
+		$team4_name = '';
+		$team4_country = '';
+		$team4_score = '';
+		if ( $result_semi_2 ) {
+			$team4 = $db->get_team_by_id ( $result_semi_2->get_team2_id() );
+			if ( $team4 ) {
+				$team4_name = $this->get_name_or_placeholder( $result_semi_2->get_team2_placeholder() , $team4 );
+				$team4_country = $team4->get_country();
+				$team4_score = $result_semi_2->get_team2_score();
+			}
+		}
 
 		return
 		'<div class="round semifinals">
@@ -375,71 +406,102 @@ class Ekc_Shortcode_Helper {
 		$result_quarter_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_2);
 		$result_quarter_3 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_3);
 		$result_quarter_4 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_4);
-		$team1 = $db->get_team_by_id ( $result_quarter_1->get_team1_id() );
-		$team1_name = $this->get_name_or_placeholder( $result_quarter_1->get_team1_placeholder() , $team1 );
+		
+		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
-		if ( $team1 ) {
-			$team1_country = $team1->get_country();
-			$team1_score = $result_quarter_1->get_team1_score();
-		}
-		$team2 = $db->get_team_by_id ( $result_quarter_1->get_team2_id() );
-		$team2_name = $this->get_name_or_placeholder( $result_quarter_1->get_team2_placeholder() , $team2 );
-		$team2_country = '';
-		$team2_score = '';
-		if ( $team2 ) {
-			$team2_country = $team2->get_country();
-			$team2_score = $result_quarter_1->get_team2_score();
-		}
-		$team3 = $db->get_team_by_id ( $result_quarter_2->get_team1_id() );
-		$team3_name = $this->get_name_or_placeholder( $result_quarter_2->get_team1_placeholder() , $team3 );
-		$team3_country = '';
-		$team3_score = '';
-		if ( $team3 ) {
-			$team3_country = $team3->get_country();
-			$team3_score = $result_quarter_2->get_team1_score();
-		}
-		$team4 = $db->get_team_by_id ( $result_quarter_2->get_team2_id() );
-		$team4_name = $this->get_name_or_placeholder( $result_quarter_2->get_team2_placeholder() , $team4 );
-		$team4_country = '';
-		$team4_score = '';
-		if ( $team4 ) {
-			$team4_country = $team4->get_country();
-			$team4_score = $result_quarter_2->get_team2_score();
-		}
-		$team5 = $db->get_team_by_id ( $result_quarter_3->get_team1_id() );
-		$team5_name = $this->get_name_or_placeholder( $result_quarter_3->get_team1_placeholder() , $team5 );
-		$team5_country = '';
-		$team5_score = '';
-		if ( $team5 ) {
-			$team5_country = $team5->get_country();
-			$team5_score = $result_quarter_3->get_team1_score();
-		}
-		$team6 = $db->get_team_by_id ( $result_quarter_3->get_team2_id() );
-		$team6_name = $this->get_name_or_placeholder( $result_quarter_3->get_team2_placeholder() , $team6 );
-		$team6_country = '';
-		$team6_score = '';
-		if ( $team6 ) {
-			$team6_country = $team6->get_country();
-			$team6_score = $result_quarter_3->get_team2_score();
-		}
-		$team7 = $db->get_team_by_id ( $result_quarter_4->get_team1_id() );
-		$team7_name = $this->get_name_or_placeholder( $result_quarter_4->get_team1_placeholder() , $team7 );
-		$team7_country = '';
-		$team7_score = '';
-		if ( $team7 ) {
-			$team7_country = $team7->get_country();
-			$team7_score = $result_quarter_4->get_team1_score();
-		}
-		$team8 = $db->get_team_by_id ( $result_quarter_4->get_team2_id() );
-		$team8_name = $this->get_name_or_placeholder( $result_quarter_4->get_team2_placeholder() , $team8 );
-		$team8_country = '';
-		$team8_score = '';
-		if ( $team8 ) {
-			$team8_country = $team8->get_country();
-			$team8_score = $result_quarter_4->get_team2_score();
+		if ( $result_quarter_1 ) {
+			$team1 = $db->get_team_by_id ( $result_quarter_1->get_team1_id() );
+			if ( $team1 ) {
+				$team1_name = $this->get_name_or_placeholder( $result_quarter_1->get_team1_placeholder() , $team1 );
+				$team1_country = $team1->get_country();
+				$team1_score = $result_quarter_1->get_team1_score();
+			}
 		}
 
+		$team2_name = '';
+		$team2_country = '';
+		$team2_score = '';
+		if ( $result_quarter_1 ) {
+			$team2 = $db->get_team_by_id ( $result_quarter_1->get_team2_id() );
+			if ( $team2 ) {
+				$team2_name = $this->get_name_or_placeholder( $result_quarter_1->get_team2_placeholder() , $team2 );
+				$team2_country = $team2->get_country();
+				$team2_score = $result_quarter_1->get_team2_score();
+			}
+		}
+
+		$team3_name = '';
+		$team3_country = '';
+		$team3_score = '';
+		if ( $result_quarter_2 ) {
+			$team3 = $db->get_team_by_id ( $result_quarter_2->get_team1_id() );
+			if ( $team3 ) {
+				$team3_name = $this->get_name_or_placeholder( $result_quarter_2->get_team1_placeholder() , $team3 );
+				$team3_country = $team3->get_country();
+				$team3_score = $result_quarter_2->get_team1_score();
+			}
+		}
+		
+		$team4_name = '';
+		$team4_country = '';
+		$team4_score = '';
+		if ( $result_quarter_2 ) {
+			$team4 = $db->get_team_by_id ( $result_quarter_2->get_team2_id() );
+			if ( $team4 ) {
+				$team4_name = $this->get_name_or_placeholder( $result_quarter_2->get_team2_placeholder() , $team4 );
+				$team4_country = $team4->get_country();
+				$team4_score = $result_quarter_2->get_team2_score();
+			}
+		}
+		
+		$team5_name = '';
+		$team5_country = '';
+		$team5_score = '';
+		if ( $result_quarter_3 ) {
+			$team5 = $db->get_team_by_id ( $result_quarter_3->get_team1_id() );
+			if ( $team5 ) {
+				$team5_name = $this->get_name_or_placeholder( $result_quarter_3->get_team1_placeholder() , $team5 );
+				$team5_country = $team5->get_country();
+				$team5_score = $result_quarter_3->get_team1_score();
+			}
+		}
+
+		$team6_name = '';
+		$team6_country = '';
+		$team6_score = '';
+		if ( $result_quarter_3 ) {
+			$team6 = $db->get_team_by_id ( $result_quarter_3->get_team2_id() );
+			if ( $team6 ) {
+				$team6_name = $this->get_name_or_placeholder( $result_quarter_3->get_team2_placeholder() , $team6 );
+				$team6_country = $team6->get_country();
+				$team6_score = $result_quarter_3->get_team2_score();
+			}
+		}
+
+		$team7_name = '';
+		$team7_country = '';
+		$team7_score = '';
+		if ( $result_quarter_4 ) {
+			$team7 = $db->get_team_by_id ( $result_quarter_4->get_team1_id() );
+			if ( $team7 ) {
+				$team7_name = $this->get_name_or_placeholder( $result_quarter_4->get_team1_placeholder() , $team7 );
+				$team7_country = $team7->get_country();
+				$team7_score = $result_quarter_4->get_team1_score();
+			}
+		}
+		
+		$team8_name = '';
+		$team8_country = '';
+		$team8_score = '';
+		if ( $result_quarter_4 ) {
+			$team8 = $db->get_team_by_id ( $result_quarter_4->get_team2_id() );
+			if ( $team8 ) {
+				$team8_name = $this->get_name_or_placeholder( $result_quarter_4->get_team2_placeholder() , $team8 );
+				$team8_country = $team8->get_country();
+				$team8_score = $result_quarter_4->get_team2_score();
+			}
+		}
 
 		return
 		'<div class="round quarterfinals">
@@ -498,133 +560,197 @@ class Ekc_Shortcode_Helper {
 		$result_1_8_6 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_6);
 		$result_1_8_7 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_7);
 		$result_1_8_8 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_8);
-		$team1 = $db->get_team_by_id ( $result_1_8_1->get_team1_id() );
-		$team1_name = $this->get_name_or_placeholder( $result_1_8_1->get_team1_placeholder() , $team1 );
+		
+		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
-		if ( $team1 ) {
-			$team1_country = $team1->get_country();
-			$team1_score = $result_1_8_1->get_team1_score();
+		if ( $result_1_8_1 ) {
+			$team1 = $db->get_team_by_id ( $result_1_8_1->get_team1_id() );
+			if ( $team1 ) {
+				$team1_name = $this->get_name_or_placeholder( $result_1_8_1->get_team1_placeholder() , $team1 );
+				$team1_country = $team1->get_country();
+				$team1_score = $result_1_8_1->get_team1_score();
+			}
 		}
-		$team2 = $db->get_team_by_id ( $result_1_8_1->get_team2_id() );
-		$team2_name = $this->get_name_or_placeholder( $result_1_8_1->get_team2_placeholder() , $team2 );
+
+		$team2_name = '';
 		$team2_country = '';
 		$team2_score = '';
-		if ( $team2 ) {
-			$team2_country = $team2->get_country();
-			$team2_score = $result_1_8_1->get_team2_score();
+		if ( $result_1_8_1 ) {
+			$team2 = $db->get_team_by_id ( $result_1_8_1->get_team2_id() );
+			if ( $team2 ) {
+				$team2_name = $this->get_name_or_placeholder( $result_1_8_1->get_team2_placeholder() , $team2 );
+				$team2_country = $team2->get_country();
+				$team2_score = $result_1_8_1->get_team2_score();
+			}
 		}
-		$team3 = $db->get_team_by_id ( $result_1_8_2->get_team1_id() );
-		$team3_name = $this->get_name_or_placeholder( $result_1_8_2->get_team1_placeholder() , $team3 );
+
+		$team3_name = '';
 		$team3_country = '';
 		$team3_score = '';
-		if ( $team3 ) {
-			$team3_country = $team3->get_country();
-			$team3_score = $result_1_8_2->get_team1_score();
+		if ( $result_1_8_2 ) {
+			$team3 = $db->get_team_by_id ( $result_1_8_2->get_team1_id() );
+			if ( $team3 ) {
+				$team3_name = $this->get_name_or_placeholder( $result_1_8_2->get_team1_placeholder() , $team3 );
+				$team3_country = $team3->get_country();
+				$team3_score = $result_1_8_2->get_team1_score();
+			}
 		}
-		$team4 = $db->get_team_by_id ( $result_1_8_2->get_team2_id() );
-		$team4_name = $this->get_name_or_placeholder( $result_1_8_2->get_team2_placeholder() , $team4 );
+		
+		$team4_name = '';
 		$team4_country = '';
 		$team4_score = '';
-		if ( $team4 ) {
-			$team4_country = $team4->get_country();
-			$team4_score = $result_1_8_2->get_team2_score();
+		if ( $result_1_8_2 ) {
+			$team4 = $db->get_team_by_id ( $result_1_8_2->get_team2_id() );
+			if ( $team4 ) {
+				$team4_name = $this->get_name_or_placeholder( $result_1_8_2->get_team2_placeholder() , $team4 );
+				$team4_country = $team4->get_country();
+				$team4_score = $result_1_8_2->get_team2_score();
+			}
 		}
-		$team5 = $db->get_team_by_id ( $result_1_8_3->get_team1_id() );
-		$team5_name = $this->get_name_or_placeholder( $result_1_8_3->get_team1_placeholder() , $team5 );
+		
+		$team5_name = '';
 		$team5_country = '';
 		$team5_score = '';
-		if ( $team5 ) {
-			$team5_country = $team5->get_country();
-			$team5_score = $result_1_8_3->get_team1_score();
+		if ( $result_1_8_3 ) {
+			$team5 = $db->get_team_by_id ( $result_1_8_3->get_team1_id() );
+			if ( $team5 ) {
+				$team5_name = $this->get_name_or_placeholder( $result_1_8_3->get_team1_placeholder() , $team5 );
+				$team5_country = $team5->get_country();
+				$team5_score = $result_1_8_3->get_team1_score();
+			}
 		}
-		$team6 = $db->get_team_by_id ( $result_1_8_3->get_team2_id() );
-		$team6_name = $this->get_name_or_placeholder( $result_1_8_3->get_team2_placeholder() , $team6 );
+
+		$team6_name = '';
 		$team6_country = '';
 		$team6_score = '';
-		if ( $team6 ) {
-			$team6_country = $team6->get_country();
-			$team6_score = $result_1_8_3->get_team2_score();
+		if ( $result_1_8_3 ) {
+			$team6 = $db->get_team_by_id ( $result_1_8_3->get_team2_id() );
+			if ( $team6 ) {
+				$team6_name = $this->get_name_or_placeholder( $result_1_8_3->get_team2_placeholder() , $team6 );
+				$team6_country = $team6->get_country();
+				$team6_score = $result_1_8_3->get_team2_score();
+			}	
 		}
-		$team7 = $db->get_team_by_id ( $result_1_8_4->get_team1_id() );
-		$team7_name = $this->get_name_or_placeholder( $result_1_8_4->get_team1_placeholder() , $team7 );
+
+		$team7_name = '';
 		$team7_country = '';
 		$team7_score = '';
-		if ( $team7 ) {
-			$team7_country = $team7->get_country();
-			$team7_score = $result_1_8_4->get_team1_score();
+		if ( $result_1_8_4 ) {
+			$team7 = $db->get_team_by_id ( $result_1_8_4->get_team1_id() );
+			if ( $team7 ) {
+				$team7_name = $this->get_name_or_placeholder( $result_1_8_4->get_team1_placeholder() , $team7 );
+				$team7_country = $team7->get_country();
+				$team7_score = $result_1_8_4->get_team1_score();
+			}	
 		}
-		$team8 = $db->get_team_by_id ( $result_1_8_4->get_team2_id() );
-		$team8_name = $this->get_name_or_placeholder( $result_1_8_4->get_team2_placeholder() , $team8 );
+		
+		$team8_name = '';
 		$team8_country = '';
 		$team8_score = '';
-		if ( $team8 ) {
-			$team8_country = $team8->get_country();
-			$team8_score = $result_1_8_4->get_team2_score();
+		if ( $result_1_8_4 ) {
+			$team8 = $db->get_team_by_id ( $result_1_8_4->get_team2_id() );
+			if ( $team8 ) {
+				$team8_name = $this->get_name_or_placeholder( $result_1_8_4->get_team2_placeholder() , $team8 );
+				$team8_country = $team8->get_country();
+				$team8_score = $result_1_8_4->get_team2_score();
+			}
 		}
-		$team9 = $db->get_team_by_id ( $result_1_8_5->get_team1_id() );
-		$team9_name = $this->get_name_or_placeholder( $result_1_8_5->get_team1_placeholder() , $team9 );
+		
+		$team9_name = '';
 		$team9_country = '';
 		$team9_score = '';
-		if ( $team9 ) {
-			$team9_country = $team9->get_country();
-			$team9_score = $result_1_8_5->get_team1_score();
+		if ( $result_1_8_5 ) {
+			$team9 = $db->get_team_by_id ( $result_1_8_5->get_team1_id() );
+			if ( $team9 ) {
+				$team9_name = $this->get_name_or_placeholder( $result_1_8_5->get_team1_placeholder() , $team9 );
+				$team9_country = $team9->get_country();
+				$team9_score = $result_1_8_5->get_team1_score();
+			}
 		}
-		$team10 = $db->get_team_by_id ( $result_1_8_5->get_team2_id() );
-		$team10_name = $this->get_name_or_placeholder( $result_1_8_5->get_team2_placeholder() , $team10 );
+
+		$team10_name = '';
 		$team10_country = '';
 		$team10_score = '';
-		if ( $team10 ) {
-			$team10_country = $team10->get_country();
-			$team10_score = $result_1_8_5->get_team2_score();
+		if ( $result_1_8_5 ) {
+			$team10 = $db->get_team_by_id ( $result_1_8_5->get_team2_id() );
+			if ( $team10 ) {
+				$team10_name = $this->get_name_or_placeholder( $result_1_8_5->get_team2_placeholder() , $team10 );
+				$team10_country = $team10->get_country();
+				$team10_score = $result_1_8_5->get_team2_score();
+			}
 		}
-		$team11 = $db->get_team_by_id ( $result_1_8_6->get_team1_id() );
-		$team11_name = $this->get_name_or_placeholder( $result_1_8_6->get_team1_placeholder() , $team11 );
+
+		$team11_name = '';
 		$team11_country = '';
 		$team11_score = '';
-		if ( $team11 ) {
-			$team11_country = $team11->get_country();
-			$team11_score = $result_1_8_6->get_team1_score();
+		if ( $result_1_8_6 ) {
+			$team11 = $db->get_team_by_id ( $result_1_8_6->get_team1_id() );
+			if ( $team11 ) {
+				$team11_name = $this->get_name_or_placeholder( $result_1_8_6->get_team1_placeholder() , $team11 );
+				$team11_country = $team11->get_country();
+				$team11_score = $result_1_8_6->get_team1_score();
+			}
 		}
-		$team12 = $db->get_team_by_id ( $result_1_8_6->get_team2_id() );
-		$team12_name = $this->get_name_or_placeholder( $result_1_8_6->get_team2_placeholder() , $team12 );
+		
+		$team12_name = '';
 		$team12_country = '';
 		$team12_score = '';
-		if ( $team12 ) {
-			$team12_country = $team12->get_country();
-			$team12_score = $result_1_8_6->get_team2_score();
+		if ( $result_1_8_6 ) {
+			$team12 = $db->get_team_by_id ( $result_1_8_6->get_team2_id() );
+			if ( $team12 ) {
+				$team12_name = $this->get_name_or_placeholder( $result_1_8_6->get_team2_placeholder() , $team12 );
+				$team12_country = $team12->get_country();
+				$team12_score = $result_1_8_6->get_team2_score();
+			}
 		}
-		$team13 = $db->get_team_by_id ( $result_1_8_7->get_team1_id() );
-		$team13_name = $this->get_name_or_placeholder( $result_1_8_7->get_team1_placeholder() , $team13 );
+		
+		$team13_name = '';
 		$team13_country = '';
 		$team13_score = '';
-		if ( $team13 ) {
-			$team13_country = $team13->get_country();
-			$team13_score = $result_1_8_7->get_team1_score();
+		if ( $result_1_8_7 ) {
+			$team13 = $db->get_team_by_id ( $result_1_8_7->get_team1_id() );
+			if ( $team13 ) {
+				$team13_name = $this->get_name_or_placeholder( $result_1_8_7->get_team1_placeholder() , $team13 );
+				$team13_country = $team13->get_country();
+				$team13_score = $result_1_8_7->get_team1_score();
+			}
 		}
-		$team14 = $db->get_team_by_id ( $result_1_8_7->get_team2_id() );
-		$team14_name = $this->get_name_or_placeholder( $result_1_8_7->get_team2_placeholder() , $team14 );
+
+		$team14_name = '';
 		$team14_country = '';
 		$team14_score = '';
-		if ( $team14 ) {
-			$team14_country = $team14->get_country();
-			$team14_score = $result_1_8_7->get_team2_score();
+		if ( $result_1_8_7 ) {
+			$team14 = $db->get_team_by_id ( $result_1_8_7->get_team2_id() );
+			if ( $team14 ) {
+				$team14_name = $this->get_name_or_placeholder( $result_1_8_7->get_team2_placeholder() , $team14 );
+				$team14_country = $team14->get_country();
+				$team14_score = $result_1_8_7->get_team2_score();
+			}
 		}
-		$team15 = $db->get_team_by_id ( $result_1_8_8->get_team1_id() );
-		$team15_name = $this->get_name_or_placeholder( $result_1_8_8->get_team1_placeholder() , $team15 );
+
+		$team15_name = '';
 		$team15_country = '';
 		$team15_score = '';
-		if ( $team15 ) {
-			$team15_country = $team15->get_country();
-			$team15_score = $result_1_8_8->get_team1_score();
+		if ( $result_1_8_8 ) {
+			$team15 = $db->get_team_by_id ( $result_1_8_8->get_team1_id() );
+			if ( $team15 ) {
+				$team15_name = $this->get_name_or_placeholder( $result_1_8_8->get_team1_placeholder() , $team15 );
+				$team15_country = $team15->get_country();
+				$team15_score = $result_1_8_8->get_team1_score();
+			}
 		}
-		$team16 = $db->get_team_by_id ( $result_1_8_8->get_team2_id() );
-		$team16_name = $this->get_name_or_placeholder( $result_1_8_8->get_team2_placeholder() , $team16 );
+		
+		$team16_name = '';
 		$team16_country = '';
 		$team16_score = '';
-		if ( $team16 ) {
-			$team16_country = $team16->get_country();
-			$team16_score = $result_1_8_8->get_team2_score();
+		if ( $result_1_8_8 ) {
+			$team16 = $db->get_team_by_id ( $result_1_8_8->get_team2_id() );
+			if ( $team16 ) {
+				$team16_name = $this->get_name_or_placeholder( $result_1_8_8->get_team2_placeholder() , $team16 );
+				$team16_country = $team16->get_country();
+				$team16_score = $result_1_8_8->get_team2_score();
+			}
 		}
 
 		return
@@ -733,261 +859,388 @@ class Ekc_Shortcode_Helper {
 		$result_1_16_15 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_15);
 		$result_1_16_16 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_16);
 		
-		$team1 = $db->get_team_by_id ( $result_1_16_1->get_team1_id() );
-		$team1_name = $this->get_name_or_placeholder( $result_1_16_1->get_team1_placeholder() , $team1 );
+		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
-		if ( $team1 ) {
-			$team1_country = $team1->get_country();
-			$team1_score = $result_1_16_1->get_team1_score();
+		if ( $result_1_16_1 ) {
+			$team1 = $db->get_team_by_id ( $result_1_16_1->get_team1_id() );
+			if ( $team1 ) {
+				$team1_name = $this->get_name_or_placeholder( $result_1_16_1->get_team1_placeholder() , $team1 );
+				$team1_country = $team1->get_country();
+				$team1_score = $result_1_16_1->get_team1_score();
+			}
 		}
-		$team2 = $db->get_team_by_id ( $result_1_16_1->get_team2_id() );
-		$team2_name = $this->get_name_or_placeholder( $result_1_16_1->get_team2_placeholder() , $team2 );
+
+		$team2_name = '';
 		$team2_country = '';
 		$team2_score = '';
-		if ( $team2 ) {
-			$team2_country = $team2->get_country();
-			$team2_score = $result_1_16_1->get_team2_score();
+		if ( $result_1_16_1 ) {
+			$team2 = $db->get_team_by_id ( $result_1_16_1->get_team2_id() );
+			if ( $team2 ) {
+				$team2_name = $this->get_name_or_placeholder( $result_1_16_1->get_team2_placeholder() , $team2 );
+				$team2_country = $team2->get_country();
+				$team2_score = $result_1_16_1->get_team2_score();
+			}
 		}
-		$team3 = $db->get_team_by_id ( $result_1_16_2->get_team1_id() );
-		$team3_name = $this->get_name_or_placeholder( $result_1_16_2->get_team1_placeholder() , $team3 );
+
+		$team3_name = '';
 		$team3_country = '';
 		$team3_score = '';
-		if ( $team3 ) {
-			$team3_country = $team3->get_country();
-			$team3_score = $result_1_16_2->get_team1_score();
+		if ( $result_1_16_2 ) {
+			$team3 = $db->get_team_by_id ( $result_1_16_2->get_team1_id() );
+			if ( $team3 ) {
+				$team3_name = $this->get_name_or_placeholder( $result_1_16_2->get_team1_placeholder() , $team3 );
+				$team3_country = $team3->get_country();
+				$team3_score = $result_1_16_2->get_team1_score();
+			}
 		}
-		$team4 = $db->get_team_by_id ( $result_1_16_2->get_team2_id() );
-		$team4_name = $this->get_name_or_placeholder( $result_1_16_2->get_team2_placeholder() , $team4 );
+		
+		$team4_name = '';
 		$team4_country = '';
 		$team4_score = '';
-		if ( $team4 ) {
-			$team4_country = $team4->get_country();
-			$team4_score = $result_1_16_2->get_team2_score();
+		if ( $result_1_16_2 ) {
+			$team4 = $db->get_team_by_id ( $result_1_16_2->get_team2_id() );
+			if ( $team4 ) {
+				$team4_name = $this->get_name_or_placeholder( $result_1_16_2->get_team2_placeholder() , $team4 );
+				$team4_country = $team4->get_country();
+				$team4_score = $result_1_16_2->get_team2_score();
+			}
 		}
-		$team5 = $db->get_team_by_id ( $result_1_16_3->get_team1_id() );
-		$team5_name = $this->get_name_or_placeholder( $result_1_16_3->get_team1_placeholder() , $team5 );
+		
+		$team5_name = '';
 		$team5_country = '';
 		$team5_score = '';
-		if ( $team5 ) {
-			$team5_country = $team5->get_country();
-			$team5_score = $result_1_16_3->get_team1_score();
+		if ( $result_1_16_3 ) {
+			$team5 = $db->get_team_by_id ( $result_1_16_3->get_team1_id() );
+			if ( $team5 ) {
+				$team5_name = $this->get_name_or_placeholder( $result_1_16_3->get_team1_placeholder() , $team5 );
+				$team5_country = $team5->get_country();
+				$team5_score = $result_1_16_3->get_team1_score();
+			}
 		}
-		$team6 = $db->get_team_by_id ( $result_1_16_3->get_team2_id() );
-		$team6_name = $this->get_name_or_placeholder( $result_1_16_3->get_team2_placeholder() , $team6 );
+
+		$team6_name = '';
 		$team6_country = '';
 		$team6_score = '';
-		if ( $team6 ) {
-			$team6_country = $team6->get_country();
-			$team6_score = $result_1_16_3->get_team2_score();
+		if ( $result_1_16_3 ) {
+			$team6 = $db->get_team_by_id ( $result_1_16_3->get_team2_id() );
+			if ( $team6 ) {
+				$team6_name = $this->get_name_or_placeholder( $result_1_16_3->get_team2_placeholder() , $team6 );
+				$team6_country = $team6->get_country();
+				$team6_score = $result_1_16_3->get_team2_score();
+			}
 		}
-		$team7 = $db->get_team_by_id ( $result_1_16_4->get_team1_id() );
-		$team7_name = $this->get_name_or_placeholder( $result_1_16_4->get_team1_placeholder() , $team7 );
+
+		$team7_name = '';
 		$team7_country = '';
 		$team7_score = '';
-		if ( $team7 ) {
-			$team7_country = $team7->get_country();
-			$team7_score = $result_1_16_4->get_team1_score();
+		if ( $result_1_16_4 ) {
+			$team7 = $db->get_team_by_id ( $result_1_16_4->get_team1_id() );
+			if ( $team7 ) {
+				$team7_name = $this->get_name_or_placeholder( $result_1_16_4->get_team1_placeholder() , $team7 );
+				$team7_country = $team7->get_country();
+				$team7_score = $result_1_16_4->get_team1_score();
+			}
 		}
-		$team8 = $db->get_team_by_id ( $result_1_16_4->get_team2_id() );
-		$team8_name = $this->get_name_or_placeholder( $result_1_16_4->get_team2_placeholder() , $team8 );
+		
+		$team8_name = '';
 		$team8_country = '';
 		$team8_score = '';
-		if ( $team8 ) {
-			$team8_country = $team8->get_country();
-			$team8_score = $result_1_16_4->get_team2_score();
+		if ( $result_1_16_4 ) {
+			$team8 = $db->get_team_by_id ( $result_1_16_4->get_team2_id() );
+			if ( $team8 ) {
+				$team8_name = $this->get_name_or_placeholder( $result_1_16_4->get_team2_placeholder() , $team8 );
+				$team8_country = $team8->get_country();
+				$team8_score = $result_1_16_4->get_team2_score();
+			}
 		}
-		$team9 = $db->get_team_by_id ( $result_1_16_5->get_team1_id() );
-		$team9_name = $this->get_name_or_placeholder( $result_1_16_5->get_team1_placeholder() , $team9 );
+		
+		$team9_name = '';
 		$team9_country = '';
 		$team9_score = '';
-		if ( $team9 ) {
-			$team9_country = $team9->get_country();
-			$team9_score = $result_1_16_5->get_team1_score();
+		if ( $result_1_16_5 ) {
+			$team9 = $db->get_team_by_id ( $result_1_16_5->get_team1_id() );
+			if ( $team9 ) {
+				$team9_name = $this->get_name_or_placeholder( $result_1_16_5->get_team1_placeholder() , $team9 );
+				$team9_country = $team9->get_country();
+				$team9_score = $result_1_16_5->get_team1_score();
+			}
 		}
-		$team10 = $db->get_team_by_id ( $result_1_16_5->get_team2_id() );
-		$team10_name = $this->get_name_or_placeholder( $result_1_16_5->get_team2_placeholder() , $team10 );
+
+		$team10_name = '';
 		$team10_country = '';
 		$team10_score = '';
-		if ( $team10 ) {
-			$team10_country = $team10->get_country();
-			$team10_score = $result_1_16_5->get_team2_score();
+		if ( $result_1_16_5 ) {
+			$team10 = $db->get_team_by_id ( $result_1_16_5->get_team2_id() );
+			if ( $team10 ) {
+				$team10_name = $this->get_name_or_placeholder( $result_1_16_5->get_team2_placeholder() , $team10 );
+				$team10_country = $team10->get_country();
+				$team10_score = $result_1_16_5->get_team2_score();
+			}
 		}
-		$team11 = $db->get_team_by_id ( $result_1_16_6->get_team1_id() );
-		$team11_name = $this->get_name_or_placeholder( $result_1_16_6->get_team1_placeholder() , $team11 );
+
+		$team11_name = '';
 		$team11_country = '';
 		$team11_score = '';
-		if ( $team11 ) {
-			$team11_country = $team11->get_country();
-			$team11_score = $result_1_16_6->get_team1_score();
+		if ( $result_1_16_6 ) {
+			$team11 = $db->get_team_by_id ( $result_1_16_6->get_team1_id() );
+			if ( $team11 ) {
+				$team11_name = $this->get_name_or_placeholder( $result_1_16_6->get_team1_placeholder() , $team11 );
+				$team11_country = $team11->get_country();
+				$team11_score = $result_1_16_6->get_team1_score();
+			}
 		}
-		$team12 = $db->get_team_by_id ( $result_1_16_6->get_team2_id() );
-		$team12_name = $this->get_name_or_placeholder( $result_1_16_6->get_team2_placeholder() , $team12 );
+		
+		$team12_name = '';
 		$team12_country = '';
 		$team12_score = '';
-		if ( $team12 ) {
-			$team12_country = $team12->get_country();
-			$team12_score = $result_1_16_6->get_team2_score();
+		if ( $result_1_16_6 ) {
+			$team12 = $db->get_team_by_id ( $result_1_16_6->get_team2_id() );
+			if ( $team12 ) {
+				$team12_name = $this->get_name_or_placeholder( $result_1_16_6->get_team2_placeholder() , $team12 );
+				$team12_country = $team12->get_country();
+				$team12_score = $result_1_16_6->get_team2_score();
+			}
 		}
-		$team13 = $db->get_team_by_id ( $result_1_16_7->get_team1_id() );
-		$team13_name = $this->get_name_or_placeholder( $result_1_16_7->get_team1_placeholder() , $team13 );
+		
+		$team13_name = '';
 		$team13_country = '';
 		$team13_score = '';
-		if ( $team13 ) {
-			$team13_country = $team13->get_country();
-			$team13_score = $result_1_16_7->get_team1_score();
+		if ( $result_1_16_7 ) {
+			$team13 = $db->get_team_by_id ( $result_1_16_7->get_team1_id() );
+			if ( $team13 ) {
+				$team13_name = $this->get_name_or_placeholder( $result_1_16_7->get_team1_placeholder() , $team13 );
+				$team13_country = $team13->get_country();
+				$team13_score = $result_1_16_7->get_team1_score();
+			}
 		}
-		$team14 = $db->get_team_by_id ( $result_1_16_7->get_team2_id() );
-		$team14_name = $this->get_name_or_placeholder( $result_1_16_7->get_team2_placeholder() , $team14 );
+
+		$team14_name = '';
 		$team14_country = '';
 		$team14_score = '';
-		if ( $team14 ) {
-			$team14_country = $team14->get_country();
-			$team14_score = $result_1_16_7->get_team2_score();
+		if ( $result_1_16_7 ) {
+			$team14 = $db->get_team_by_id ( $result_1_16_7->get_team2_id() );
+			if ( $team14 ) {
+				$team14_name = $this->get_name_or_placeholder( $result_1_16_7->get_team2_placeholder() , $team14 );
+				$team14_country = $team14->get_country();
+				$team14_score = $result_1_16_7->get_team2_score();
+			}
 		}
-		$team15 = $db->get_team_by_id ( $result_1_16_8->get_team1_id() );
-		$team15_name = $this->get_name_or_placeholder( $result_1_16_8->get_team1_placeholder() , $team15 );
+
+		$team15_name = '';
 		$team15_country = '';
 		$team15_score = '';
-		if ( $team15 ) {
-			$team15_country = $team15->get_country();
-			$team15_score = $result_1_16_8->get_team1_score();
+		if ( $result_1_16_8 ) {
+			$team15 = $db->get_team_by_id ( $result_1_16_8->get_team1_id() );
+			if ( $team15 ) {
+				$team15_name = $this->get_name_or_placeholder( $result_1_16_8->get_team1_placeholder() , $team15 );
+				$team15_country = $team15->get_country();
+				$team15_score = $result_1_16_8->get_team1_score();
+			}
 		}
-		$team16 = $db->get_team_by_id ( $result_1_16_8->get_team2_id() );
-		$team16_name = $this->get_name_or_placeholder( $result_1_16_8->get_team2_placeholder() , $team16 );
+		
+		$team16_name = '';
 		$team16_country = '';
 		$team16_score = '';
-		if ( $team16 ) {
-			$team16_country = $team16->get_country();
-			$team16_score = $result_1_16_8->get_team2_score();
+		if ( $result_1_16_8 ) {
+			$team16 = $db->get_team_by_id ( $result_1_16_8->get_team2_id() );
+			if ( $team16 ) {
+				$team16_name = $this->get_name_or_placeholder( $result_1_16_8->get_team2_placeholder() , $team16 );
+				$team16_country = $team16->get_country();
+				$team16_score = $result_1_16_8->get_team2_score();
+			}
 		}
-		$team17 = $db->get_team_by_id ( $result_1_16_9->get_team1_id() );
-		$team17_name = $this->get_name_or_placeholder( $result_1_16_9->get_team1_placeholder() , $team17 );
+
+		$team17_name = '';
 		$team17_country = '';
 		$team17_score = '';
-		if ( $team17 ) {
-			$team17_country = $team17->get_country();
-			$team17_score = $result_1_16_9->get_team1_score();
+		if ( $result_1_16_9 ) {
+			$team17 = $db->get_team_by_id ( $result_1_16_9->get_team1_id() );
+			if ( $team17 ) {
+				$team17_name = $this->get_name_or_placeholder( $result_1_16_9->get_team1_placeholder() , $team17 );
+				$team17_country = $team17->get_country();
+				$team17_score = $result_1_16_9->get_team1_score();
+			}
 		}
-		$team18 = $db->get_team_by_id ( $result_1_16_9->get_team2_id() );
-		$team18_name = $this->get_name_or_placeholder( $result_1_16_9->get_team2_placeholder() , $team18 );
+
+		$team18_name = '';
 		$team18_country = '';
 		$team18_score = '';
-		if ( $team18 ) {
-			$team18_country = $team18->get_country();
-			$team18_score = $result_1_16_9->get_team2_score();
+		if ( $result_1_16_9 ) {
+			$team18 = $db->get_team_by_id ( $result_1_16_9->get_team2_id() );
+			if ( $team18 ) {
+				$team18_name = $this->get_name_or_placeholder( $result_1_16_9->get_team2_placeholder() , $team18 );
+				$team18_country = $team18->get_country();
+				$team18_score = $result_1_16_9->get_team2_score();
+			}
 		}
-		$team19 = $db->get_team_by_id ( $result_1_16_10->get_team1_id() );
-		$team19_name = $this->get_name_or_placeholder( $result_1_16_10->get_team1_placeholder() , $team19 );
+
+		$team19_name = '';
 		$team19_country = '';
 		$team19_score = '';
-		if ( $team19 ) {
-			$team19_country = $team19->get_country();
-			$team19_score = $result_1_16_10->get_team1_score();
+		if ( $result_1_16_10 ) {
+			$team19 = $db->get_team_by_id ( $result_1_16_10->get_team1_id() );
+			if ( $team19 ) {
+				$team19_name = $this->get_name_or_placeholder( $result_1_16_10->get_team1_placeholder() , $team19 );
+				$team19_country = $team19->get_country();
+				$team19_score = $result_1_16_10->get_team1_score();
+			}
 		}
-		$team20 = $db->get_team_by_id ( $result_1_16_10->get_team2_id() );
-		$team20_name = $this->get_name_or_placeholder( $result_1_16_10->get_team2_placeholder() , $team20 );
+		
+		$team20_name = '';
 		$team20_country = '';
 		$team20_score = '';
-		if ( $team20 ) {
-			$team20_country = $team20->get_country();
-			$team20_score = $result_1_16_10->get_team2_score();
+		if ( $result_1_16_10 ) {
+			$team20 = $db->get_team_by_id ( $result_1_16_10->get_team2_id() );
+			if ( $team20 ) {
+				$team20_name = $this->get_name_or_placeholder( $result_1_16_10->get_team2_placeholder() , $team20 );
+				$team20_country = $team20->get_country();
+				$team20_score = $result_1_16_10->get_team2_score();
+			}
 		}
-		$team21 = $db->get_team_by_id ( $result_1_16_11->get_team1_id() );
-		$team21_name = $this->get_name_or_placeholder( $result_1_16_11->get_team1_placeholder() , $team21 );
+		
+		$team21_name = '';
 		$team21_country = '';
 		$team21_score = '';
-		if ( $team21 ) {
-			$team21_country = $team21->get_country();
-			$team21_score = $result_1_16_11->get_team1_score();
+		if ( $result_1_16_11 ) {
+			$team21 = $db->get_team_by_id ( $result_1_16_11->get_team1_id() );
+			if ( $team21 ) {
+				$team21_name = $this->get_name_or_placeholder( $result_1_16_11->get_team1_placeholder() , $team21 );
+				$team21_country = $team21->get_country();
+				$team21_score = $result_1_16_11->get_team1_score();
+			}
 		}
-		$team22 = $db->get_team_by_id ( $result_1_16_11->get_team2_id() );
-		$team22_name = $this->get_name_or_placeholder( $result_1_16_11->get_team2_placeholder() , $team22 );
+
+		$team22_name = '';
 		$team22_country = '';
 		$team22_score = '';
-		if ( $team22 ) {
-			$team22_country = $team22->get_country();
-			$team22_score = $result_1_16_11->get_team2_score();
+		if ( $result_1_16_11 ) {
+			$team22 = $db->get_team_by_id ( $result_1_16_11->get_team2_id() );
+			if ( $team22 ) {
+				$team22_name = $this->get_name_or_placeholder( $result_1_16_11->get_team2_placeholder() , $team22 );
+				$team22_country = $team22->get_country();
+				$team22_score = $result_1_16_11->get_team2_score();
+			}
 		}
-		$team23 = $db->get_team_by_id ( $result_1_16_12->get_team1_id() );
-		$team23_name = $this->get_name_or_placeholder( $result_1_16_12->get_team1_placeholder() , $team23 );
+
+		$team23_name = '';
 		$team23_country = '';
 		$team23_score = '';
-		if ( $team23 ) {
-			$team23_country = $team23->get_country();
-			$team23_score = $result_1_16_12->get_team1_score();
+		if ( $result_1_16_12 ) {
+			$team23 = $db->get_team_by_id ( $result_1_16_12->get_team1_id() );
+			if ( $team23 ) {
+				$team23_name = $this->get_name_or_placeholder( $result_1_16_12->get_team1_placeholder() , $team23 );
+				$team23_country = $team23->get_country();
+				$team23_score = $result_1_16_12->get_team1_score();
+			}
 		}
-		$team24 = $db->get_team_by_id ( $result_1_16_12->get_team2_id() );
-		$team24_name = $this->get_name_or_placeholder( $result_1_16_12->get_team2_placeholder() , $team24 );
+		
+		$team24_name = '';
 		$team24_country = '';
 		$team24_score = '';
-		if ( $team24 ) {
-			$team24_country = $team24->get_country();
-			$team24_score = $result_1_16_12->get_team2_score();
+		if ( $result_1_16_12 ) {
+			$team24 = $db->get_team_by_id ( $result_1_16_12->get_team2_id() );
+			if ( $team24 ) {
+				$team24_name = $this->get_name_or_placeholder( $result_1_16_12->get_team2_placeholder() , $team24 );
+				$team24_country = $team24->get_country();
+				$team24_score = $result_1_16_12->get_team2_score();
+			}
 		}
-		$team25 = $db->get_team_by_id ( $result_1_16_13->get_team1_id() );
-		$team25_name = $this->get_name_or_placeholder( $result_1_16_13->get_team1_placeholder() , $team25 );
+		
+		$team25_name = '';
 		$team25_country = '';
 		$team25_score = '';
-		if ( $team25 ) {
-			$team25_country = $team25->get_country();
-			$team25_score = $result_1_16_13->get_team1_score();
+		if ( $result_1_16_13 ) {
+			$team25 = $db->get_team_by_id ( $result_1_16_13->get_team1_id() );
+			if ( $team25 ) {
+				$team25_name = $this->get_name_or_placeholder( $result_1_16_13->get_team1_placeholder() , $team25 );
+				$team25_country = $team25->get_country();
+				$team25_score = $result_1_16_13->get_team1_score();
+			}
 		}
-		$team26 = $db->get_team_by_id ( $result_1_16_13->get_team2_id() );
-		$team26_name = $this->get_name_or_placeholder( $result_1_16_13->get_team2_placeholder() , $team26 );
+
+		$team26_name = '';
 		$team26_country = '';
 		$team26_score = '';
-		if ( $team26 ) {
-			$team26_country = $team26->get_country();
-			$team26_score = $result_1_16_13->get_team2_score();
+		if ( $result_1_16_13 ) {
+			$team26 = $db->get_team_by_id ( $result_1_16_13->get_team2_id() );
+			if ( $team26 ) {
+				$team26_name = $this->get_name_or_placeholder( $result_1_16_13->get_team2_placeholder() , $team26 );
+				$team26_country = $team26->get_country();
+				$team26_score = $result_1_16_13->get_team2_score();
+			}
 		}
-		$team27 = $db->get_team_by_id ( $result_1_16_14->get_team1_id() );
-		$team27_name = $this->get_name_or_placeholder( $result_1_16_14->get_team1_placeholder() , $team27 );
+
+		$team27_name = '';
 		$team27_country = '';
 		$team27_score = '';
-		if ( $team27 ) {
-			$team27_country = $team27->get_country();
-			$team27_score = $result_1_16_14->get_team1_score();
+		if ( $result_1_16_14 ) {
+			$team27 = $db->get_team_by_id ( $result_1_16_14->get_team1_id() );
+			if ( $team27 ) {
+				$team27_name = $this->get_name_or_placeholder( $result_1_16_14->get_team1_placeholder() , $team27 );
+				$team27_country = $team27->get_country();
+				$team27_score = $result_1_16_14->get_team1_score();
+			}
 		}
-		$team28 = $db->get_team_by_id ( $result_1_16_14->get_team2_id() );
-		$team28_name = $this->get_name_or_placeholder( $result_1_16_14->get_team2_placeholder() , $team28 );
+		
+		$team28_name = '';
 		$team28_country = '';
 		$team28_score = '';
-		if ( $team28 ) {
-			$team28_country = $team28->get_country();
-			$team28_score = $result_1_16_14->get_team2_score();
+		if ( $result_1_16_14 ) {
+			$team28 = $db->get_team_by_id ( $result_1_16_14->get_team2_id() );
+			if ( $team28 ) {
+				$team28_name = $this->get_name_or_placeholder( $result_1_16_14->get_team2_placeholder() , $team28 );
+				$team28_country = $team28->get_country();
+				$team28_score = $result_1_16_14->get_team2_score();
+			}
 		}
-		$team29 = $db->get_team_by_id ( $result_1_16_15->get_team1_id() );
-		$team29_name = $this->get_name_or_placeholder( $result_1_16_15->get_team1_placeholder() , $team29 );
+		
+		$team29_name = '';
 		$team29_country = '';
 		$team29_score = '';
-		if ( $team29 ) {
-			$team29_country = $team29->get_country();
-			$team29_score = $result_1_16_15->get_team1_score();
+		if ( $result_1_16_15 ) {
+			$team29 = $db->get_team_by_id ( $result_1_16_15->get_team1_id() );
+			if ( $team29 ) {
+				$team29_name = $this->get_name_or_placeholder( $result_1_16_15->get_team1_placeholder() , $team29 );
+				$team29_country = $team29->get_country();
+				$team29_score = $result_1_16_15->get_team1_score();
+			}
 		}
-		$team30 = $db->get_team_by_id ( $result_1_16_15->get_team2_id() );
-		$team30_name = $this->get_name_or_placeholder( $result_1_16_15->get_team2_placeholder() , $team30 );
+
+		$team30_name = '';
 		$team30_country = '';
 		$team30_score = '';
-		if ( $team30 ) {
-			$team30_country = $team30->get_country();
-			$team30_score = $result_1_16_15->get_team2_score();
+		if ( $result_1_16_15 ) {
+			$team30 = $db->get_team_by_id ( $result_1_16_15->get_team2_id() );
+			if ( $team30 ) {
+				$team30_name = $this->get_name_or_placeholder( $result_1_16_15->get_team2_placeholder() , $team30 );
+				$team30_country = $team30->get_country();
+				$team30_score = $result_1_16_15->get_team2_score();
+			}
 		}
-		$team31 = $db->get_team_by_id ( $result_1_16_16->get_team1_id() );
-		$team31_name = $this->get_name_or_placeholder( $result_1_16_16->get_team1_placeholder() , $team31 );
+
+		$team31_name = '';
 		$team31_country = '';
 		$team31_score = '';
-		if ( $team31 ) {
-			$team31_country = $team31->get_country();
-			$team31_score = $result_1_16_16->get_team1_score();
+		if ( $result_1_16_16 ) {
+			$team31 = $db->get_team_by_id ( $result_1_16_16->get_team1_id() );
+			if ( $team31 ) {
+				$team31_name = $this->get_name_or_placeholder( $result_1_16_16->get_team1_placeholder() , $team31 );
+				$team31_country = $team31->get_country();
+				$team31_score = $result_1_16_16->get_team1_score();
+			}
 		}
-		$team32 = $db->get_team_by_id ( $result_1_16_16->get_team2_id() );
-		$team32_name = $this->get_name_or_placeholder( $result_1_16_16->get_team2_placeholder() , $team32 );
+		
+		$team32_name = '';
 		$team32_country = '';
 		$team32_score = '';
-		if ( $team32 ) {
-			$team32_country = $team32->get_country();
-			$team32_score = $result_1_16_16->get_team2_score();
+		if ( $result_1_16_16 ) {
+			$team32 = $db->get_team_by_id ( $result_1_16_16->get_team2_id() );
+			if ( $team32 ) {
+				$team32_name = $this->get_name_or_placeholder( $result_1_16_16->get_team2_placeholder() , $team32 );
+				$team32_country = $team32->get_country();
+				$team32_score = $result_1_16_16->get_team2_score();
+			}
 		}
 
 		return
