@@ -743,6 +743,24 @@ class Ekc_Database_Access {
 		return $results;
 	}
 
+	public function get_team_by_shareable_link_id( $link_id ) {
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( 
+			"
+			SELECT team_id, tournament_id, name, LOWER(country) as country, is_active, email, phone, registration_date, camping_count, breakfast_count, is_on_wait_list, registration_order, seeding_score, initial_score, virtual_rank, shareable_link_id 
+			FROM   {$wpdb->prefix}ekc_team
+			WHERE  shareable_link_id = %s
+			",
+       		$link_id
+		) ); 
+
+		if ( ! $row ) {
+			return null;
+		}
+
+		return $this->create_team_from_table_row( $row );
+	}
+
 	/***************************************************************************************************************************
 	 * Results
 	 ***************************************************************************************************************************/

@@ -80,7 +80,7 @@ class Ekc_Shareable_Links_Helper {
 	}
 
 	public function create_shareable_link_url( $url_prefix, $link_id ) {
-		return $url_prefix . '?linkid=' . $link_id;
+		return $url_prefix . 'linkid=' . $link_id;
 	}
 
 	private function create_shareable_link_id( $team_id ) {
