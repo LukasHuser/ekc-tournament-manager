@@ -12,9 +12,6 @@ class Ekc_Tournaments_Backup_Page {
 		if ( $action === 'delete' ) {
       $this->delete_backup( $file_name );
     }
-    elseif ( $action === 'showupload' ) {
-      $this->show_upload();
-    }
     else {
       // handle POST
       if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
@@ -29,7 +26,33 @@ class Ekc_Tournaments_Backup_Page {
         $helper->safe_move_uploaded_file( $_FILES['backup-file']['name'], $_FILES['backup-file']['tmp_name']);
       }
     }
+    $this->show_wp_header();
+    if ( $action === 'showupload' ) {
+      $this->show_upload();
+    }
     $this->show_backup_table();
+    $this->close_wp_content();
+  }
+
+  private function show_wp_header() {
+    ?>
+    <div class="wrap">
+    
+      <h1 class="wp-heading-inline"><?php _e( 'Backup Files' ); ?></h1>
+      <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=showupload" class="page-title-action"><?php _e( 'Upload backup file' ); ?></a>
+    
+      <hr class="wp-header-end">
+    
+    <?php 
+  }
+
+  /**
+   * Close the css class 'wrap' div from wordpress
+   */
+  private function close_wp_content() {
+    ?>
+    </div><!-- .wrap -->
+    <?php
   }
   
   private function show_upload() {
@@ -54,26 +77,14 @@ class Ekc_Tournaments_Backup_Page {
     }
 
 		$backup_table = new Ekc_Tournaments_Backup_Table($table_data);
-?>
-<div class="wrap">
 
-  <h1 class="wp-heading-inline"><?php _e( 'Backup Files' ); ?></h1>
-  <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=showupload" class="page-title-action"><?php _e( 'Upload backup file' ); ?></a>
-
-  <hr class="wp-header-end">
-
-<?php 
-	if ( $table_data ) {
-		$backup_table->prepare_items();
-		$backup_table->display();
-	} 
-	else {
-		esc_html_e("No backup files available.");
-	}
-?>
-
-</div><!-- .wrap -->
-<?php
+    if ( $table_data ) {
+      $backup_table->prepare_items();
+      $backup_table->display();
+    } 
+    else {
+      esc_html_e("No backup files available.");
+    }
 	}	
 
 	public function delete_backup( $file_name ) {
