@@ -49,9 +49,13 @@ class Ekc_Shareable_Links_Helper {
 	
 	private function send_shareable_link( $tournament, $team ) {
 		$url = $this->create_shareable_link_url( $tournament->get_shareable_link_url_prefix(), $team->get_shareable_link_id() );
-		$email_content = $this->replace_placeholder( $tournament->get_shareable_link_email_text(), $team->get_team_name(), $url );
+		$email_content = $this->replace_placeholder( $tournament->get_shareable_link_email_text(), $team->get_name(), $url );
 
-		$this->send_mail( $team->get_email(), $tournament->get_tournament_name(), $email_content );
+		// convert new lines to html <br>
+		$email_content = nl2br( $email_content );
+		if ( $team->get_email() ) {
+			$this->send_mail( $team->get_email(), $tournament->get_name(), $email_content );
+		}
 	} 
 
 	private function replace_placeholder( $email_content, $team_name, $url ) {

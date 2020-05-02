@@ -20,7 +20,7 @@ class Ekc_Shareable_links_Admin_Page {
       $this->generate_shareable_link( $team_id );
     }
     elseif ( $action === 'send' ) {
-      $this->send_shareable_link_by_mail( $team_id );
+      $this->send_shareable_link_by_mail( $tournament_id, $team_id );
     }
     elseif ( $action === 'generateall' ) {
       $this->generate_all_shareable_links( $tournament_id );
@@ -92,7 +92,7 @@ class Ekc_Shareable_links_Admin_Page {
         <fieldset>
           <div class="ekc-control-group">
             <label for="urlprefix">URL prefix</label>
-            <input id="urlprefix" name="urlprefix" type="text" placeholder="http://mydomain.com/mytournament/team" size="40" maxlength="50" value="<?php esc_html_e( $url_prefix ) ?>" />
+            <input id="urlprefix" name="urlprefix" type="text" placeholder="http://mydomain.com/mytournament/team" size="40" maxlength="500" value="<?php esc_html_e( $url_prefix ) ?>" />
           </div>
           <div class="ekc-control-group">
             <p>E-mail content supports the following placholders:<br/>
@@ -131,9 +131,9 @@ class Ekc_Shareable_links_Admin_Page {
 		$helper->generate_all_shareable_links( $tournament_id );
   }
 
-  public function send_shareable_link_by_mail( $team_id ) {
+  public function send_shareable_link_by_mail( $tournament_id, $team_id ) {
 		$helper = new Ekc_Shareable_Links_Helper();
-		$helper->send_shareable_link_by_mail( $team_id );
+		$helper->send_shareable_link_by_mail( $tournament_id, $team_id );
   }
 
   public function send_all_shareable_links_by_mail( $tournament_id ) {
