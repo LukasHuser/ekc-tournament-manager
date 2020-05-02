@@ -5,7 +5,7 @@ $color-background:      #ffffff
 $color-lose:            #888888
 $color-win:             #000000
 $color-border:          #000000
-$font-content:          "EKC Font", serif-sans
+$font-content:          "EKC Font", sans-serif
 
 
 
@@ -53,7 +53,7 @@ $font-content:          "EKC Font", serif-sans
                                 span
                                     line-height: 3rem
                                     font-size: 1rem
-                                    font-family: "EKC Font"
+                                    font-family: $font-content
                                     margin-left: 1rem
                                     display: inline-block
                                     overflow: hidden
@@ -95,6 +95,29 @@ $font-content:          "EKC Font", serif-sans
                         &:after
                             border-right-width: 2px
                             border-bottom-width: 2px
+    &.participants-4
+        .round
+            &.semifinals
+                .single-bracket
+                    margin-bottom: 10rem
+                    .matchups
+                        .matchup
+                            &:not(:last-child)
+                                margin-bottom: 2rem
+                    .connector
+                        .merger
+                            height: 8rem
+                        .line
+                            height: 4rem
+            &.finals
+                .single-bracket
+                    .matchups
+                        .matchup
+                            &:not(:last-child)
+                                @media screen and (min-width: 30rem)
+                                    margin-bottom: 4rem
+                                @media screen and (max-width: 30rem)
+                                    margin-bottom: 2rem
     &.participants-8
         .round
             &.quarterfinals
