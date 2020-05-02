@@ -703,7 +703,7 @@ class Ekc_Database_Access {
 		$wpdb->update( 
 			$wpdb->prefix . 'ekc_tournament', 
 			array( 
-				'shareable_link_url_prefix'	=> $this->truncate_string( $tournament->get_shareable_link_url_prefix(), 50 ),
+				'shareable_link_url_prefix'	=> $this->truncate_string( $tournament->get_shareable_link_url_prefix(), 500 ),
 				'shareable_link_email_text' => $this->truncate_string( $tournament->get_shareable_link_email_text(), 5000 ),
 			),
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
