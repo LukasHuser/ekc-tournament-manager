@@ -53,7 +53,7 @@ class Ekc_Shareable_Links_Helper {
 
 		// convert new lines to html <br>
 		$email_content = nl2br( $email_content );
-		if ( $team->get_email() ) {
+		if ( $team->get_email() && $team->get_shareable_link_id() ) {
 			$this->send_mail( $team->get_email(), $tournament->get_name(), $email_content );
 		}
 	} 
