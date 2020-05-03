@@ -1620,6 +1620,14 @@ class Ekc_Shortcode_Helper {
 	  }
 
 	  public function shortcode_shareable_link( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'type' => 'team-results',
+			),
+			$atts,
+			'ekc-link'
+		);
+
 		$link_id = ( isset($_GET['linkid'] ) ) ? sanitize_text_field( wp_unslash( $_GET['linkid'] ) ) : '';
 		$page_id = ( isset($_GET['page_id'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page_id'] ) ) : '';
 		$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
@@ -1629,8 +1637,18 @@ class Ekc_Shortcode_Helper {
 		$db = new Ekc_Database_Access();
 		$team = $db->get_team_by_shareable_link_id( $link_id );
 
+		if ( $atts['type'] === 'team-name') {
+			if ( $team ) {
+				return $team->get_name();
+			}
+			else {
+				return '';
+			}
+		}
+		// else: type == team-results
+
 		if ( ! $team ) {
-			return '<p>No data found.</p>';
+			return 'No data found.';
 		}
 
 		$html = '';
