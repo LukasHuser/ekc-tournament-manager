@@ -111,7 +111,10 @@ class Ekc_Tournament_Registration {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		
+		// for the post-redirect-get pattern to work, we need to write http headers before any output is written
+		// we use the template_redirect hook 
+		$this->loader->add_action( 'template_redirect', $plugin_public, 'post_redirect_get' );
 	}
 
 	private function add_shortcodes() {
