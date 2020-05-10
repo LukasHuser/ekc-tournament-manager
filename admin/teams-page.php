@@ -164,9 +164,9 @@ class Ekc_Teams_Admin_Page {
 <?php
 	}	
 
-	public function show_new_team($tournament_id) {
+	public function show_new_team( $tournament_id ) {
 		$db = new Ekc_Database_Access();
-		$tournament = $db->get_tournament_by_id($tournament_id);
+		$tournament = $db->get_tournament_by_id( $tournament_id );
 ?>
   <div class="wrap">
       <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
@@ -224,7 +224,7 @@ class Ekc_Teams_Admin_Page {
             <input id="virtualrank" name="virtualrank" type="number" step="any" placeholder="1" />
           </div>
 <?php }
-      if ( $tournament->is_player_names_required() ) { ?>
+      if ( $this->is_visible_player_1( $tournament ) ) { ?>
           <div class="ekc-control-group">
             <label for="player1first">Captain <span class="ekc-required">*</span></label>
             <input id="player1first" name="player1first" type="text" placeholder="First name" maxlength="500" required />
@@ -233,7 +233,7 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php }
 
-      if ( $tournament->is_player_names_required() && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 ) { ?>
+      if ( $this->is_visible_player_2( $tournament ) ) { ?>
           <div class="ekc-control-group">
             <label for="player2first">Player 2 <span class="ekc-required">*</span></label>
             <input id="player2first" name="player2first" type="text" placeholder="First name" maxlength="500" required />
@@ -242,38 +242,38 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_2 ) { ?>
+     if ( $this->is_visible_player_3( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player3first">Player 3 <span class="ekc-required">*</span></label>
-            <input id="player3first" name="player3first" type="text" placeholder="First name" maxlength="500" required />
-            <input id="player3last" name="player3last" type="text" placeholder="Last name" maxlength="500" required />
+            <label for="player3first">Player 3 <?php $this->is_required_player_3( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player3first" name="player3first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_3( $tournament ) ? _e('required') : _e('') ?> />
+            <input id="player3last" name="player3last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_3( $tournament ) ? _e('required') : _e('') ?> />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player3country", Ekc_Drop_Down_Helper::SELECTION_NONE) ?>
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && ( $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_3plus || $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ) ) { ?>
+     if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player4first">Player 4 <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
-            <input id="player4first" name="player4first" type="text" placeholder="First name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?> />
-            <input id="player4last" name="player4last" type="text" placeholder="Last name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?> />
+            <label for="player4first">Player 4 <?php $this->is_required_player_4_5_6( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player4first" name="player4first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?> />
+            <input id="player4last" name="player4last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?> />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player4country", Ekc_Drop_Down_Helper::SELECTION_NONE) ?>
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && ( $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_3plus || $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ) ) { ?>
+     if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player5first">Player 5 <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
-            <input id="player5first" name="player5first" type="text" placeholder="First name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?> />
-            <input id="player5last" name="player5last" type="text" placeholder="Last name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?> />
+            <label for="player5first">Player 5 <?php $this->is_required_player_4_5_6( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player5first" name="player5first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?> />
+            <input id="player5last" name="player5last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?> />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player5country", Ekc_Drop_Down_Helper::SELECTION_NONE) ?>
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && ( $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_3plus || $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ) ) { ?>
+     if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player6first">Player 6 <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
-            <input id="player6first" name="player6first" type="text" placeholder="First name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?> />
-            <input id="player6last" name="player6last" type="text" placeholder="Last name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?> />
+            <label for="player6first">Player 6 <?php $this->is_required_player_4_5_6( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player6first" name="player6first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?> />
+            <input id="player6last" name="player6last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?> />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player6country", Ekc_Drop_Down_Helper::SELECTION_NONE) ?>
           </div>
 <?php } ?>
@@ -287,11 +287,11 @@ class Ekc_Teams_Admin_Page {
       </form>
   </div><!-- .wrap -->
 <?php
-	}
+  }
 
-	public function show_edit_team($team_id) {
+	public function show_edit_team( $team_id ) {
 		$db = new Ekc_Database_Access();
-		$team = $db->get_team_by_id($team_id);
+		$team = $db->get_team_by_id( $team_id );
 		$tournament = $db->get_tournament_by_id($team->get_tournament_id());
 ?>
   <div class="wrap">
@@ -350,16 +350,18 @@ class Ekc_Teams_Admin_Page {
             <input id="virtualrank" name="virtualrank" type="number" step="any" placeholder="1" value="<?php esc_html_e( $team->get_virtual_rank() ) ?>" />
           </div>
 <?php }
-      if ( $tournament->is_player_names_required() ) { ?>
+      if ( $this->is_visible_player_1( $tournament ) ) { ?>
           <div class="ekc-control-group">
             <label for="player1first">Captain <span class="ekc-required">*</span></label>
-            <input id="player1first" name="player1first" type="text" placeholder="First name" maxlength="500" required value="<?php $team->get_player(0) ? esc_html_e( $team->get_player(0)->get_first_name() ) : _e('') ?>"/>
-            <input id="player1last" name="player1last" type="text" placeholder="Last name" maxlength="500" required value="<?php $team->get_player(0) ? esc_html_e( $team->get_player(0)->get_last_name() ) : _e('') ?>" />
+            <input id="player1first" name="player1first" type="text" placeholder="First name" maxlength="500" required 
+                   value="<?php $team->get_player(0) ? esc_html_e( $team->get_player(0)->get_first_name() ) : _e('') ?>"/>
+            <input id="player1last" name="player1last" type="text" placeholder="Last name" maxlength="500" required 
+                   value="<?php $team->get_player(0) ? esc_html_e( $team->get_player(0)->get_last_name() ) : _e('') ?>" />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player1country", $team->get_player(0) ? $team->get_player(0)->get_country() : '') ?>
           </div>
 <?php }
 
-      if ( $tournament->is_player_names_required() && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 ) { ?>
+      if ( $this->is_visible_player_2( $tournament ) ) { ?>
           <div class="ekc-control-group">
             <label for="player2first">Player 2 <span class="ekc-required">*</span></label>
             <input id="player2first" name="player2first" type="text" placeholder="First name" maxlength="500" required 
@@ -370,45 +372,45 @@ class Ekc_Teams_Admin_Page {
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_2 ) { ?>
+     if ( $this->is_visible_player_3( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player3first">Player 3 <span class="ekc-required">*</span></label>
-            <input id="player3first" name="player3first" type="text" placeholder="First name" maxlength="500" required
+            <label for="player3first">Player 3 <?php $this->is_required_player_3( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player3first" name="player3first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_3( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(2) ? esc_html_e( $team->get_player(2)->get_first_name() ) : _e('') ?>" />
-            <input id="player3last" name="player3last" type="text" placeholder="Last name" maxlength="500" required
+            <input id="player3last" name="player3last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_3( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(2) ? esc_html_e( $team->get_player(2)->get_last_name() ) : _e('') ?>" />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player3country", $team->get_player(2) ? $team->get_player(2)->get_country() : '') ?>
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && ($tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_3plus || $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ) ) { ?>
+     if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player4first">Player 4 <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
-            <input id="player4first" name="player4first" type="text" placeholder="First name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?>
+            <label for="player4first">Player 4 <?php $this->is_required_player_4_5_6( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player4first" name="player4first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(3) ? esc_html_e( $team->get_player(3)->get_first_name() ) : _e('') ?>" />
-            <input id="player4last" name="player4last" type="text" placeholder="Last name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?>
+            <input id="player4last" name="player4last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(3) ? esc_html_e( $team->get_player(3)->get_last_name() ) : _e('') ?>" />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player4country", $team->get_player(3) ? $team->get_player(3)->get_country() : '') ?>
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && ( $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_3plus || $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ) ) { ?>
+     if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player5first">Player 5 <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
-            <input id="player5first" name="player5first" type="text" placeholder="First name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?>
+            <label for="player5first">Player 5 <?php $this->is_required_player_4_5_6( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player5first" name="player5first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(4) ? esc_html_e( $team->get_player(4)->get_first_name() ) : _e('') ?>" />
-            <input id="player5last" name="player5last" type="text" placeholder="Last name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?>
+            <input id="player5last" name="player5last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(4) ? esc_html_e( $team->get_player(4)->get_last_name() ) : _e('') ?>" />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player5country", $team->get_player(4) ? $team->get_player(4)->get_country() : '') ?>
           </div>
 <?php }
 
-     if ( $tournament->is_player_names_required() && ( $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_3plus || $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ) ) { ?>
+     if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player6first">Player 6 <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
-            <input id="player6first" name="player6first" type="text" placeholder="First name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?>
+            <label for="player6first">Player 6 <?php $this->is_required_player_4_5_6( $tournament ) ? _e('<span class="ekc-required">*</span>') : _e('') ?></label>
+            <input id="player6first" name="player6first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(5) ? esc_html_e( $team->get_player(5)->get_first_name() ) : _e('') ?>" />
-            <input id="player6last" name="player6last" type="text" placeholder="Last name" maxlength="500" <?php $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6 ? _e('required') : _e('') ?>
+            <input id="player6last" name="player6last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
                    value="<?php $team->get_player(5) ? esc_html_e( $team->get_player(5)->get_last_name() ) : _e('') ?>" />
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("player6country", $team->get_player(5) ? $team->get_player(5)->get_country() : '') ?>
           </div>
@@ -423,9 +425,41 @@ class Ekc_Teams_Admin_Page {
       </form>
   </div><!-- .wrap -->
 <?php
-	}
+  }
 
-	public function set_team_active( $team_id, $is_active ) {
+  private function is_visible_player_1( $tournament ) {
+    return $tournament->is_player_names_required();
+  }
+
+  private function is_visible_player_2( $tournament ) {
+    return $tournament->is_player_names_required()
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1;
+  }
+
+  private function is_visible_player_3( $tournament ) {
+    return $tournament->is_player_names_required()
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_2;
+  }
+
+  private function is_required_player_3( $tournament ) {
+    return $this->is_visible_player_3( $tournament )
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_2plus;
+  }
+
+  private function is_visible_player_4_5_6( $tournament ) {
+    return $tournament->is_player_names_required()
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_2
+        && $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_3;
+  }
+
+  private function is_required_player_4_5_6( $tournament ) {
+    return $this->is_visible_player_4_5_6( $tournament )
+        && $tournament->get_team_size() === Ekc_Drop_Down_Helper::TEAM_SIZE_6;
+  }
+
+  public function set_team_active( $team_id, $is_active ) {
 		$db = new Ekc_Database_Access();
 		$db->set_team_active( $team_id, $is_active );
 	}

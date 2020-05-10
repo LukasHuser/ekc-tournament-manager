@@ -9,13 +9,15 @@ class Ekc_Drop_Down_Helper {
 
 	const TEAM_SIZE_1 	= "1vs1";
 	const TEAM_SIZE_2	= "2vs2";
+	const TEAM_SIZE_2plus	= "2+vs2+";
 	const TEAM_SIZE_3 	= "3vs3";
 	const TEAM_SIZE_3plus	= "3+vs3+";
 	const TEAM_SIZE_6	= "6vs6";
 
 	const TEAM_SIZE		= array( 
 		Ekc_Drop_Down_Helper::TEAM_SIZE_1, 
-		Ekc_Drop_Down_Helper::TEAM_SIZE_2, 
+		Ekc_Drop_Down_Helper::TEAM_SIZE_2,
+		Ekc_Drop_Down_Helper::TEAM_SIZE_2plus, 
 		Ekc_Drop_Down_Helper::TEAM_SIZE_3, 
 		Ekc_Drop_Down_Helper::TEAM_SIZE_3plus, 
 		Ekc_Drop_Down_Helper::TEAM_SIZE_6,
