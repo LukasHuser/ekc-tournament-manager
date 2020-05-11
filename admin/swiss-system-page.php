@@ -27,8 +27,9 @@ class Ekc_Swiss_System_Admin_Page {
       $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;	
       $tournament = $db->get_tournament_by_id( $tournament_id );
       $tournament_round = ( isset($_POST['tournamentround'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentround'] ) ) : null;
+      $result_id = ( isset($_POST['resultid'] ) ) ? sanitize_key( wp_unslash( $_POST['resultid'] ) ) : null;
       $action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-      if ( $action === 'swiss-system-store' ) {
+      if ( $action === 'swiss-system-store-round' ) {
         $existing_results = $db->get_tournament_results( $tournament_id, Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, '', $tournament_round );
         $this->update_results( $existing_results );
         if ( $tournament->is_auto_backup_enabled() ) {
@@ -36,6 +37,10 @@ class Ekc_Swiss_System_Admin_Page {
           $helper->store_backup( $tournament_id );
         }
         $this->show_swiss_system( $tournament_id, $tournament_round );
+      }
+      elseif ( $action === 'swiss-system-store-result' ) {
+        $existing_result = $db->get_tournament_result_by_id( $result_id );
+        $this->update_results( array( $existing_result ) );
       }
       elseif ( $action === 'swiss-system-new-round' ) {
         Ekc_Swiss_System_Helper::calculate_and_store_next_round( $tournament, $tournament_round );
@@ -199,10 +204,10 @@ class Ekc_Swiss_System_Admin_Page {
       </tbody>
     </table>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary">Save results for round <?php esc_html_e( $round ) ?></button>
+        <button type="submit" class="ekc-button ekc-button-primary">Save all results for round <?php esc_html_e( $round ) ?></button>
         <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
         <input id="tournamentround" name="tournamentround" type="hidden" value="<?php esc_html_e( $round ) ?>" />
-        <input id="action" name="action" type="hidden" value="swiss-system-store" />
+        <input id="action" name="action" type="hidden" value="swiss-system-store-round" />
     </div>
   </fieldset>
 </form>
@@ -225,6 +230,7 @@ class Ekc_Swiss_System_Admin_Page {
     <input id="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team1_placeholder() ) ?>" /></div>
   </td>
   <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?>"><input id="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $result->get_team1_score() ) ?>" /></div></td>
+  <td><a class="ekc-post-result" href="javascript:void(0);" data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>">Save result</a></td> <!-- see admin.js for onClick handler -->
 </tr>
 <tr>
   <td></td>
@@ -239,6 +245,7 @@ class Ekc_Swiss_System_Admin_Page {
     <input id="team2-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team2_placeholder() ) ?>" /></div>
   </td>
   <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?>"><input id="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $result->get_team2_score() ) ?>" /></div></td>
+  <td></td>
 </tr>
 
 <?php

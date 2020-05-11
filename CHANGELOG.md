@@ -8,7 +8,7 @@ CHANGELOG ekc-tournament
 [1] avoid duplicate matches with top-down pairings
 
 ## Version 1.2.6
-[1] store each result individually. Needed to store results in parallel (two or more users, and for shareable links)
+[x] store each result individually. Needed to store results in parallel (two or more users, and for shareable links)
 [x] 2+vs2+ support for virtual EKC
 [x] shareable links: individual pages for each team via shareable links. All rounds and results per team. Allow to report result of current round.
 

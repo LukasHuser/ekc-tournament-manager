@@ -796,24 +796,44 @@ class Ekc_Database_Access {
 
 		$tournament_results = array();
 		foreach ( $results as $row ) {
-			$tournament_result = new Ekc_Result();
-			$tournament_result->set_result_id( $row->result_id );
-			$tournament_result->set_tournament_id( $row->tournament_id );
-			$tournament_result->set_team1_id( $row->team1_id );
-			$tournament_result->set_team2_id( $row->team2_id );
-			$tournament_result->set_team1_placeholder( strval( $row->team1_placeholder ) );
-			$tournament_result->set_team2_placeholder( strval( $row->team2_placeholder ) );
-			$tournament_result->set_team1_score( $row->team1_score );
-			$tournament_result->set_team2_score( $row->team2_score );
-			$tournament_result->set_pitch( strval( $row->pitch ) );
-			$tournament_result->set_stage( strval( $row->stage ) );
-			$tournament_result->set_tournament_round( $row->tournament_round );
-			$tournament_result->set_result_type( strval( $row->result_type ) );
-			$tournament_result->set_virtual_result( boolval( $row->is_virtual_result ) );
-			$tournament_results[] = $tournament_result;
+			$tournament_results[] = $this->create_result_from_table_row( $row );
 		}
 		return $tournament_results;
+	}
 
+	public function get_tournament_result_by_id( $result_id ) {
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( 
+			"
+			SELECT result_id, tournament_id, team1_id, team2_id, team1_placeholder, team2_placeholder, team1_score, team2_score, stage, pitch, tournament_round, result_type, is_virtual_result
+			FROM   {$wpdb->prefix}ekc_result
+			WHERE  result_id = %d
+			",
+			$result_id
+		) ); 
+	
+		if ( ! $row ) {
+			return null;
+		} 
+		return $this->create_result_from_table_row( $row );
+	}
+
+	private function create_result_from_table_row( $row ) {
+		$tournament_result = new Ekc_Result();
+		$tournament_result->set_result_id( $row->result_id );
+		$tournament_result->set_tournament_id( $row->tournament_id );
+		$tournament_result->set_team1_id( $row->team1_id );
+		$tournament_result->set_team2_id( $row->team2_id );
+		$tournament_result->set_team1_placeholder( strval( $row->team1_placeholder ) );
+		$tournament_result->set_team2_placeholder( strval( $row->team2_placeholder ) );
+		$tournament_result->set_team1_score( $row->team1_score );
+		$tournament_result->set_team2_score( $row->team2_score );
+		$tournament_result->set_pitch( strval( $row->pitch ) );
+		$tournament_result->set_stage( strval( $row->stage ) );
+		$tournament_result->set_tournament_round( $row->tournament_round );
+		$tournament_result->set_result_type( strval( $row->result_type ) );
+		$tournament_result->set_virtual_result( boolval( $row->is_virtual_result ) );
+		return $tournament_result;
 	}
 
 	public function insert_or_update_tournament_result( $tournament_result ) {

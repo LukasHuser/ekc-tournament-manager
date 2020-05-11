@@ -254,6 +254,32 @@
    
       $( ".ekc-teams-combobox" ).teams_combobox();
 
+      // save a single tournament result (instead of submitting the whole form)
+      var postTournamentResult = function( a ) {
+        var resultId = $(a).data("resultid");
+
+        var postParams = new URLSearchParams();
+        postParams.append("pitch-" + resultId, $("#pitch-" + resultId).val());
+        postParams.append("team1-" + resultId, $("#team1-" + resultId).val());
+        postParams.append("team2-" + resultId, $("#team2-" + resultId).val());
+        postParams.append("team1-score-" + resultId, $("#team1-score-" + resultId).val());
+        postParams.append("team2-score-" + resultId, $("#team2-score-" + resultId).val());
+        postParams.append("team1-placeholder-" + resultId, $("#team1-placeholder-" + resultId).val());
+        postParams.append("team2-placeholder-" + resultId, $("#team2-placeholder-" + resultId).val());
+        postParams.append("resultid", resultId);
+        postParams.append("action", "swiss-system-store-result");
+
+        var requestParam = new URLSearchParams(window.location.search);
+        var request = new XMLHttpRequest();
+        request.open("POST", "?page=" + requestParam.get("page"));
+        request.setRequestHeader("Content-Type", 'application\/x-www-form-urlencoded');
+        request.send(postParams.toString());
+      };
+
+      $( ".ekc-post-result" ).click(function(){
+        postTournamentResult( $(this) );
+        return false;
+      }); 
 
   });
 
