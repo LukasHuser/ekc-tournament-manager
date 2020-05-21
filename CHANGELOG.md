@@ -2,12 +2,12 @@ CHANGELOG ekc-tournament
 ========================
 
 ## TODO
-[1] swiss system: teams already played -> mark red
 [3] team / tournament: form input/label alignment  
-[3] performance: drop down lists as key / value (integer keys instead of string keys)  
-[1] avoid duplicate matches with top-down pairings
+[3] performance: drop down lists as key / value (integer keys instead of string keys) 
+[2] shareable links: timer for current round on personalized pages
 
 ## Version 1.2.6
+[x] avoid duplicate matches. Use blossom algorithm for minimum weight matching in undirected graphs
 [x] store each result individually. Needed to store results in parallel (two or more users, and for shareable links)
 [x] 2+vs2+ support for virtual EKC
 [x] shareable links: individual pages for each team via shareable links. All rounds and results per team. Allow to report result of current round.
