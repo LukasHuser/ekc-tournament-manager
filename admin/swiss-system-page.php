@@ -14,6 +14,10 @@ class Ekc_Swiss_System_Admin_Page {
 		if ( $action === 'swiss-system' ) {
 			$this->show_swiss_system( $tournament_id, $tournament_round );
     }
+    elseif ( $action === 'swiss-system-start-timer' ) {
+      $this->start_timer( $tournament_id, $tournament_round );
+      $this->show_swiss_system( $tournament_id, $tournament_round );
+    }
     elseif ( $action === 'swiss-system-ranking' ) {
       $this->show_swiss_system( $tournament_id, null, true );
     }
@@ -123,6 +127,10 @@ class Ekc_Swiss_System_Admin_Page {
       $this->show_round_link( $tournament, $round );
     }
 
+    if ( ! $show_ranking && $tournament->get_swiss_system_round_time() > 0 && $current_round > 0 ) {
+      $this->show_timer( $tournament, $current_round );
+    }
+
     if ( $show_ranking ) {
       $this->show_swiss_system_ranking( $tournament_id );
     }
@@ -182,6 +190,33 @@ class Ekc_Swiss_System_Admin_Page {
   </fieldset>
 </form>
     <?php
+  }
+
+  private function show_timer( $tournament, $current_round ) {
+    $db = new Ekc_Database_Access();
+    $round_start_time = $db->get_tournament_round_start( $tournament->get_tournament_id(), $current_round );
+
+    if ( $round_start_time ) {
+      $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
+      $round_end_date->add(new DateInterval('PT' . $tournament->get_swiss_system_round_time() . 'M')); // add minutes
+      $now = new DateTime();
+      $time_left = '0';
+      if ( $round_end_date > $now ) {
+        $time_left = $now->diff( $round_end_date )->format('%i');
+      }
+      ?> 
+      <p>round <?php _e( $current_round ) ?> started at <?php _e( $round_start_time ) ?>. <strong><?php _e( $time_left ) ?></strong> minutes left.
+      &nbsp;<a href="?page=ekc-swiss&amp;action=swiss-system-start-timer&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $current_round ) ?>">reset timer</a> &nbsp;
+      </p>
+      <?php
+    }
+    else {
+      ?>
+      <p>timer for round <?php _e( $current_round ) ?> not started yet.
+      &nbsp;<a href="?page=ekc-swiss&amp;action=swiss-system-start-timer&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $current_round ) ?>">start timer</a> &nbsp;
+      </p>
+      <?php
+    }
   }
 
   private function show_swiss_round( $tournament, $results_for_round, $round ) {
@@ -351,6 +386,11 @@ class Ekc_Swiss_System_Admin_Page {
 
   private function compare_results($result1, $result2) {
     return $result1->get_result_id() - $result2->get_result_id();
+  }
+
+  private function start_timer( $tournament_id, $tournament_round ) {
+    $db = new Ekc_Database_Access();
+    $db->store_tournament_round_start( $tournament_id, $tournament_round );
   }
 }
 

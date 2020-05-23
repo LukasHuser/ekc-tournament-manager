@@ -19,6 +19,7 @@ class Ekc_Database_Setup {
 		global $wpdb;
 
 		$tournament_table = $wpdb->prefix . "ekc_tournament";
+		$tournament_round_table = $wpdb->prefix . "ekc_tournament_round";
 		$team_table       = $wpdb->prefix . "ekc_team";
 		$player_table     = $wpdb->prefix . "ekc_player";
 		$result_table     = $wpdb->prefix . "ekc_result";
@@ -42,10 +43,19 @@ class Ekc_Database_Setup {
 			swiss_system_rounds integer(10),
 			swiss_system_additional_rounds integer(10),
 			swiss_system_slide_match_rounds integer(10),
+			swiss_system_round_time integer(10),
 			shareable_link_url_prefix varchar(500),
 			shareable_link_email_text varchar(5000),
 			PRIMARY KEY  (tournament_id),
 			UNIQUE KEY uc_code_name (code_name)
+		) $charset_collate;";
+
+		$tournament_round_table_sql = 
+			"CREATE TABLE $tournament_round_table (
+			tournament_id integer(10) NOT NULL,
+			tournament_round integer(10) NOT NULL,
+			round_start_time timestamp,
+			PRIMARY KEY  (tournament_id, tournament_round)
 		) $charset_collate;";
 
 		$team_table_sql = 
@@ -106,6 +116,7 @@ class Ekc_Database_Setup {
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $tournament_table_sql );
+		dbDelta( $tournament_round_table_sql );
 		dbDelta( $team_table_sql );
 		dbDelta( $player_table_sql );
 		dbDelta( $result_table_sql );

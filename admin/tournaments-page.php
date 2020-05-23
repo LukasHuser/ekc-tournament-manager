@@ -78,6 +78,9 @@ class Ekc_Tournaments_Admin_Page {
       }
 			if ( isset($_POST['swissslidematchrounds'] ) ) {
 				$tournament->set_swiss_system_slide_match_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissslidematchrounds'] ) ) ) );
+      }
+      if ( isset($_POST['swissroundtime'] ) ) {
+				$tournament->set_swiss_system_round_time( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissroundtime'] ) ) ) );
 			}
 			if ($has_data) {
 				$db = new Ekc_Database_Access();
@@ -170,6 +173,10 @@ class Ekc_Tournaments_Admin_Page {
             <label for="swissadditionalrounds">Number of additional rounds for Swiss System (i.e. ranking games after elimination bracket has started)</label>
             <input id="swissadditionalrounds" name="swissadditionalrounds" type="number" placeholder="2" />
           </div>
+          <div class="ekc-control-group">
+            <label for="swissroundtime">Time limit for a Swiss System round (setting a value will enable a timer)</label>
+            <input id="swissroundtime" name="swissroundtime" type="number" placeholder="30" />
+          </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Create tournament</button>
             <input id="tournamentid" name="tournamentid" type="hidden" />
@@ -243,6 +250,10 @@ class Ekc_Tournaments_Admin_Page {
           <div class="ekc-control-group">
             <label for="swissadditionalrounds">Number of additional rounds of Swiss System (i.e. ranking games after elimination bracket has started)</label>
             <input id="swissadditionalrounds" name="swissadditionalrounds" type="number" placeholder="2" value="<?php esc_html_e( $tournament->get_swiss_system_additional_rounds() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swissroundtime">Time limit for a Swiss System round (setting a value will enable a timer)</label>
+            <input id="swissroundtime" name="swissroundtime" type="number" placeholder="30" value="<?php esc_html_e( $tournament->get_swiss_system_round_time() ) ?>" />
           </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save tournament</button>

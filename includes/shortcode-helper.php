@@ -1444,12 +1444,14 @@ class Ekc_Shortcode_Helper {
 				'tournament' => '',
 				'ranking' => 'false',
 				'rounds' => '2',
+				'timer' => 'false',
 			),
 			$atts,
 			'ekc-swiss-system'
 		);
 		$tournament_code_name = $atts['tournament'];
 		$is_show_ranking =  filter_var( $atts['ranking'], FILTER_VALIDATE_BOOLEAN );
+		$is_show_timer =  filter_var( $atts['timer'], FILTER_VALIDATE_BOOLEAN );
 		$max_rounds = filter_var( $atts['rounds'], FILTER_VALIDATE_INT );
 		if ( $atts['rounds'] === 'all' ) {
 			$max_rounds = 1000;
@@ -1466,7 +1468,10 @@ class Ekc_Shortcode_Helper {
 		}
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 
-		if ( $is_show_ranking ) {
+		if ( $is_show_timer ) {
+			return $this->show_timer( $tournament );
+		}
+		elseif ( $is_show_ranking ) {
 			return $this->create_swiss_ranking_table( $tournament );
 		}
 		return $this->create_swiss_rounds( $tournament, $max_rounds );
@@ -1619,6 +1624,28 @@ class Ekc_Shortcode_Helper {
 		}
 		return $filtered_results;
 	  }
+
+	  private function show_timer( $tournament ) {
+		$db = new Ekc_Database_Access();
+		$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
+		$round_start_time = $db->get_tournament_round_start( $tournament->get_tournament_id(), $current_round );
+
+		if ( $round_start_time ) {
+		  $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
+		  $round_end_date->add(new DateInterval('PT' . $tournament->get_swiss_system_round_time() . 'M')); // add minutes
+		  $now = new DateTime();
+		  $time_left = '0';
+		  if ( $round_end_date > $now ) {
+			$time_left = $now->diff( $round_end_date )->format('%i');
+		  }
+		  return 'Round '. $current_round . ': ' . $time_left . ' minutes left.';
+		}
+
+		if ( $current_round > 0 && $tournament->get_swiss_system_round_time() ) {
+			return 'Round ' . $current_round . ' not started yet.';
+		}
+		return '';
+	}
 
 	public function shortcode_shareable_link( $atts ) {
 		$atts = shortcode_atts(

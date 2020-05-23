@@ -55,8 +55,9 @@ class Ekc_Database_Access {
 				'swiss_system_rounds'		=> $tournament->get_swiss_system_rounds(),
 				'swiss_system_additional_rounds'	=> $tournament->get_swiss_system_additional_rounds(),
 				'swiss_system_slide_match_rounds'	=> $tournament->get_swiss_system_slide_match_rounds(),
+				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
 			), 
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
@@ -80,9 +81,10 @@ class Ekc_Database_Access {
 				'swiss_system_rounds'		=> $tournament->get_swiss_system_rounds(),
 				'swiss_system_additional_rounds'	=> $tournament->get_swiss_system_additional_rounds(),
 				'swiss_system_slide_match_rounds'	=> $tournament->get_swiss_system_slide_match_rounds(),
+				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
@@ -109,7 +111,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds, shareable_link_url_prefix, shareable_link_email_text
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds, swiss_system_round_time, shareable_link_url_prefix, shareable_link_email_text
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  tournament_id = %d
 			",
@@ -127,7 +129,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds, shareable_link_url_prefix, shareable_link_email_text
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, swiss_system_rounds, swiss_system_additional_rounds, swiss_system_slide_match_rounds, swiss_system_round_time, shareable_link_url_prefix, shareable_link_email_text
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  code_name = %s
 			",
@@ -157,6 +159,7 @@ class Ekc_Database_Access {
 		$tournament->set_swiss_system_rounds( $row->swiss_system_rounds );
 		$tournament->set_swiss_system_additional_rounds( $row->swiss_system_additional_rounds );
 		$tournament->set_swiss_system_slide_match_rounds( $row->swiss_system_slide_match_rounds );
+		$tournament->set_swiss_system_round_time( $row->swiss_system_round_time );
 		$tournament->set_shareable_link_url_prefix( $row->shareable_link_url_prefix );
 		$tournament->set_shareable_link_email_text( $row->shareable_link_email_text );
 		return $tournament;
@@ -174,6 +177,35 @@ class Ekc_Database_Access {
 			$tournament_id
 		));		
 		return boolval( $result );
+	}
+
+	public function get_tournament_round_start( $tournament_id, $round ) {
+		global $wpdb;
+		$result = $wpdb->get_var( $wpdb->prepare(
+			"
+			SELECT round_start_time
+			FROM   {$wpdb->prefix}ekc_tournament_round
+			WHERE  tournament_id = %d
+			AND    tournament_round = %d
+                        ",
+			$tournament_id,
+			$round
+		));		
+		return $result;
+	}
+
+	public function store_tournament_round_start( $tournament_id, $round ) {
+		global $wpdb;
+		$wpdb->delete( $wpdb->prefix . 'ekc_tournament_round', array( 'tournament_id' => $tournament_id, 'tournament_round' => $round ) );
+
+		$wpdb->insert( 
+			$wpdb->prefix . 'ekc_tournament_round', 
+			array( 'tournament_id'		=> $tournament_id,
+				   'tournament_round'	=> $round ,
+				   'round_start_time'	=> date('Y-m-d H:i:s')
+			),
+			array( '%d', '%d', '%s' )
+		);
 	}
 
 	/***************************************************************************************************************************

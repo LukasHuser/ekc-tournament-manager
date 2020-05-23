@@ -4,7 +4,9 @@ CHANGELOG ekc-tournament
 ## TODO
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
-[2] shareable links: timer for current round on personalized pages
+
+## Version 1.2.7
+[x] shareable links: timer for current round on personalized pages
 
 ## Version 1.2.6
 [x] avoid duplicate matches. Use blossom algorithm for minimum weight matching in undirected graphs
