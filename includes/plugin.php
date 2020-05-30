@@ -155,7 +155,7 @@ class Ekc_Tournament_Registration {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'lib/JsonMapper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'lib/JsonMapper/Exception.php';
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/blossom.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'lib/blossom.php';
 	}
 
 	/**
