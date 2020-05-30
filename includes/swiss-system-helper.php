@@ -292,60 +292,6 @@ class Ekc_Swiss_System_Helper {
 			return 32;
 		}
 	}
-
-	//////////////////////////////////////////////////////////////////////////////////////
-	// TODO Legacy functions
-	// Remove after testing
-
-	private function match_top_legacy( $group, $all_results ) {
-		$this->assert_group( $group );
-		$matchups = array();
-		
-		while ( count( $group ) > 0 ) {
-			$team1 = array_shift($group);
-			$found = false;
-			for ($i = 0; $i < count($group); $i++) {
-				if ( ! $found and ! $this->played_already( $team1, $group[$i], $all_results)) {
-					$team2 = array_splice( $group, $i, 1)[0];
-					$matchups[] = array( $team1, $team2 );
-					$found = true;
-				}
-			}
-			if ( ! $found) {
-				// TODO manual correction? backtrack?
-				$team2 = array_shift( $group );
-				$matchups[] = array( $team1, $team2 );
-			}
-		}
-		return $matchups;
-	}
-
-	private function match_slide_legacy( $group, $all_results ) {
-		$this->assert_group( $group );
-		$matchups = array();
-		while ( count( $group ) > 0 ) {
-			$team1 = array_shift( $group );
-			$offsets = array_map(function($i) {if($i % 2 === 0) return $i; else return -$i;}, range( 0, count( $group ) - 1 ) );
-			$index = intdiv( count( $group ), 2);
-			$found = false;
-			foreach ( $offsets as $offset ) {
-				$index = $index + $offset;
-				if ( ! $this->played_already( $team1, $group[$index], $all_results)) {
-					$team2 = array_splice( $group, $index, 1)[0];
-					$matchups[] = array($team1, $team2);
-					$found = true;
-					break;
-				}
-			}
-			if ( ! $found) {
-				// TODO manual correction? backtrack?
-				// Maybe simply switch to match_top as a fallback?
-				$team2 = array_shift( $group );
-				$matchups[] = array( $team1, $team2 );
-			}
-		}
-		return $matchups;
-	}
 }
 
 
