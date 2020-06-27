@@ -5,12 +5,13 @@
  */
 class Ekc_Shareable_Links_Helper {
 
-	public function store_shareable_links_content( $tournament_id, $url_prefix, $email_content ) {
+	public function store_shareable_links_content( $tournament_id, $url_prefix, $email_content, $sender_email ) {
 		$tournament = new Ekc_Tournament();
 		$tournament->set_tournament_id( $tournament_id );
 		$tournament->set_shareable_link_url_prefix( $url_prefix );
 		$tournament->set_shareable_link_email_text( $email_content );
-		
+		$tournament->set_shareable_link_sender_email( $sender_email );
+
 		$db = new Ekc_Database_Access();
 		$db->update_shareable_link_data( $tournament );
 	}
@@ -50,11 +51,12 @@ class Ekc_Shareable_Links_Helper {
 	private function send_shareable_link( $tournament, $team ) {
 		$url = $this->create_shareable_link_url( $tournament->get_shareable_link_url_prefix(), $team->get_shareable_link_id() );
 		$email_content = $this->replace_placeholder( $tournament->get_shareable_link_email_text(), $team->get_name(), $url );
+		$sender_email = $tournament->get_shareable_link_sender_email();
 
 		// convert new lines to html <br>
 		$email_content = nl2br( $email_content );
 		if ( $team->get_email() && $team->get_shareable_link_id() ) {
-			$this->send_mail( $team->get_email(), $tournament->get_name(), $email_content );
+			$this->send_mail( $team->get_email(), $tournament->get_name(), $email_content, $sender_email );
 		}
 	} 
 
@@ -72,10 +74,12 @@ class Ekc_Shareable_Links_Helper {
 	 *    for wp_mail function. This is the recommended option.
 	 *    https://wordpress.org/plugins/wp-mail-smtp/
 	 */
-	private function send_mail( $recipient_email_address, $subject, $email_content ) {
+	private function send_mail( $recipient_email_address, $subject, $email_content, $sender_email ) {
 		$headers = array('Content-Type: text/html; charset=UTF-8');
+		if ( $sender_email ) {
+			$headers[] = "From: " . $sender_email;
+		}
 		$html_email_content = '<html>' . $email_content . '</html>';
-		
 		wp_mail( $recipient_email_address, $subject, $html_email_content, $headers );
 	}
 

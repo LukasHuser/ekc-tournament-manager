@@ -52,9 +52,12 @@ class Ekc_Shareable_links_Admin_Page {
     if ( isset($_POST['emailcontent'] ) ) {
 			$email_content = sanitize_textarea_field( wp_unslash( $_POST['emailcontent'] ) );
     }
+    if ( isset($_POST['senderemail'] ) ) {
+			$sender_email =  wp_unslash( $_POST['senderemail'] );
+    }
     if ( $tournament_id ) {
       $helper = new Ekc_Shareable_Links_Helper();
-      $helper->store_shareable_links_content( $tournament_id, $url_prefix, $email_content );
+      $helper->store_shareable_links_content( $tournament_id, $url_prefix, $email_content, $sender_email );
     }
   }
 
@@ -82,6 +85,7 @@ class Ekc_Shareable_links_Admin_Page {
   private function show_shareable_links_content( $tournament ) {
     $url_prefix = $tournament->get_shareable_link_url_prefix();
     $email_content = $tournament->get_shareable_link_email_text();
+    $sender_email = $tournament->get_shareable_link_sender_email();
 
     ?>
     <p>For each team, a unique shareable link is generated and sent by e-mail to the registered e-mail address.<br/>
@@ -93,6 +97,10 @@ class Ekc_Shareable_links_Admin_Page {
           <div class="ekc-control-group">
             <label for="urlprefix">URL prefix</label>
             <input id="urlprefix" name="urlprefix" type="text" placeholder="http://mydomain.com/mytournament/team" size="40" maxlength="500" value="<?php esc_html_e( $url_prefix ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="senderemail">Sender e-mail (format: &quot;name@example.com&quot; or &quot;Full Name &lt;name@example.com&gt;&quot;)</label>
+            <input id="senderemail" name="senderemail" type="text" placeholder="Full Name &lt;name@example.com&gt;" size="40" maxlength="500" value="<?php esc_html_e( $sender_email ) ?>" />
           </div>
           <div class="ekc-control-group">
             <p>E-mail content supports the following placholders:<br/>
