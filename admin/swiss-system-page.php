@@ -25,6 +25,10 @@ class Ekc_Swiss_System_Admin_Page {
       $this->remove_team_from_tournament( $team_id );
       $this->show_swiss_system( $tournament_id, null, true );
     }
+    elseif ( $action === 'random-seed' ) {
+      $this->random_seed( $tournament_id );
+      $this->show_swiss_system( $tournament_id, null, true );
+    }
 		else {
 			// handle POST
       $db = new Ekc_Database_Access();
@@ -286,7 +290,19 @@ class Ekc_Swiss_System_Admin_Page {
 <?php
   }
 
+  private function show_random_seed_link( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $current_round = $db->get_current_swiss_system_round( $tournament_id );
+    if ( $current_round > 0) {
+      return;
+    }
+    ?>
+    <p><a href="?page=ekc-swiss&amp;action=random-seed&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>">Generate random seeding scores</a></p>
+    <?php
+  }
+
   private function show_swiss_system_ranking( $tournament_id ) {
+    $this->show_random_seed_link( $tournament_id );
     $db = new Ekc_Database_Access();
     $tournament = $db->get_tournament_by_id( $tournament_id );
     $is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
@@ -391,6 +407,19 @@ class Ekc_Swiss_System_Admin_Page {
   private function start_timer( $tournament_id, $tournament_round ) {
     $db = new Ekc_Database_Access();
     $db->store_tournament_round_start( $tournament_id, $tournament_round );
+  }
+
+  private function random_seed( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $teams = $db->get_active_teams( $tournament_id );
+    $random_seed = range(1, count( $teams ) );
+    shuffle( $random_seed );
+    $i = 0;
+    foreach( $teams as $team ) {
+      $team->set_seeding_score( $random_seed[$i] );
+      $db->update_team( $team );
+      $i++;
+    }
   }
 }
 
