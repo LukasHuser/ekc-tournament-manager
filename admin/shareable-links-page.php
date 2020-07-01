@@ -50,7 +50,7 @@ class Ekc_Shareable_links_Admin_Page {
 			$url_prefix = sanitize_text_field( wp_unslash( $_POST['urlprefix'] ) );
     }
     if ( isset($_POST['emailcontent'] ) ) {
-			$email_content = sanitize_textarea_field( wp_unslash( $_POST['emailcontent'] ) );
+			$email_content = wp_unslash( $_POST['emailcontent'] );
     }
     if ( isset($_POST['senderemail'] ) ) {
 			$sender_email =  wp_unslash( $_POST['senderemail'] );
