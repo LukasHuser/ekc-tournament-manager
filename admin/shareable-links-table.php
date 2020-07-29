@@ -14,6 +14,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 			'name'				=> 'Name',
 			'is_active'			=> 'Active',
 			'country'			=> 'Country',
+			'email'				=> 'E-mail',
 			'shareable_link'	=> 'Shareable link'
 		);
 		return $columns;
@@ -95,6 +96,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 		switch( $column_name ) { 
 			case 'is_active':
 			case 'country':
+			case 'email':
 			case 'shareable_link':
 			return $item[ $column_name ];
 			default:

@@ -14,7 +14,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 			'name'				=> 'Name',
 			'is_active'			=> 'Active',
 			'country'			=> 'Country',
-			'email'				=> 'E-Mail',
+			'email'				=> 'E-mail',
 			'phone'				=> 'Phone',
 			'registration_date'	=> 'Registered',
 			'registration_order' => 'Order',

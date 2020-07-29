@@ -766,7 +766,7 @@ class Ekc_Database_Access {
 		$sql_filter = $this->create_team_table_filter( $filter, 't' );
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.shareable_link_id
+			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email as email, t.shareable_link_id
 			FROM   {$wpdb->prefix}ekc_team t
 			WHERE t.tournament_id = %d
 			      {$sql_filter} 

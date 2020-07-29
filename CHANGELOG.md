@@ -5,6 +5,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 
+# Version 1.2.9
+[x] shareable links page: show e-mail address for each team
+
 # Version 1.2.8
 [x] swiss system: support to generate random seeding scores
 [X] shareable links: sender e-mail address
