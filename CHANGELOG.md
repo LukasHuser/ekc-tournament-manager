@@ -10,6 +10,7 @@ CHANGELOG ekc-tournament
 [x] shareable links page: show e-mail address for each team
 [x] shortcodes (ranking, elimination bracket, registered teams etc.) allow to hide country columns and flags
 [x] refactoring of elimination bracket html code (remove duplicated copy/paste code)
+[x] shortcode ekc-link: show timer (without explicitly providing tournament as parameter)
 
 # Version 1.2.8
 [x] swiss system: support to generate random seeding scores

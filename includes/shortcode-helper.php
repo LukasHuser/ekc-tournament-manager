@@ -687,9 +687,14 @@ class Ekc_Shortcode_Helper {
 			if ( $team ) {
 				return $team->get_name();
 			}
-			else {
-				return '';
+			return '';
+		}
+		if ( $atts['type'] === 'timer') {
+			if ( $team ) {
+				$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
+				return $this->show_timer( $tournament );
 			}
+			return '';
 		}
 		// else: type == team-results
 

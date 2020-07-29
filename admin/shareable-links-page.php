@@ -103,7 +103,7 @@ class Ekc_Shareable_links_Admin_Page {
             <input id="senderemail" name="senderemail" type="text" placeholder="Full Name &lt;name@example.com&gt;" size="40" maxlength="500" value="<?php esc_html_e( $sender_email ) ?>" />
           </div>
           <div class="ekc-control-group">
-            <p>E-mail content supports the following placholders:<br/>
+            <p>E-mail content supports the following placeholders:<br/>
               ${team} will be replaced by the team name.<br/>
               ${url} will be replaced by the full shareable link url.<br/>
               You can use html in this e-mail text.</p>
