@@ -220,7 +220,7 @@ class Ekc_Teams_Admin_Page {
             <input id="initialscore" name="initialscore" type="number" step="any" placeholder="2.5" />
           </div>
           <div class="ekc-control-group">
-            <label for="virtualrank">Swiss System: Virtual Rank (for a top team which is excluded in addational ranking rounds)</label>
+            <label for="virtualrank">Swiss System: Virtual Rank (for a top team which is excluded in additional ranking rounds)</label>
             <input id="virtualrank" name="virtualrank" type="number" step="any" placeholder="1" />
           </div>
 <?php }
@@ -346,7 +346,7 @@ class Ekc_Teams_Admin_Page {
             <input id="initialscore" name="initialscore" type="number" step="any" placeholder="2.5" value="<?php esc_html_e( $team->get_initial_score() ) ?>" />
           </div>
           <div class="ekc-control-group">
-            <label for="virtualrank">Swiss System: Virtual Rank (for a top team which is excluded in addational ranking rounds)</label>
+            <label for="virtualrank">Swiss System: Virtual Rank (for a top team which is excluded in additional ranking rounds)</label>
             <input id="virtualrank" name="virtualrank" type="number" step="any" placeholder="1" value="<?php esc_html_e( $team->get_virtual_rank() ) ?>" />
           </div>
 <?php }
