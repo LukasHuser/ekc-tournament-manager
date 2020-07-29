@@ -3,3 +3,7 @@
 .ekc-excluded-team {
     color: #888;
 }
+
+.ekc-hidden {
+    visibility: hidden;
+}

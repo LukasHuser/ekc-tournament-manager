@@ -56,6 +56,7 @@ class Ekc_Shortcode_Helper {
 				'limit' => 'all',
 				'sort' => 'asc',
 				'waitlist' => 'false',
+				'country' => 'true',
 			),
 			$atts,
 			'ekc-teams'
@@ -64,6 +65,7 @@ class Ekc_Shortcode_Helper {
 		$limit = $atts['limit'] === 'all' ? 0 : intval( $atts['limit'] );
 		$sort = $atts['sort'];
 		$is_wait_list =  filter_var( $atts['waitlist'], FILTER_VALIDATE_BOOLEAN );
+		$show_country = filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( trim( $tournament_code_name ) === '' ) {
 			return '';
@@ -90,7 +92,7 @@ class Ekc_Shortcode_Helper {
 			if ( $is_sort_desc ) {
 				$c += count( $teams );
 			}
-			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc );
+			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country );
 		}
 		else {
 			$teams = $db->get_active_teams($tournament->get_tournament_id(), $limit, $sort);
@@ -99,15 +101,17 @@ class Ekc_Shortcode_Helper {
 			if ( $is_sort_desc ) {
 				$c = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
 			}
-			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc );
+			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country );
 		}
 	}
 
-	private function create_teams_table( $teams, $tournament, $counter, $is_sort_desc ) {
+	private function create_teams_table( $teams, $tournament, $counter, $is_sort_desc, $show_country ) {
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$header = array();
 		$header[] = array('<span class="dashicons dashicons-arrow-down-alt"></span>', 'ekc-column-no');
-		$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
+		if ( $show_country ) {
+			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
+		}
 		if ( ! $is_single_player ) {
 			$header[] = array('Team', 'ekc-column-team');
 		}
@@ -120,7 +124,9 @@ class Ekc_Shortcode_Helper {
 		foreach ( $teams as $team ) {
 			$row = array();
 			$row[] = $counter;
-			$row[] = $this->html_flag( esc_html($team->get_country()) );
+			if ( $show_country ) {
+				$row[] = $this->html_flag( esc_html($team->get_country()) );
+			}
 			if ( ! $is_single_player || ! $tournament->is_player_names_required() ) {
 				$row[] = esc_html($team->get_name());
 			}			
@@ -208,18 +214,20 @@ class Ekc_Shortcode_Helper {
 		$atts = shortcode_atts(
 			array(
 				'tournament' => '',
+				'country'    => 'true',
 			),
 			$atts,
 			'ekc-elimination-bracket'
 		);
 		$tournament_code_name = $atts['tournament'];
+		$show_country = filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( trim( $tournament_code_name ) === '' ) {
 			return '';
 		}
 		
 		$db = new Ekc_Database_Access();
-		$tournament = $db->get_tournament_by_code_name($tournament_code_name);
+		$tournament = $db->get_tournament_by_code_name( $tournament_code_name );
 		if ( ! $tournament ) {
 			return '';
 		}
@@ -228,18 +236,18 @@ class Ekc_Shortcode_Helper {
 
 		$html = '';
 		if ( Ekc_Elimination_Bracket_Helper::has_1_16_finals( $elimination_bracket ) ) {
-			$html = $html . $this->bracket_round_of_32_div( $results );
+			$html = $html . $this->bracket_round_of_32_div( $results, $show_country );
 		}
 		if ( Ekc_Elimination_Bracket_Helper::has_1_8_finals( $elimination_bracket ) ) {
-			$html = $html . $this->bracket_round_of_16_div( $results );
+			$html = $html . $this->bracket_round_of_16_div( $results, $show_country );
 		}
 		if ( Ekc_Elimination_Bracket_Helper::has_1_4_finals( $elimination_bracket ) ) {
-			$html = $html . $this->bracket_quarterfinals_div( $results );
+			$html = $html . $this->bracket_quarterfinals_div( $results, $show_country );
 		}
 		if ( Ekc_Elimination_Bracket_Helper::has_1_2_finals( $elimination_bracket ) ) {
-			$html = $html . $this->bracket_semifinals_div( $results );
+			$html = $html . $this->bracket_semifinals_div( $results, $show_country );
 		}
-		$html = $html . $this->bracket_finals_div( $results );
+		$html = $html . $this->bracket_finals_div( $results, $show_country );
 		return $this->bracket_main_div( $this->elimination_bracket_to_css_class( $elimination_bracket ), $html );
 	}
 
@@ -247,308 +255,34 @@ class Ekc_Shortcode_Helper {
 		return '<div class="tournament-bracket ' . $participants_css_class . '">' . $inner . '</div>';
 	}
 
-	private function bracket_finals_div( $results ) {
+	private function bracket_finals_div( $results, $show_country ) {
 		$db = new Ekc_Database_Access();
 		$result_final = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_1);
 		$result_3rd = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_2);
 
-		$team1_name = '';
-		$team1_country = '';
-		$team1_score = '';
-		if ( $result_final ) {
-			$team1 = $db->get_team_by_id ( $result_final->get_team1_id() );
-			if ( $team1 ) {
-				$team1_name = $this->get_name_or_placeholder( $result_final->get_team1_placeholder() , $team1 );
-				$team1_country = $team1->get_country();
-				$team1_score = $result_final->get_team1_score();
-			}
-		}
-
-		$team2_name = '';
-		$team2_country = '';
-		$team2_score = '';
-		if ( $result_final ) {
-			$team2 = $db->get_team_by_id ( $result_final->get_team2_id() );
-			if ( $team2 ) {
-				$team2_name = $this->get_name_or_placeholder( $result_final->get_team2_placeholder() , $team2 );
-				$team2_country = $team2->get_country();
-				$team2_score = $result_final->get_team2_score();
-			}	
-		}
-
-		$team3_name = '';
-		$team3_country = '';
-		$team3_score = '';
-		if ( $result_3rd ) {
-			$team3 = $db->get_team_by_id ( $result_3rd->get_team1_id() );
-			if ( $team3 ) {
-				$team3_name = $this->get_name_or_placeholder( $result_3rd->get_team1_placeholder() , $team3 );
-				$team3_country = $team3->get_country();
-				$team3_score = $result_3rd->get_team1_score();
-			}
-		}
-
-		$team4_name = '';
-		$team4_country = '';
-		$team4_score = '';
-		if ( $result_3rd ) {
-			$team4 = $db->get_team_by_id ( $result_3rd->get_team2_id() );
-			if ( $team4 ) {
-				$team4_name = $this->get_name_or_placeholder( $result_3rd->get_team2_placeholder() , $team4 );
-				$team4_country = $team4->get_country();
-				$team4_score = $result_3rd->get_team2_score();
-			}
-		}
-
-		return
-		'<div class="round finals">
-		<span class="round-label">Finals</span>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-				<div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team1_country . '"></span><span class="label">' . $team1_name . '</span><span class="score"> ' . $team1_score . '</span></div>
-				<div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team2_country . '"></span><span class="label">' . $team2_name . '</span><span class="score"> ' . $team2_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-				<div class="participants">
-					<div class="participant ' . ($team3_score < $team4_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team3_country . '"></span><span class="label">' . $team3_name . '</span><span class="score"> ' . $team3_score . '</span></div>
-					<div class="participant ' . ($team4_score < $team3_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team4_country . '"></span><span class="label">' . $team4_name . '</span><span class="score"> ' . $team4_score . '</span></div>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		</div>';
+		$html = $this->bracket_matchups( $db, $result_finals, $result_3rd, $show_country, false );
+		return $this->bracket_round( 'finals', 'Finals', $html );
 	}
 
-	private function bracket_semifinals_div( $results ) {
+	private function bracket_semifinals_div( $results, $show_country ) {
 		$db = new Ekc_Database_Access();
 		$result_semi_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_1);
 		$result_semi_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_2);
 		
-		$team1_name = '';
-		$team1_country = '';
-		$team1_score = '';
-		if ( $result_semi_1 ) {
-			$team1 = $db->get_team_by_id ( $result_semi_1->get_team1_id() );
-			if ( $team1 ) {
-				$team1_name = $this->get_name_or_placeholder( $result_semi_1->get_team1_placeholder() , $team1 );
-				$team1_country = $team1->get_country();
-				$team1_score = $result_semi_1->get_team1_score();
-			}
-		}
-
-		$team2_name = '';
-		$team2_country = '';
-		$team2_score = '';
-		if ( $result_semi_1 ) {
-			$team2 = $db->get_team_by_id ( $result_semi_1->get_team2_id() );
-			if ( $team2 ) {
-				$team2_name = $this->get_name_or_placeholder( $result_semi_1->get_team2_placeholder() , $team2 );
-				$team2_country = $team2->get_country();
-				$team2_score = $result_semi_1->get_team2_score();
-			}
-		}
-
-		$team3_name = '';
-		$team3_country = '';
-		$team3_score = '';
-		if ( $result_semi_2 ) {
-			$team3 = $db->get_team_by_id ( $result_semi_2->get_team1_id() );
-			if ( $team3 ) {
-				$team3_name = $this->get_name_or_placeholder( $result_semi_2->get_team1_placeholder() , $team3 );
-				$team3_country = $team3->get_country();
-				$team3_score = $result_semi_2->get_team1_score();
-			}
-		}
-		
-		$team4_name = '';
-		$team4_country = '';
-		$team4_score = '';
-		if ( $result_semi_2 ) {
-			$team4 = $db->get_team_by_id ( $result_semi_2->get_team2_id() );
-			if ( $team4 ) {
-				$team4_name = $this->get_name_or_placeholder( $result_semi_2->get_team2_placeholder() , $team4 );
-				$team4_country = $team4->get_country();
-				$team4_score = $result_semi_2->get_team2_score();
-			}
-		}
-
-		return
-		'<div class="round semifinals">
-		  <span class="round-label">Semifinals</span>
-		  <div class="single-bracket">
-		    <div class="matchups">
-			    <div class="matchup">
-			      <div class="participants">
-			       <div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team1_country . '"></span><span class="label">' . $team1_name . '</span><span class="score"> ' . $team1_score . '</span></div>
-			       <div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team2_country . '"></span><span class="label">' . $team2_name . '</span><span class="score"> ' . $team2_score . '</span></div>
-			      </div>
-			    </div>
-			    <div class="matchup">
-			     <div class="participants">
-					  <div class="participant ' . ($team3_score < $team4_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team3_country . '"></span><span class="label">' . $team3_name . '</span><span class="score"> ' . $team3_score . '</span></div>
-			      <div class="participant ' . ($team4_score < $team3_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team4_country . '"></span><span class="label">' . $team4_name . '</span><span class="score"> ' . $team4_score . '</span></div>
-			     </div>
-			    </div>
-			  </div>
-			  <div class="connector">
-			    <div class="merger"></div>
-			    <div class="line"></div>
-			  </div>
-		  </div>
-		</div>';
+		$html = $this->bracket_matchups( $db, $result_semi_1, $result_semi_2, $show_country, true );
+		return $this->bracket_round( 'semifinals', 'Semifinals', $html );
 	}
 
-	private function bracket_quarterfinals_div( $results ) {
+	private function bracket_quarterfinals_div( $results, $show_country ) {
 		$db = new Ekc_Database_Access();
-		
 		$result_quarter_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_1);
 		$result_quarter_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_2);
 		$result_quarter_3 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_3);
 		$result_quarter_4 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_4);
 		
-		$team1_name = '';
-		$team1_country = '';
-		$team1_score = '';
-		if ( $result_quarter_1 ) {
-			$team1 = $db->get_team_by_id ( $result_quarter_1->get_team1_id() );
-			if ( $team1 ) {
-				$team1_name = $this->get_name_or_placeholder( $result_quarter_1->get_team1_placeholder() , $team1 );
-				$team1_country = $team1->get_country();
-				$team1_score = $result_quarter_1->get_team1_score();
-			}
-		}
-
-		$team2_name = '';
-		$team2_country = '';
-		$team2_score = '';
-		if ( $result_quarter_1 ) {
-			$team2 = $db->get_team_by_id ( $result_quarter_1->get_team2_id() );
-			if ( $team2 ) {
-				$team2_name = $this->get_name_or_placeholder( $result_quarter_1->get_team2_placeholder() , $team2 );
-				$team2_country = $team2->get_country();
-				$team2_score = $result_quarter_1->get_team2_score();
-			}
-		}
-
-		$team3_name = '';
-		$team3_country = '';
-		$team3_score = '';
-		if ( $result_quarter_2 ) {
-			$team3 = $db->get_team_by_id ( $result_quarter_2->get_team1_id() );
-			if ( $team3 ) {
-				$team3_name = $this->get_name_or_placeholder( $result_quarter_2->get_team1_placeholder() , $team3 );
-				$team3_country = $team3->get_country();
-				$team3_score = $result_quarter_2->get_team1_score();
-			}
-		}
-		
-		$team4_name = '';
-		$team4_country = '';
-		$team4_score = '';
-		if ( $result_quarter_2 ) {
-			$team4 = $db->get_team_by_id ( $result_quarter_2->get_team2_id() );
-			if ( $team4 ) {
-				$team4_name = $this->get_name_or_placeholder( $result_quarter_2->get_team2_placeholder() , $team4 );
-				$team4_country = $team4->get_country();
-				$team4_score = $result_quarter_2->get_team2_score();
-			}
-		}
-		
-		$team5_name = '';
-		$team5_country = '';
-		$team5_score = '';
-		if ( $result_quarter_3 ) {
-			$team5 = $db->get_team_by_id ( $result_quarter_3->get_team1_id() );
-			if ( $team5 ) {
-				$team5_name = $this->get_name_or_placeholder( $result_quarter_3->get_team1_placeholder() , $team5 );
-				$team5_country = $team5->get_country();
-				$team5_score = $result_quarter_3->get_team1_score();
-			}
-		}
-
-		$team6_name = '';
-		$team6_country = '';
-		$team6_score = '';
-		if ( $result_quarter_3 ) {
-			$team6 = $db->get_team_by_id ( $result_quarter_3->get_team2_id() );
-			if ( $team6 ) {
-				$team6_name = $this->get_name_or_placeholder( $result_quarter_3->get_team2_placeholder() , $team6 );
-				$team6_country = $team6->get_country();
-				$team6_score = $result_quarter_3->get_team2_score();
-			}
-		}
-
-		$team7_name = '';
-		$team7_country = '';
-		$team7_score = '';
-		if ( $result_quarter_4 ) {
-			$team7 = $db->get_team_by_id ( $result_quarter_4->get_team1_id() );
-			if ( $team7 ) {
-				$team7_name = $this->get_name_or_placeholder( $result_quarter_4->get_team1_placeholder() , $team7 );
-				$team7_country = $team7->get_country();
-				$team7_score = $result_quarter_4->get_team1_score();
-			}
-		}
-		
-		$team8_name = '';
-		$team8_country = '';
-		$team8_score = '';
-		if ( $result_quarter_4 ) {
-			$team8 = $db->get_team_by_id ( $result_quarter_4->get_team2_id() );
-			if ( $team8 ) {
-				$team8_name = $this->get_name_or_placeholder( $result_quarter_4->get_team2_placeholder() , $team8 );
-				$team8_country = $team8->get_country();
-				$team8_score = $result_quarter_4->get_team2_score();
-			}
-		}
-
-		return
-		'<div class="round quarterfinals">
-		<span class="round-label">1/4 Finals</span>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team1_country . '"></span><span class="label">' . $team1_name . '</span><span class="score"> ' . $team1_score . '</span></div>
-			  <div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team2_country . '"></span><span class="label">' . $team2_name . '</span><span class="score"> ' . $team2_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team3_score < $team4_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team3_country . '"></span><span class="label">' . $team3_name . '</span><span class="score"> ' . $team3_score . '</span></div>
-			  <div class="participant ' . ($team4_score < $team3_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team4_country . '"></span><span class="label">' . $team4_name . '</span><span class="score"> ' . $team4_score . '</span></div>
-			  </div>
-			</div>
-		  </div>
-		  <div class="connector">
-			<div class="merger"></div>
-			<div class="line"></div>
-		  </div>
-		</div>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team5_score < $team6_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team5_country . '"></span><span class="label">' . $team5_name . '</span><span class="score"> ' . $team5_score . '</span></div>
-			  <div class="participant ' . ($team6_score < $team5_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team6_country . '"></span><span class="label">' . $team6_name . '</span><span class="score"> ' . $team6_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team7_score < $team8_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team7_country . '"></span><span class="label">' . $team7_name . '</span><span class="score"> ' . $team7_score . '</span></div>
-			  <div class="participant ' . ($team8_score < $team7_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team8_country . '"></span><span class="label">' . $team8_name . '</span><span class="score"> ' . $team8_score . '</span></div>
-			  </div>
-			</div>
-		  </div>
-		  <div class="connector">
-			<div class="merger"></div>
-			<div class="line"></div>
-		  </div>
-		</div>
-	  </div>';
+		$html = $this->bracket_matchups( $db, $result_quarter_1, $result_quarter_2, $show_country, true )
+		      . $this->bracket_matchups( $db, $result_quarter_3, $result_quarter_4, $show_country, true );
+		return $this->bracket_round( 'quarterfinals', '1/4 Finals', $html );
 	}
 
 	private function bracket_round_of_16_div( $results ) {
@@ -563,282 +297,11 @@ class Ekc_Shortcode_Helper {
 		$result_1_8_7 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_7);
 		$result_1_8_8 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_8);
 		
-		$team1_name = '';
-		$team1_country = '';
-		$team1_score = '';
-		if ( $result_1_8_1 ) {
-			$team1 = $db->get_team_by_id ( $result_1_8_1->get_team1_id() );
-			if ( $team1 ) {
-				$team1_name = $this->get_name_or_placeholder( $result_1_8_1->get_team1_placeholder() , $team1 );
-				$team1_country = $team1->get_country();
-				$team1_score = $result_1_8_1->get_team1_score();
-			}
-		}
-
-		$team2_name = '';
-		$team2_country = '';
-		$team2_score = '';
-		if ( $result_1_8_1 ) {
-			$team2 = $db->get_team_by_id ( $result_1_8_1->get_team2_id() );
-			if ( $team2 ) {
-				$team2_name = $this->get_name_or_placeholder( $result_1_8_1->get_team2_placeholder() , $team2 );
-				$team2_country = $team2->get_country();
-				$team2_score = $result_1_8_1->get_team2_score();
-			}
-		}
-
-		$team3_name = '';
-		$team3_country = '';
-		$team3_score = '';
-		if ( $result_1_8_2 ) {
-			$team3 = $db->get_team_by_id ( $result_1_8_2->get_team1_id() );
-			if ( $team3 ) {
-				$team3_name = $this->get_name_or_placeholder( $result_1_8_2->get_team1_placeholder() , $team3 );
-				$team3_country = $team3->get_country();
-				$team3_score = $result_1_8_2->get_team1_score();
-			}
-		}
-		
-		$team4_name = '';
-		$team4_country = '';
-		$team4_score = '';
-		if ( $result_1_8_2 ) {
-			$team4 = $db->get_team_by_id ( $result_1_8_2->get_team2_id() );
-			if ( $team4 ) {
-				$team4_name = $this->get_name_or_placeholder( $result_1_8_2->get_team2_placeholder() , $team4 );
-				$team4_country = $team4->get_country();
-				$team4_score = $result_1_8_2->get_team2_score();
-			}
-		}
-		
-		$team5_name = '';
-		$team5_country = '';
-		$team5_score = '';
-		if ( $result_1_8_3 ) {
-			$team5 = $db->get_team_by_id ( $result_1_8_3->get_team1_id() );
-			if ( $team5 ) {
-				$team5_name = $this->get_name_or_placeholder( $result_1_8_3->get_team1_placeholder() , $team5 );
-				$team5_country = $team5->get_country();
-				$team5_score = $result_1_8_3->get_team1_score();
-			}
-		}
-
-		$team6_name = '';
-		$team6_country = '';
-		$team6_score = '';
-		if ( $result_1_8_3 ) {
-			$team6 = $db->get_team_by_id ( $result_1_8_3->get_team2_id() );
-			if ( $team6 ) {
-				$team6_name = $this->get_name_or_placeholder( $result_1_8_3->get_team2_placeholder() , $team6 );
-				$team6_country = $team6->get_country();
-				$team6_score = $result_1_8_3->get_team2_score();
-			}	
-		}
-
-		$team7_name = '';
-		$team7_country = '';
-		$team7_score = '';
-		if ( $result_1_8_4 ) {
-			$team7 = $db->get_team_by_id ( $result_1_8_4->get_team1_id() );
-			if ( $team7 ) {
-				$team7_name = $this->get_name_or_placeholder( $result_1_8_4->get_team1_placeholder() , $team7 );
-				$team7_country = $team7->get_country();
-				$team7_score = $result_1_8_4->get_team1_score();
-			}	
-		}
-		
-		$team8_name = '';
-		$team8_country = '';
-		$team8_score = '';
-		if ( $result_1_8_4 ) {
-			$team8 = $db->get_team_by_id ( $result_1_8_4->get_team2_id() );
-			if ( $team8 ) {
-				$team8_name = $this->get_name_or_placeholder( $result_1_8_4->get_team2_placeholder() , $team8 );
-				$team8_country = $team8->get_country();
-				$team8_score = $result_1_8_4->get_team2_score();
-			}
-		}
-		
-		$team9_name = '';
-		$team9_country = '';
-		$team9_score = '';
-		if ( $result_1_8_5 ) {
-			$team9 = $db->get_team_by_id ( $result_1_8_5->get_team1_id() );
-			if ( $team9 ) {
-				$team9_name = $this->get_name_or_placeholder( $result_1_8_5->get_team1_placeholder() , $team9 );
-				$team9_country = $team9->get_country();
-				$team9_score = $result_1_8_5->get_team1_score();
-			}
-		}
-
-		$team10_name = '';
-		$team10_country = '';
-		$team10_score = '';
-		if ( $result_1_8_5 ) {
-			$team10 = $db->get_team_by_id ( $result_1_8_5->get_team2_id() );
-			if ( $team10 ) {
-				$team10_name = $this->get_name_or_placeholder( $result_1_8_5->get_team2_placeholder() , $team10 );
-				$team10_country = $team10->get_country();
-				$team10_score = $result_1_8_5->get_team2_score();
-			}
-		}
-
-		$team11_name = '';
-		$team11_country = '';
-		$team11_score = '';
-		if ( $result_1_8_6 ) {
-			$team11 = $db->get_team_by_id ( $result_1_8_6->get_team1_id() );
-			if ( $team11 ) {
-				$team11_name = $this->get_name_or_placeholder( $result_1_8_6->get_team1_placeholder() , $team11 );
-				$team11_country = $team11->get_country();
-				$team11_score = $result_1_8_6->get_team1_score();
-			}
-		}
-		
-		$team12_name = '';
-		$team12_country = '';
-		$team12_score = '';
-		if ( $result_1_8_6 ) {
-			$team12 = $db->get_team_by_id ( $result_1_8_6->get_team2_id() );
-			if ( $team12 ) {
-				$team12_name = $this->get_name_or_placeholder( $result_1_8_6->get_team2_placeholder() , $team12 );
-				$team12_country = $team12->get_country();
-				$team12_score = $result_1_8_6->get_team2_score();
-			}
-		}
-		
-		$team13_name = '';
-		$team13_country = '';
-		$team13_score = '';
-		if ( $result_1_8_7 ) {
-			$team13 = $db->get_team_by_id ( $result_1_8_7->get_team1_id() );
-			if ( $team13 ) {
-				$team13_name = $this->get_name_or_placeholder( $result_1_8_7->get_team1_placeholder() , $team13 );
-				$team13_country = $team13->get_country();
-				$team13_score = $result_1_8_7->get_team1_score();
-			}
-		}
-
-		$team14_name = '';
-		$team14_country = '';
-		$team14_score = '';
-		if ( $result_1_8_7 ) {
-			$team14 = $db->get_team_by_id ( $result_1_8_7->get_team2_id() );
-			if ( $team14 ) {
-				$team14_name = $this->get_name_or_placeholder( $result_1_8_7->get_team2_placeholder() , $team14 );
-				$team14_country = $team14->get_country();
-				$team14_score = $result_1_8_7->get_team2_score();
-			}
-		}
-
-		$team15_name = '';
-		$team15_country = '';
-		$team15_score = '';
-		if ( $result_1_8_8 ) {
-			$team15 = $db->get_team_by_id ( $result_1_8_8->get_team1_id() );
-			if ( $team15 ) {
-				$team15_name = $this->get_name_or_placeholder( $result_1_8_8->get_team1_placeholder() , $team15 );
-				$team15_country = $team15->get_country();
-				$team15_score = $result_1_8_8->get_team1_score();
-			}
-		}
-		
-		$team16_name = '';
-		$team16_country = '';
-		$team16_score = '';
-		if ( $result_1_8_8 ) {
-			$team16 = $db->get_team_by_id ( $result_1_8_8->get_team2_id() );
-			if ( $team16 ) {
-				$team16_name = $this->get_name_or_placeholder( $result_1_8_8->get_team2_placeholder() , $team16 );
-				$team16_country = $team16->get_country();
-				$team16_score = $result_1_8_8->get_team2_score();
-			}
-		}
-
-		return
-		'<div class="round round-of-16">
-		<span class="round-label">1/8 Finals</span>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team1_country . '"></span><span class="label">' . $team1_name . '</span><span class="score"> ' . $team1_score . '</span></div>
-			  <div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team2_country . '"></span><span class="label">' . $team2_name . '</span><span class="score"> ' . $team2_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team3_score < $team4_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team3_country . '"></span><span class="label">' . $team3_name . '</span><span class="score"> ' . $team3_score . '</span></div>
-			  <div class="participant ' . ($team4_score < $team3_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team4_country . '"></span><span class="label">' . $team4_name . '</span><span class="score"> ' . $team4_score . '</span></div>
-			  </div>
-			</div>
-		  </div>
-		  <div class="connector">
-			<div class="merger"></div>
-			<div class="line"></div>
-		  </div>
-		</div>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team5_score < $team6_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team5_country . '"></span><span class="label">' . $team5_name . '</span><span class="score"> ' . $team5_score . '</span></div>
-			  <div class="participant ' . ($team6_score < $team5_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team6_country . '"></span><span class="label">' . $team6_name . '</span><span class="score"> ' . $team6_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team7_score < $team8_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team7_country . '"></span><span class="label">' . $team7_name . '</span><span class="score"> ' . $team7_score . '</span></div>
-			  <div class="participant ' . ($team8_score < $team7_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team8_country . '"></span><span class="label">' . $team8_name . '</span><span class="score"> ' . $team8_score . '</span></div>
-			  </div>
-			</div>
-		  </div>
-		  <div class="connector">
-			<div class="merger"></div>
-			<div class="line"></div>
-		  </div>
-		</div>
-		<div class="single-bracket">
-			<div class="matchups">
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team9_score < $team10_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team9_country . '"></span><span class="label">' . $team9_name . '</span><span class="score"> ' . $team9_score . '</span></div>
-				<div class="participant ' . ($team10_score < $team9_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team10_country . '"></span><span class="label">' . $team10_name . '</span><span class="score"> ' . $team10_score . '</span></div>
-				</div>
-			  </div>
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team11_score < $team12_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team11_country . '"></span><span class="label">' . $team11_name . '</span><span class="score"> ' . $team11_score . '</span></div>
-				<div class="participant ' . ($team12_score < $team11_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team12_country . '"></span><span class="label">' . $team12_name . '</span><span class="score"> ' . $team12_score . '</span></div>
-				</div>
-			  </div>
-			</div>
-			<div class="connector">
-			  <div class="merger"></div>
-			  <div class="line"></div>
-			</div>
-		</div>
-		  <div class="single-bracket">
-			<div class="matchups">
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team13_score < $team14_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team13_country . '"></span><span class="label">' . $team13_name . '</span><span class="score"> ' . $team13_score . '</span></div>
-				<div class="participant ' . ($team14_score < $team13_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team14_country . '"></span><span class="label">' . $team14_name . '</span><span class="score"> ' . $team14_score . '</span></div>
-				</div>
-			  </div>
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team15_score < $team16_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team15_country . '"></span><span class="label">' . $team15_name . '</span><span class="score"> ' . $team15_score . '</span></div>
-				<div class="participant ' . ($team16_score < $team15_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team16_country . '"></span><span class="label">' . $team16_name . '</span><span class="score"> ' . $team16_score . '</span></div>
-				</div>
-			  </div>
-			</div>
-			<div class="connector">
-			  <div class="merger"></div>
-			  <div class="line"></div>
-			</div>
-		  </div>
-	</div>';
+		$html = $this->bracket_matchups( $db, $result_1_8_1, $result_1_8_2, $show_country, true )
+			  . $this->bracket_matchups( $db, $result_1_8_3, $result_1_8_4, $show_country, true )
+			  . $this->bracket_matchups( $db, $result_1_8_5, $result_1_8_6, $show_country, true )
+		      . $this->bracket_matchups( $db, $result_1_8_7, $result_1_8_8, $show_country, true );
+		return $this->bracket_round( 'round-of-16', '1/8 Finals', $html );
 	}
 
 	private function bracket_round_of_32_div( $results ) {
@@ -861,554 +324,95 @@ class Ekc_Shortcode_Helper {
 		$result_1_16_15 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_15);
 		$result_1_16_16 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_16);
 		
+		$html = $this->bracket_matchups( $db, $result_1_16_1, $result_1_16_2, $show_country, true )
+			  . $this->bracket_matchups( $db, $result_1_16_3, $result_1_16_4, $show_country, true )
+		      . $this->bracket_matchups( $db, $result_1_16_5, $result_1_16_6, $show_country, true )
+			  . $this->bracket_matchups( $db, $result_1_16_7, $result_1_16_8, $show_country, true )
+			  . $this->bracket_matchups( $db, $result_1_16_9, $result_1_16_10, $show_country, true )
+			  . $this->bracket_matchups( $db, $result_1_16_11, $result_1_16_12, $show_country, true )
+		      . $this->bracket_matchups( $db, $result_1_16_13, $result_1_16_14, $show_country, true )
+		      . $this->bracket_matchups( $db, $result_1_16_15, $result_1_16_16, $show_country, true );
+  		return $this->bracket_round( 'round-of-32', '1/16 Finals', $html );
+	}
+
+	private function bracket_round( $round_css_class, $round_label, $inner_html ) {
+		return
+		'<div class="round ' . $round_css_class . '">
+		<span class="round-label">' . $round_label . '</span>
+		' . $inner_html . '
+		</div>';
+	}
+
+	private function bracket_matchups( $db, $result1, $result2, $show_country, $connector = true ) {
+		$html_connector = $connector ? $this->bracket_connector() : '';
+
+		return
+		'<div class="single-bracket">
+		  <div class="matchups">
+			<div class="matchup">
+			' . $this->bracket_participants( $db, $result1, $show_country ) . '
+			</div>
+			<div class="matchup">
+			' . $this->bracket_participants( $db, $result2, $show_country ) . '
+			</div>
+		  </div>
+		  ' . $html_connector  . '
+	    </div>';
+	}
+
+	private function bracket_participants( $db, $result, $show_country ) {
 		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
-		if ( $result_1_16_1 ) {
-			$team1 = $db->get_team_by_id ( $result_1_16_1->get_team1_id() );
+		if ( $result ) {
+			$team1 = $db->get_team_by_id ( $result->get_team1_id() );
 			if ( $team1 ) {
-				$team1_name = $this->get_name_or_placeholder( $result_1_16_1->get_team1_placeholder() , $team1 );
+				$team1_name = $this->get_name_or_placeholder( $result->get_team1_placeholder() , $team1 );
 				$team1_country = $team1->get_country();
-				$team1_score = $result_1_16_1->get_team1_score();
+				$team1_score = $result->get_team1_score();
 			}
 		}
 
 		$team2_name = '';
 		$team2_country = '';
 		$team2_score = '';
-		if ( $result_1_16_1 ) {
-			$team2 = $db->get_team_by_id ( $result_1_16_1->get_team2_id() );
+		if ( $result ) {
+			$team2 = $db->get_team_by_id ( $result->get_team2_id() );
 			if ( $team2 ) {
-				$team2_name = $this->get_name_or_placeholder( $result_1_16_1->get_team2_placeholder() , $team2 );
+				$team2_name = $this->get_name_or_placeholder( $result->get_team2_placeholder() , $team2 );
 				$team2_country = $team2->get_country();
-				$team2_score = $result_1_16_1->get_team2_score();
-			}
-		}
-
-		$team3_name = '';
-		$team3_country = '';
-		$team3_score = '';
-		if ( $result_1_16_2 ) {
-			$team3 = $db->get_team_by_id ( $result_1_16_2->get_team1_id() );
-			if ( $team3 ) {
-				$team3_name = $this->get_name_or_placeholder( $result_1_16_2->get_team1_placeholder() , $team3 );
-				$team3_country = $team3->get_country();
-				$team3_score = $result_1_16_2->get_team1_score();
-			}
-		}
-		
-		$team4_name = '';
-		$team4_country = '';
-		$team4_score = '';
-		if ( $result_1_16_2 ) {
-			$team4 = $db->get_team_by_id ( $result_1_16_2->get_team2_id() );
-			if ( $team4 ) {
-				$team4_name = $this->get_name_or_placeholder( $result_1_16_2->get_team2_placeholder() , $team4 );
-				$team4_country = $team4->get_country();
-				$team4_score = $result_1_16_2->get_team2_score();
-			}
-		}
-		
-		$team5_name = '';
-		$team5_country = '';
-		$team5_score = '';
-		if ( $result_1_16_3 ) {
-			$team5 = $db->get_team_by_id ( $result_1_16_3->get_team1_id() );
-			if ( $team5 ) {
-				$team5_name = $this->get_name_or_placeholder( $result_1_16_3->get_team1_placeholder() , $team5 );
-				$team5_country = $team5->get_country();
-				$team5_score = $result_1_16_3->get_team1_score();
-			}
-		}
-
-		$team6_name = '';
-		$team6_country = '';
-		$team6_score = '';
-		if ( $result_1_16_3 ) {
-			$team6 = $db->get_team_by_id ( $result_1_16_3->get_team2_id() );
-			if ( $team6 ) {
-				$team6_name = $this->get_name_or_placeholder( $result_1_16_3->get_team2_placeholder() , $team6 );
-				$team6_country = $team6->get_country();
-				$team6_score = $result_1_16_3->get_team2_score();
-			}
-		}
-
-		$team7_name = '';
-		$team7_country = '';
-		$team7_score = '';
-		if ( $result_1_16_4 ) {
-			$team7 = $db->get_team_by_id ( $result_1_16_4->get_team1_id() );
-			if ( $team7 ) {
-				$team7_name = $this->get_name_or_placeholder( $result_1_16_4->get_team1_placeholder() , $team7 );
-				$team7_country = $team7->get_country();
-				$team7_score = $result_1_16_4->get_team1_score();
-			}
-		}
-		
-		$team8_name = '';
-		$team8_country = '';
-		$team8_score = '';
-		if ( $result_1_16_4 ) {
-			$team8 = $db->get_team_by_id ( $result_1_16_4->get_team2_id() );
-			if ( $team8 ) {
-				$team8_name = $this->get_name_or_placeholder( $result_1_16_4->get_team2_placeholder() , $team8 );
-				$team8_country = $team8->get_country();
-				$team8_score = $result_1_16_4->get_team2_score();
-			}
-		}
-		
-		$team9_name = '';
-		$team9_country = '';
-		$team9_score = '';
-		if ( $result_1_16_5 ) {
-			$team9 = $db->get_team_by_id ( $result_1_16_5->get_team1_id() );
-			if ( $team9 ) {
-				$team9_name = $this->get_name_or_placeholder( $result_1_16_5->get_team1_placeholder() , $team9 );
-				$team9_country = $team9->get_country();
-				$team9_score = $result_1_16_5->get_team1_score();
-			}
-		}
-
-		$team10_name = '';
-		$team10_country = '';
-		$team10_score = '';
-		if ( $result_1_16_5 ) {
-			$team10 = $db->get_team_by_id ( $result_1_16_5->get_team2_id() );
-			if ( $team10 ) {
-				$team10_name = $this->get_name_or_placeholder( $result_1_16_5->get_team2_placeholder() , $team10 );
-				$team10_country = $team10->get_country();
-				$team10_score = $result_1_16_5->get_team2_score();
-			}
-		}
-
-		$team11_name = '';
-		$team11_country = '';
-		$team11_score = '';
-		if ( $result_1_16_6 ) {
-			$team11 = $db->get_team_by_id ( $result_1_16_6->get_team1_id() );
-			if ( $team11 ) {
-				$team11_name = $this->get_name_or_placeholder( $result_1_16_6->get_team1_placeholder() , $team11 );
-				$team11_country = $team11->get_country();
-				$team11_score = $result_1_16_6->get_team1_score();
-			}
-		}
-		
-		$team12_name = '';
-		$team12_country = '';
-		$team12_score = '';
-		if ( $result_1_16_6 ) {
-			$team12 = $db->get_team_by_id ( $result_1_16_6->get_team2_id() );
-			if ( $team12 ) {
-				$team12_name = $this->get_name_or_placeholder( $result_1_16_6->get_team2_placeholder() , $team12 );
-				$team12_country = $team12->get_country();
-				$team12_score = $result_1_16_6->get_team2_score();
-			}
-		}
-		
-		$team13_name = '';
-		$team13_country = '';
-		$team13_score = '';
-		if ( $result_1_16_7 ) {
-			$team13 = $db->get_team_by_id ( $result_1_16_7->get_team1_id() );
-			if ( $team13 ) {
-				$team13_name = $this->get_name_or_placeholder( $result_1_16_7->get_team1_placeholder() , $team13 );
-				$team13_country = $team13->get_country();
-				$team13_score = $result_1_16_7->get_team1_score();
-			}
-		}
-
-		$team14_name = '';
-		$team14_country = '';
-		$team14_score = '';
-		if ( $result_1_16_7 ) {
-			$team14 = $db->get_team_by_id ( $result_1_16_7->get_team2_id() );
-			if ( $team14 ) {
-				$team14_name = $this->get_name_or_placeholder( $result_1_16_7->get_team2_placeholder() , $team14 );
-				$team14_country = $team14->get_country();
-				$team14_score = $result_1_16_7->get_team2_score();
-			}
-		}
-
-		$team15_name = '';
-		$team15_country = '';
-		$team15_score = '';
-		if ( $result_1_16_8 ) {
-			$team15 = $db->get_team_by_id ( $result_1_16_8->get_team1_id() );
-			if ( $team15 ) {
-				$team15_name = $this->get_name_or_placeholder( $result_1_16_8->get_team1_placeholder() , $team15 );
-				$team15_country = $team15->get_country();
-				$team15_score = $result_1_16_8->get_team1_score();
-			}
-		}
-		
-		$team16_name = '';
-		$team16_country = '';
-		$team16_score = '';
-		if ( $result_1_16_8 ) {
-			$team16 = $db->get_team_by_id ( $result_1_16_8->get_team2_id() );
-			if ( $team16 ) {
-				$team16_name = $this->get_name_or_placeholder( $result_1_16_8->get_team2_placeholder() , $team16 );
-				$team16_country = $team16->get_country();
-				$team16_score = $result_1_16_8->get_team2_score();
-			}
-		}
-
-		$team17_name = '';
-		$team17_country = '';
-		$team17_score = '';
-		if ( $result_1_16_9 ) {
-			$team17 = $db->get_team_by_id ( $result_1_16_9->get_team1_id() );
-			if ( $team17 ) {
-				$team17_name = $this->get_name_or_placeholder( $result_1_16_9->get_team1_placeholder() , $team17 );
-				$team17_country = $team17->get_country();
-				$team17_score = $result_1_16_9->get_team1_score();
-			}
-		}
-
-		$team18_name = '';
-		$team18_country = '';
-		$team18_score = '';
-		if ( $result_1_16_9 ) {
-			$team18 = $db->get_team_by_id ( $result_1_16_9->get_team2_id() );
-			if ( $team18 ) {
-				$team18_name = $this->get_name_or_placeholder( $result_1_16_9->get_team2_placeholder() , $team18 );
-				$team18_country = $team18->get_country();
-				$team18_score = $result_1_16_9->get_team2_score();
-			}
-		}
-
-		$team19_name = '';
-		$team19_country = '';
-		$team19_score = '';
-		if ( $result_1_16_10 ) {
-			$team19 = $db->get_team_by_id ( $result_1_16_10->get_team1_id() );
-			if ( $team19 ) {
-				$team19_name = $this->get_name_or_placeholder( $result_1_16_10->get_team1_placeholder() , $team19 );
-				$team19_country = $team19->get_country();
-				$team19_score = $result_1_16_10->get_team1_score();
-			}
-		}
-		
-		$team20_name = '';
-		$team20_country = '';
-		$team20_score = '';
-		if ( $result_1_16_10 ) {
-			$team20 = $db->get_team_by_id ( $result_1_16_10->get_team2_id() );
-			if ( $team20 ) {
-				$team20_name = $this->get_name_or_placeholder( $result_1_16_10->get_team2_placeholder() , $team20 );
-				$team20_country = $team20->get_country();
-				$team20_score = $result_1_16_10->get_team2_score();
-			}
-		}
-		
-		$team21_name = '';
-		$team21_country = '';
-		$team21_score = '';
-		if ( $result_1_16_11 ) {
-			$team21 = $db->get_team_by_id ( $result_1_16_11->get_team1_id() );
-			if ( $team21 ) {
-				$team21_name = $this->get_name_or_placeholder( $result_1_16_11->get_team1_placeholder() , $team21 );
-				$team21_country = $team21->get_country();
-				$team21_score = $result_1_16_11->get_team1_score();
-			}
-		}
-
-		$team22_name = '';
-		$team22_country = '';
-		$team22_score = '';
-		if ( $result_1_16_11 ) {
-			$team22 = $db->get_team_by_id ( $result_1_16_11->get_team2_id() );
-			if ( $team22 ) {
-				$team22_name = $this->get_name_or_placeholder( $result_1_16_11->get_team2_placeholder() , $team22 );
-				$team22_country = $team22->get_country();
-				$team22_score = $result_1_16_11->get_team2_score();
-			}
-		}
-
-		$team23_name = '';
-		$team23_country = '';
-		$team23_score = '';
-		if ( $result_1_16_12 ) {
-			$team23 = $db->get_team_by_id ( $result_1_16_12->get_team1_id() );
-			if ( $team23 ) {
-				$team23_name = $this->get_name_or_placeholder( $result_1_16_12->get_team1_placeholder() , $team23 );
-				$team23_country = $team23->get_country();
-				$team23_score = $result_1_16_12->get_team1_score();
-			}
-		}
-		
-		$team24_name = '';
-		$team24_country = '';
-		$team24_score = '';
-		if ( $result_1_16_12 ) {
-			$team24 = $db->get_team_by_id ( $result_1_16_12->get_team2_id() );
-			if ( $team24 ) {
-				$team24_name = $this->get_name_or_placeholder( $result_1_16_12->get_team2_placeholder() , $team24 );
-				$team24_country = $team24->get_country();
-				$team24_score = $result_1_16_12->get_team2_score();
-			}
-		}
-		
-		$team25_name = '';
-		$team25_country = '';
-		$team25_score = '';
-		if ( $result_1_16_13 ) {
-			$team25 = $db->get_team_by_id ( $result_1_16_13->get_team1_id() );
-			if ( $team25 ) {
-				$team25_name = $this->get_name_or_placeholder( $result_1_16_13->get_team1_placeholder() , $team25 );
-				$team25_country = $team25->get_country();
-				$team25_score = $result_1_16_13->get_team1_score();
-			}
-		}
-
-		$team26_name = '';
-		$team26_country = '';
-		$team26_score = '';
-		if ( $result_1_16_13 ) {
-			$team26 = $db->get_team_by_id ( $result_1_16_13->get_team2_id() );
-			if ( $team26 ) {
-				$team26_name = $this->get_name_or_placeholder( $result_1_16_13->get_team2_placeholder() , $team26 );
-				$team26_country = $team26->get_country();
-				$team26_score = $result_1_16_13->get_team2_score();
-			}
-		}
-
-		$team27_name = '';
-		$team27_country = '';
-		$team27_score = '';
-		if ( $result_1_16_14 ) {
-			$team27 = $db->get_team_by_id ( $result_1_16_14->get_team1_id() );
-			if ( $team27 ) {
-				$team27_name = $this->get_name_or_placeholder( $result_1_16_14->get_team1_placeholder() , $team27 );
-				$team27_country = $team27->get_country();
-				$team27_score = $result_1_16_14->get_team1_score();
-			}
-		}
-		
-		$team28_name = '';
-		$team28_country = '';
-		$team28_score = '';
-		if ( $result_1_16_14 ) {
-			$team28 = $db->get_team_by_id ( $result_1_16_14->get_team2_id() );
-			if ( $team28 ) {
-				$team28_name = $this->get_name_or_placeholder( $result_1_16_14->get_team2_placeholder() , $team28 );
-				$team28_country = $team28->get_country();
-				$team28_score = $result_1_16_14->get_team2_score();
-			}
-		}
-		
-		$team29_name = '';
-		$team29_country = '';
-		$team29_score = '';
-		if ( $result_1_16_15 ) {
-			$team29 = $db->get_team_by_id ( $result_1_16_15->get_team1_id() );
-			if ( $team29 ) {
-				$team29_name = $this->get_name_or_placeholder( $result_1_16_15->get_team1_placeholder() , $team29 );
-				$team29_country = $team29->get_country();
-				$team29_score = $result_1_16_15->get_team1_score();
-			}
-		}
-
-		$team30_name = '';
-		$team30_country = '';
-		$team30_score = '';
-		if ( $result_1_16_15 ) {
-			$team30 = $db->get_team_by_id ( $result_1_16_15->get_team2_id() );
-			if ( $team30 ) {
-				$team30_name = $this->get_name_or_placeholder( $result_1_16_15->get_team2_placeholder() , $team30 );
-				$team30_country = $team30->get_country();
-				$team30_score = $result_1_16_15->get_team2_score();
-			}
-		}
-
-		$team31_name = '';
-		$team31_country = '';
-		$team31_score = '';
-		if ( $result_1_16_16 ) {
-			$team31 = $db->get_team_by_id ( $result_1_16_16->get_team1_id() );
-			if ( $team31 ) {
-				$team31_name = $this->get_name_or_placeholder( $result_1_16_16->get_team1_placeholder() , $team31 );
-				$team31_country = $team31->get_country();
-				$team31_score = $result_1_16_16->get_team1_score();
-			}
-		}
-		
-		$team32_name = '';
-		$team32_country = '';
-		$team32_score = '';
-		if ( $result_1_16_16 ) {
-			$team32 = $db->get_team_by_id ( $result_1_16_16->get_team2_id() );
-			if ( $team32 ) {
-				$team32_name = $this->get_name_or_placeholder( $result_1_16_16->get_team2_placeholder() , $team32 );
-				$team32_country = $team32->get_country();
-				$team32_score = $result_1_16_16->get_team2_score();
-			}
+				$team2_score = $result->get_team2_score();
+			}	
 		}
 
 		return
-		'<div class="round round-of-32">
-		<span class="round-label">1/16 Finals</span>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team1_country . '"></span><span class="label">' . $team1_name . '</span><span class="score"> ' . $team1_score . '</span></div>
-			  <div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team2_country . '"></span><span class="label">' . $team2_name . '</span><span class="score"> ' . $team2_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team3_score < $team4_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team3_country . '"></span><span class="label">' . $team3_name . '</span><span class="score"> ' . $team3_score . '</span></div>
-			  <div class="participant ' . ($team4_score < $team3_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team4_country . '"></span><span class="label">' . $team4_name . '</span><span class="score"> ' . $team4_score . '</span></div>
-			  </div>
-			</div>
+		'<div class="participants">
+		  <div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '">
+		    <span class="flag-icon flag-icon-' . $team1_country . $this->css_class_hidden( $show_country ) . '"></span>
+		    <span class="label">' . $team1_name . '</span>
+		    <span class="score"> ' . $team1_score . '</span>
 		  </div>
-		  <div class="connector">
-			<div class="merger"></div>
-			<div class="line"></div>
+		  <div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '">
+		    <span class="flag-icon flag-icon-' . $team2_country . $this->css_class_hidden( $show_country ) . '"></span>
+		    <span class="label">' . $team2_name . '</span>
+		    <span class="score"> ' . $team2_score . '</span>
 		  </div>
-		</div>
-		<div class="single-bracket">
-		  <div class="matchups">
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team5_score < $team6_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team5_country . '"></span><span class="label">' . $team5_name . '</span><span class="score"> ' . $team5_score . '</span></div>
-			  <div class="participant ' . ($team6_score < $team5_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team6_country . '"></span><span class="label">' . $team6_name . '</span><span class="score"> ' . $team6_score . '</span></div>
-			  </div>
-			</div>
-			<div class="matchup">
-			  <div class="participants">
-			  <div class="participant ' . ($team7_score < $team8_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team7_country . '"></span><span class="label">' . $team7_name . '</span><span class="score"> ' . $team7_score . '</span></div>
-			  <div class="participant ' . ($team8_score < $team7_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team8_country . '"></span><span class="label">' . $team8_name . '</span><span class="score"> ' . $team8_score . '</span></div>
-			  </div>
-			</div>
-		  </div>
-		  <div class="connector">
-			<div class="merger"></div>
-			<div class="line"></div>
-		  </div>
-		</div>
-		<div class="single-bracket">
-			<div class="matchups">
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team9_score < $team10_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team9_country . '"></span><span class="label">' . $team9_name . '</span><span class="score"> ' . $team9_score . '</span></div>
-				<div class="participant ' . ($team10_score < $team9_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team10_country . '"></span><span class="label">' . $team10_name . '</span><span class="score"> ' . $team10_score . '</span></div>
-				</div>
-			  </div>
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team11_score < $team12_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team11_country . '"></span><span class="label">' . $team11_name . '</span><span class="score"> ' . $team11_score . '</span></div>
-				<div class="participant ' . ($team12_score < $team11_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team12_country . '"></span><span class="label">' . $team12_name . '</span><span class="score"> ' . $team12_score . '</span></div>
-				</div>
-			  </div>
-			</div>
-			<div class="connector">
-			  <div class="merger"></div>
-			  <div class="line"></div>
-			</div>
-		</div>
-		  <div class="single-bracket">
-			<div class="matchups">
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team13_score < $team14_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team13_country . '"></span><span class="label">' . $team13_name . '</span><span class="score"> ' . $team13_score . '</span></div>
-				<div class="participant ' . ($team14_score < $team13_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team14_country . '"></span><span class="label">' . $team14_name . '</span><span class="score"> ' . $team14_score . '</span></div>
-				</div>
-			  </div>
-			  <div class="matchup">
-				<div class="participants">
-				<div class="participant ' . ($team15_score < $team16_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team15_country . '"></span><span class="label">' . $team15_name . '</span><span class="score"> ' . $team15_score . '</span></div>
-				<div class="participant ' . ($team16_score < $team15_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team16_country . '"></span><span class="label">' . $team16_name . '</span><span class="score"> ' . $team16_score . '</span></div>
-				</div>
-			  </div>
-			</div>
-			<div class="connector">
-			  <div class="merger"></div>
-			  <div class="line"></div>
-			</div>
-		  </div>
-		  <div class="single-bracket">
-			  <div class="matchups">
-				<div class="matchup">
-				  <div class="participants">
-				  <div class="participant ' . ($team17_score < $team18_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team17_country . '"></span><span class="label">' . $team17_name . '</span><span class="score"> ' . $team17_score . '</span></div>
-				  <div class="participant ' . ($team18_score < $team17_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team18_country . '"></span><span class="label">' . $team18_name . '</span><span class="score"> ' . $team18_score . '</span></div>
-				  </div>
-				</div>
-				<div class="matchup">
-				  <div class="participants">
-				  <div class="participant ' . ($team19_score < $team20_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team19_country . '"></span><span class="label">' . $team19_name . '</span><span class="score"> ' . $team19_score . '</span></div>
-				  <div class="participant ' . ($team20_score < $team19_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team20_country . '"></span><span class="label">' . $team20_name . '</span><span class="score"> ' . $team20_score . '</span></div>
-				  </div>
-				</div>
-			  </div>
-			  <div class="connector">
-				<div class="merger"></div>
-				<div class="line"></div>
-			  </div>
-			</div>
-			<div class="single-bracket">
-			  <div class="matchups">
-				<div class="matchup">
-				  <div class="participants">
-				  <div class="participant ' . ($team21_score < $team22_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team21_country . '"></span><span class="label">' . $team21_name . '</span><span class="score"> ' . $team21_score . '</span></div>
-				  <div class="participant ' . ($team22_score < $team21_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team22_country . '"></span><span class="label">' . $team22_name . '</span><span class="score"> ' . $team22_score . '</span></div>
-				  </div>
-				</div>
-				<div class="matchup">
-				  <div class="participants">
-				  <div class="participant ' . ($team23_score < $team24_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team23_country . '"></span><span class="label">' . $team23_name . '</span><span class="score"> ' . $team23_score . '</span></div>
-				  <div class="participant ' . ($team24_score < $team23_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team24_country . '"></span><span class="label">' . $team24_name . '</span><span class="score"> ' . $team24_score . '</span></div>
-				  </div>
-				</div>
-			  </div>
-			  <div class="connector">
-				<div class="merger"></div>
-				<div class="line"></div>
-			  </div>
-			</div>
-			<div class="single-bracket">
-				<div class="matchups">
-				  <div class="matchup">
-					<div class="participants">
-					<div class="participant ' . ($team25_score < $team26_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team25_country . '"></span><span class="label">' . $team25_name . '</span><span class="score"> ' . $team25_score . '</span></div>
-					<div class="participant ' . ($team26_score < $team25_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team26_country . '"></span><span class="label">' . $team26_name . '</span><span class="score"> ' . $team26_score . '</span></div>
-					</div>
-				  </div>
-				  <div class="matchup">
-					<div class="participants">
-					<div class="participant ' . ($team27_score < $team28_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team27_country . '"></span><span class="label">' . $team27_name . '</span><span class="score"> ' . $team27_score . '</span></div>
-					<div class="participant ' . ($team28_score < $team27_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team28_country . '"></span><span class="label">' . $team28_name . '</span><span class="score"> ' . $team28_score . '</span></div>
-					</div>
-				  </div>
-				</div>
-				<div class="connector">
-				  <div class="merger"></div>
-				  <div class="line"></div>
-				</div>
-			</div>
-			  <div class="single-bracket">
-				<div class="matchups">
-				  <div class="matchup">
-					<div class="participants">
-					<div class="participant ' . ($team29_score < $team30_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team29_country . '"></span><span class="label">' . $team29_name . '</span><span class="score"> ' . $team29_score . '</span></div>
-					<div class="participant ' . ($team30_score < $team29_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team30_country . '"></span><span class="label">' . $team30_name . '</span><span class="score"> ' . $team30_score . '</span></div>
-					</div>
-				  </div>
-				  <div class="matchup">
-					<div class="participants">
-					<div class="participant ' . ($team31_score < $team32_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team31_country . '"></span><span class="label">' . $team31_name . '</span><span class="score"> ' . $team31_score . '</span></div>
-					<div class="participant ' . ($team32_score < $team31_score ? 'loser' : 'winner') . '"><span class="flag-icon flag-icon-' . $team32_country . '"></span><span class="label">' . $team32_name . '</span><span class="score"> ' . $team32_score . '</span></div>
-					</div>
-				  </div>
-				</div>
-				<div class="connector">
-				  <div class="merger"></div>
-				  <div class="line"></div>
-				</div>
-			  </div>
-	</div>';
+	    </div>';
+	}
+
+	private function bracket_connector() {
+		return
+		'<div class="connector">
+		  <div class="merger"></div>
+		  <div class="line"></div>
+	    </div>';
+	}
+
+	private function css_class_hidden( $is_visible ) {
+		if ( $is_visible ) {
+			return '';
+		}
+		return ' ekc-hidden ';
 	}
 
 	private function get_name_or_placeholder( $placeholder, $team ){
@@ -1445,12 +449,14 @@ class Ekc_Shortcode_Helper {
 				'ranking' => 'false',
 				'rounds' => '2',
 				'timer' => 'false',
+				'country' => 'true',
 			),
 			$atts,
 			'ekc-swiss-system'
 		);
 		$tournament_code_name = $atts['tournament'];
 		$is_show_ranking =  filter_var( $atts['ranking'], FILTER_VALIDATE_BOOLEAN );
+		$is_show_country =  filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
 		$is_show_timer =  filter_var( $atts['timer'], FILTER_VALIDATE_BOOLEAN );
 		$max_rounds = filter_var( $atts['rounds'], FILTER_VALIDATE_INT );
 		if ( $atts['rounds'] === 'all' ) {
@@ -1472,12 +478,12 @@ class Ekc_Shortcode_Helper {
 			return $this->show_timer( $tournament );
 		}
 		elseif ( $is_show_ranking ) {
-			return $this->create_swiss_ranking_table( $tournament );
+			return $this->create_swiss_ranking_table( $tournament, $is_show_country );
 		}
-		return $this->create_swiss_rounds( $tournament, $max_rounds );
+		return $this->create_swiss_rounds( $tournament, $max_rounds, $is_show_country );
 	}
 
-	private function create_swiss_rounds( $tournament, $max_rounds ) {
+	private function create_swiss_rounds( $tournament, $max_rounds, $show_country ) {
 		$db = new Ekc_Database_Access();
 		$html = '';
 		$all_results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, null, null );
@@ -1491,13 +497,13 @@ class Ekc_Shortcode_Helper {
 			$results_for_round = $this->get_results_for_round( $all_results, $round );
 			if (count( $results_for_round ) > 0) {
 				$html .= '<h3>Round ' . $round  . '</h3>';
-				$html .= $this->create_swiss_round_table( $tournament, $results_for_round, $round );
+				$html .= $this->create_swiss_round_table( $tournament, $results_for_round, $round, $show_country );
 			}
 		}
 		return $html;
 	}
 
-	private function create_swiss_ranking_table( $tournament ) {
+	private function create_swiss_ranking_table( $tournament, $show_country ) {
 		$db = new Ekc_Database_Access();
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$counter = 1;
@@ -1505,7 +511,9 @@ class Ekc_Shortcode_Helper {
 		
 		$header = array();
 		$header[] = array('<span class="dashicons dashicons-awards"></span>', 'ekc-column-rank');
-		$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
+		if ( $show_country ) {
+			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
+		}
 		$header[] = array($is_single_player ? 'Player' : 'Team', 'ekc-column-team');
 		$header[] = array('Score', 'ekc-column-score');
 		$html_header = $this->html_table_head($header);
@@ -1516,7 +524,9 @@ class Ekc_Shortcode_Helper {
 			$is_excluded = intval( $team->get_virtual_rank() ) !== 0;
 			$row = array();
 			$row[] = $counter;
-			$row[] = $this->html_flag( esc_html($team->get_country()) );
+			if ( $show_country ) {
+				$row[] = $this->html_flag( esc_html($team->get_country()) );
+			}
 			$row[] = esc_html($team->get_name());
 			$row[] = strval( $ranking->get_total_score() ) . '&nbsp;/&nbsp;' . strval( $ranking->get_opponent_score() );
 			$html_body .= $this->html_table_row( $row, 'rank-' . $counter, $is_excluded );
@@ -1527,14 +537,16 @@ class Ekc_Shortcode_Helper {
 		return $this->html_table( $html_header . $html_body );
 	}
 
-	private function create_swiss_round_table( $tournament, $results_for_round, $round, $score_as_input = false ) {
+	private function create_swiss_round_table( $tournament, $results_for_round, $round, $show_country, $score_as_input = false ) {
 		$db = new Ekc_Database_Access();
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$is_additional_round = $round > $tournament->get_swiss_system_rounds();
 
 		$header = array();
 		$header[] = array('Pitch', 'ekc-column-pitch');
-		$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
+		if ( $show_country ) {
+			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
+		}
 		$header[] = array($is_single_player ? 'Player' : 'Team', 'ekc-column-team');
 		$header[] = array('Score', 'ekc-column-score');
 		$html_header = $this->html_table_head($header);
@@ -1559,7 +571,9 @@ class Ekc_Shortcode_Helper {
 			if ($team1) {
 				$team1_country = $this->html_flag( esc_html($team1->get_country()) );
 			}
-			$row[] = $team1_country;
+			if ( $show_country ) {
+				$row[] = $team1_country;
+			}
 			$team1_name = '';
 			if ($team1) {
 				$team1_name = $team1->get_name();
@@ -1582,7 +596,9 @@ class Ekc_Shortcode_Helper {
 			if ($team2) {
 				$team2_country = $this->html_flag( esc_html($team2->get_country()) );
 			}
-			$row[] = $team2_country;
+			if ( $show_country ) {
+				$row[] = $team2_country;
+			}
 			$team2_name = '';
 			if ($team2) {
 				$team2_name = $team2->get_name();
@@ -1651,6 +667,7 @@ class Ekc_Shortcode_Helper {
 		$atts = shortcode_atts(
 			array(
 				'type' => 'team-results',
+				'country' => 'true',
 			),
 			$atts,
 			'ekc-link'
@@ -1663,6 +680,8 @@ class Ekc_Shortcode_Helper {
 
 		$db = new Ekc_Database_Access();
 		$team = $db->get_team_by_shareable_link_id( $link_id );
+
+		$show_country =  filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( $atts['type'] === 'team-name') {
 			if ( $team ) {
@@ -1687,22 +706,22 @@ class Ekc_Shortcode_Helper {
 		$html = '<p><a href="' . $_SERVER['REQUEST_URI'] . '">Reload page</a></p>';
 		if (count( $current_round_result ) > 0) {
 			$html .= '<h3>Round ' . $current_round  . '</h3>';
-			$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $url_path );
+			$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $url_path );
 		}	
 
 		for ( $round = $current_round - 1; $round > 0; $round-- ) {
 			$result_for_round = $this->get_results_for_round( $all_results, $round, $team->get_team_id() );
 			if (count( $result_for_round ) > 0) {
 				$html .= '<h3>Round ' . $round  . '</h3>';
-				$html .= $this->create_swiss_round_table( $tournament, $result_for_round, $round );
+				$html .= $this->create_swiss_round_table( $tournament, $result_for_round, $round, $show_country );
 			}
 		}
 		return $html;
 	}
 
-	private function create_current_round_result( $tournament, $current_round_result, $current_round, $url_path ) {
+	private function create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $url_path ) {
 		$html = '<form class="ekc-form" method="post" action="' . $url_path . '" accept-charset="utf-8">';
-		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, true );
+		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country, true );
 		$html .= '<div class="ekc-controls">';
 		$html .= '<button type="submit" class="ekc-button ekc-button-primary">Save result for round ' . $current_round . '</button>';
 		$html .= '<input id="action" name="action" type="hidden" value="storeresult" />';
