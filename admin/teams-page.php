@@ -178,7 +178,7 @@ class Ekc_Teams_Admin_Page {
             <input id="name" name="name" type="text" placeholder="Name" maxlength="500" required />
           </div>         
           <div class="ekc-control-group">
-            <label for="country">Country <span class="ekc-required">*</span></label>
+            <label for="country">Country</label>
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("country", Ekc_Drop_Down_Helper::SELECTION_NONE) ?>
           </div>
 <?php } ?>
@@ -304,7 +304,7 @@ class Ekc_Teams_Admin_Page {
             <input id="name" name="name" type="text" placeholder="Name" maxlength="500" required value="<?php esc_html_e( $team->get_name() ) ?>" />
           </div>         
           <div class="ekc-control-group">
-            <label for="country">Country <span class="ekc-required">*</span></label>
+            <label for="country">Country</label>
             <?php Ekc_Drop_Down_Helper::country_small_drop_down("country", $team->get_country()) ?>
           </div>
 <?php } ?>

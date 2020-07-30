@@ -11,6 +11,7 @@ CHANGELOG ekc-tournament
 [x] shortcodes (ranking, elimination bracket, registered teams etc.) allow to hide country columns and flags
 [x] refactoring of elimination bracket html code (remove duplicated copy/paste code)
 [x] shortcode ekc-link: show timer (without explicitly providing tournament as parameter)
+[x] team registration: country not mandatory
 
 # Version 1.2.8
 [x] swiss system: support to generate random seeding scores
