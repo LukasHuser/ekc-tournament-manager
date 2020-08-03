@@ -260,7 +260,7 @@ class Ekc_Shortcode_Helper {
 		$result_final = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_1);
 		$result_3rd = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_2);
 
-		$html = $this->bracket_matchups( $db, $result_finals, $result_3rd, $show_country, false );
+		$html = $this->bracket_matchups( $db, $result_final, $result_3rd, $show_country, false );
 		return $this->bracket_round( 'finals', 'Finals', $html );
 	}
 
