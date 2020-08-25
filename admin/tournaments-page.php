@@ -70,8 +70,14 @@ class Ekc_Tournaments_Admin_Page {
 			if ( isset($_POST['eliminationrounds'] ) ) {
 				$tournament->set_elimination_rounds( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['eliminationrounds'] ) ) ) );
       }
+      if ( isset($_POST['eliminationmaxpoints'] ) ) {
+				$tournament->set_elimination_max_points_per_round( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['eliminationmaxpoints'] ) ) ) );
+      }
 			if ( isset($_POST['swissrounds'] ) ) {
 				$tournament->set_swiss_system_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissrounds'] ) ) ) );
+      }
+      if ( isset($_POST['swissmaxpoints'] ) ) {
+				$tournament->set_swiss_system_max_points_per_round( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissmaxpoints'] ) ) ) );
       }
 			if ( isset($_POST['swissadditionalrounds'] ) ) {
 				$tournament->set_swiss_system_additional_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissadditionalrounds'] ) ) ) );
@@ -162,8 +168,16 @@ class Ekc_Tournaments_Admin_Page {
             <?php Ekc_Drop_Down_Helper::elimination_bracket_drop_down("eliminationrounds", Ekc_Drop_Down_Helper::SELECTION_NONE) ?>
           </div>
           <div class="ekc-control-group">
+            <label for="eliminationmaxpoints">Maximum points per round for elimination bracket</label>
+            <input id="eliminationmaxpoints" name="eliminationmaxpoints" type="number" min="0" />
+          </div>
+          <div class="ekc-control-group">
             <label for="swissrounds">Number of rounds for Swiss System</label>
             <input id="swissrounds" name="swissrounds" type="number" placeholder="7" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swissmaxpoints">Maximum points per round for Swiss System</label>
+            <input id="swissmaxpoints" name="swissmaxpoints" type="number" min="0" />
           </div>
           <div class="ekc-control-group">
             <label for="swissslidematchrounds">Number of slide match rounds for Swiss System (i.e. the pairing for the first n rounds is slide match, all following rounds are top down match)</label>
@@ -240,8 +254,16 @@ class Ekc_Tournaments_Admin_Page {
               Ekc_Drop_Down_Helper::elimination_bracket_drop_down("eliminationrounds", $tournament->get_elimination_rounds() ) ?>
           </div>
           <div class="ekc-control-group">
+            <label for="eliminationmaxpoints">Maximum points per round for elimination bracket</label>
+            <input id="eliminationmaxpoints" name="eliminationmaxpoints" type="number" min="0" value="<?php esc_html_e( $tournament->get_elimination_max_points_per_round() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
             <label for="swissrounds">Number of rounds of Swiss System</label>
             <input id="swissrounds" name="swissrounds" type="number" placeholder="7" value="<?php esc_html_e( $tournament->get_swiss_system_rounds() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swissmaxpoints">Maximum points per round for Swiss System</label>
+            <input id="swissmaxpoints" name="swissmaxpoints" type="number" min="0" value="<?php esc_html_e( $tournament->get_swiss_system_max_points_per_round() ) ?>" />
           </div>
           <div class="ekc-control-group">
             <label for="swissslidematchrounds">Number of slide match rounds for Swiss System (i.e. the pairing for the first n rounds is slide match, all following rounds are top down match)</label>

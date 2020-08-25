@@ -237,7 +237,7 @@ class Ekc_Swiss_System_Admin_Page {
     <?php
         usort( $results_for_round, array($this, "compare_results") );
         foreach ( $results_for_round as $result ) {
-          $this->show_result( $result, $teams );
+          $this->show_result( $result, $teams, $tournament->get_swiss_system_max_points_per_round() );
         }
     ?>
       </tbody>
@@ -253,7 +253,7 @@ class Ekc_Swiss_System_Admin_Page {
     <?php
   }
 
-  private function show_result( $result, $teams ) {
+  private function show_result( $result, $teams, $max_points_per_round ) {
     $is_result_missing = ( is_null( $result->get_team1_score() ) || is_null( $result->get_team2_score() ) );
 ?>
 <tr>
@@ -268,7 +268,7 @@ class Ekc_Swiss_System_Admin_Page {
       Ekc_Drop_Down_Helper::teams_drop_down("team1-" . $result->get_result_id(), $team_id, $team ) ?>
     <input id="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team1_placeholder() ) ?>" /></div>
   </td>
-  <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?>"><input id="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $result->get_team1_score() ) ?>" /></div></td>
+  <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?>"><input id="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team1_score() ) ?>" /></div></td>
   <td><a class="ekc-post-result" href="javascript:void(0);" data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>">Save result</a></td> <!-- see admin.js for onClick handler -->
 </tr>
 <tr>
@@ -283,7 +283,7 @@ class Ekc_Swiss_System_Admin_Page {
       Ekc_Drop_Down_Helper::teams_drop_down("team2-" . $result->get_result_id(), $team_id, $team ) ?>
     <input id="team2-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team2_placeholder() ) ?>" /></div>
   </td>
-  <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?>"><input id="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $result->get_team2_score() ) ?>" /></div></td>
+  <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?>"><input id="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team2_score() ) ?>" /></div></td>
   <td></td>
 </tr>
 

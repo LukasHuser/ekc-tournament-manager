@@ -541,6 +541,7 @@ class Ekc_Shortcode_Helper {
 		$db = new Ekc_Database_Access();
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$is_additional_round = $round > $tournament->get_swiss_system_rounds();
+		$max_points_per_round = $tournament->get_swiss_system_max_points_per_round();
 
 		$header = array();
 		$header[] = array('Pitch', 'ekc-column-pitch');
@@ -584,7 +585,7 @@ class Ekc_Shortcode_Helper {
 				$team1_score = $result->get_team1_score() == 0 ? '0' : strval( $result->get_team1_score() );
 			}
 			if ( $score_as_input ) {
-				$team1_score = $this->html_score_input( $team1_score, 'team1-score-' . $result->get_result_id() );
+				$team1_score = $this->html_score_input( $team1_score, 'team1-score-' . $result->get_result_id(), $max_points_per_round );
 			}
 			$row[] = $team1_score;
 			$html_body .= $this->html_table_row( $row, 'pitch-' . $result->get_pitch(), false, 'rowspan' );
@@ -609,7 +610,7 @@ class Ekc_Shortcode_Helper {
 				$team2_score = $result->get_team2_score() == 0 ? '0' :  strval( $result->get_team2_score() );
 			}
 			if ( $score_as_input ) {
-				$team2_score = $this->html_score_input( $team2_score, 'team2-score-' . $result->get_result_id() );
+				$team2_score = $this->html_score_input( $team2_score, 'team2-score-' . $result->get_result_id(), $max_points_per_round );
 			}
 			$row[] = $team2_score;
 			$html_body .= $this->html_table_row( $row, '', false, 'rowspan-omit' );
@@ -619,8 +620,8 @@ class Ekc_Shortcode_Helper {
 		return $this->html_table( $html_header . $html_body );
 	}
 
-	private function html_score_input( $score_value, $html_id ) {
-		return '<input id="' . $html_id . '" name="' . $html_id . '" type="number" step="any" value="' . $score_value . '" />';
+	private function html_score_input( $score_value, $html_id, $max_points_per_round ) {
+		return '<input id="' . $html_id . '" name="' . $html_id . '" type="number" step="any" min="0" max="' . $max_points_per_round . '" value="' . $score_value . '" />';
 	}
 
 	private function get_results_for_round( $results, $tournament_round, $team_id = null ) {

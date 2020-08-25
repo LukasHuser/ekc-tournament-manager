@@ -6,6 +6,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 
+# Version 1.2.10
+[x] Validation: maximum number of points per round (needed for input from shareable links)
+
 # Version 1.2.9
 [x] shareable links page: show e-mail address for each team
 [x] shortcodes (ranking, elimination bracket, registered teams etc.) allow to hide country columns and flags
