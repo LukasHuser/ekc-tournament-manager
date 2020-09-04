@@ -46,6 +46,7 @@ class Ekc_Database_Setup {
 			swiss_system_additional_rounds integer(10),
 			swiss_system_slide_match_rounds integer(10),
 			swiss_system_round_time integer(10),
+			swiss_system_start_pitch integer(10),
 			shareable_link_url_prefix varchar(500),
 			shareable_link_email_text varchar(5000),
 			shareable_link_sender_email varchar(500),

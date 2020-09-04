@@ -58,25 +58,22 @@ class Ekc_Swiss_System_Helper {
 			// do match slide
 			$groups = $helper->group_by_score( $current_ranking );
 			$matchups = $helper->match_slide( $groups, $current_ranking, $all_results );
-
-			///////////////
-			// TODO Legacy
-			// Remove after testing
-//			foreach ( $groups as $group ) {
-//				$matchups = array_merge( $matchups, $this->match_slide( $group, $all_results ));
-//			}
 		}
 		else {
 			// do match top
 			$matchups = $helper->match_top( $current_ranking, $all_results );
 		}
 
-		$helper->store_matchups( $tournament_id, $next_round, $matchups, $virtual_matchups );
+		$helper->store_matchups( $tournament, $next_round, $matchups, $virtual_matchups );
 	}
 
-	private function store_matchups( $tournament_id, $next_round, $matchups, $virtual_matchups ) {
+	private function store_matchups( $tournament, $next_round, $matchups, $virtual_matchups ) {
 		$db = new Ekc_Database_Access();
+		$tournament_id = $tournament->get_tournament_id();
 		$pitch = 1;
+		if ( $tournament->get_swiss_system_start_pitch() ) {
+			$pitch = intval( $tournament->get_swiss_system_start_pitch() );
+		}
 
 		foreach ( $virtual_matchups as $matchup ) {
 			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
@@ -276,21 +273,6 @@ class Ekc_Swiss_System_Helper {
 			}
 		}
 		return $matchups;
-	}
-
-	private function get_top_teams_count( $tournament ) {
-		if ( $tournamet->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2) {
-			return 4;
-		}
-		if ( $tournamet->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_4) {
-			return 8;
-		}
-		if ( $tournamet->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_8) {
-			return 16;
-		}
-		if ( $tournamet->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16) {
-			return 32;
-		}
 	}
 }
 

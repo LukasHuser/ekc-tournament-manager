@@ -58,8 +58,9 @@ class Ekc_Database_Access {
 				'swiss_system_additional_rounds'	=> $tournament->get_swiss_system_additional_rounds(),
 				'swiss_system_slide_match_rounds'	=> $tournament->get_swiss_system_slide_match_rounds(),
 				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
+				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 			), 
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
@@ -86,9 +87,10 @@ class Ekc_Database_Access {
 				'swiss_system_additional_rounds'	=> $tournament->get_swiss_system_additional_rounds(),
 				'swiss_system_slide_match_rounds'	=> $tournament->get_swiss_system_slide_match_rounds(),
 				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
+				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
@@ -115,7 +117,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, elimination_max_points_per_round, swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, swiss_system_slide_match_rounds, swiss_system_round_time, shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, elimination_max_points_per_round, swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_start_pitch, shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  tournament_id = %d
 			",
@@ -133,7 +135,7 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, elimination_max_points_per_round, swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, swiss_system_slide_match_rounds, swiss_system_round_time, shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, is_wait_list_enabled, is_player_names_required, is_auto_backup_enabled, tournament_system, elimination_rounds, elimination_max_points_per_round, swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_start_pitch, shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  code_name = %s
 			",
@@ -166,6 +168,7 @@ class Ekc_Database_Access {
 		$tournament->set_swiss_system_additional_rounds( $row->swiss_system_additional_rounds );
 		$tournament->set_swiss_system_slide_match_rounds( $row->swiss_system_slide_match_rounds );
 		$tournament->set_swiss_system_round_time( $row->swiss_system_round_time );
+		$tournament->set_swiss_system_start_pitch( $row->swiss_system_start_pitch );
 		$tournament->set_shareable_link_url_prefix( $row->shareable_link_url_prefix );
 		$tournament->set_shareable_link_email_text( $row->shareable_link_email_text );
 		$tournament->set_shareable_link_sender_email( $row->shareable_link_sender_email );

@@ -6,6 +6,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 
+# Version 1.2.11
+[x] Swiss System: define a starting pitch number for a tournament (needed when two tournaments take place in parallel, e.g. pro and amateur)
+
 # Version 1.2.10
 [x] Validation: maximum number of points per round (needed for input from shareable links)
 
@@ -18,7 +21,7 @@ CHANGELOG ekc-tournament
 
 # Version 1.2.8
 [x] swiss system: support to generate random seeding scores
-[X] shareable links: sender e-mail address
+[x] shareable links: sender e-mail address
 
 ## Version 1.2.7
 [x] shareable links: timer for current round on personalized pages

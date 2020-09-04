@@ -87,6 +87,9 @@ class Ekc_Tournaments_Admin_Page {
       }
       if ( isset($_POST['swissroundtime'] ) ) {
 				$tournament->set_swiss_system_round_time( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissroundtime'] ) ) ) );
+      }
+      if ( isset($_POST['swissstartpitch'] ) ) {
+				$tournament->set_swiss_system_start_pitch( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissstartpitch'] ) ) ) );
 			}
 			if ($has_data) {
 				$db = new Ekc_Database_Access();
@@ -191,6 +194,10 @@ class Ekc_Tournaments_Admin_Page {
             <label for="swissroundtime">Time limit for a Swiss System round (setting a value will enable a timer)</label>
             <input id="swissroundtime" name="swissroundtime" type="number" placeholder="30" />
           </div>
+          <div class="ekc-control-group">
+            <label for="swissstartpitch">Start pitch number (useful, if two tournaments run in parallel)</label>
+            <input id="swissstartpitch" name="swissstartpitch" type="number" placeholder="1" />
+          </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Create tournament</button>
             <input id="tournamentid" name="tournamentid" type="hidden" />
@@ -276,6 +283,10 @@ class Ekc_Tournaments_Admin_Page {
           <div class="ekc-control-group">
             <label for="swissroundtime">Time limit for a Swiss System round (setting a value will enable a timer)</label>
             <input id="swissroundtime" name="swissroundtime" type="number" placeholder="30" value="<?php esc_html_e( $tournament->get_swiss_system_round_time() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swissstartpitch">Start pitch number (useful, if two tournaments run in parallel)</label>
+            <input id="swissstartpitch" name="swissstartpitch" type="number" placeholder="1" value="<?php esc_html_e( $tournament->get_swiss_system_start_pitch() ) ?>" />
           </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save tournament</button>
