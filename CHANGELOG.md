@@ -6,6 +6,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 
+# Version 1.2.12
+[x] Updated css for jQuery UI Version 1.12.1
+
 # Version 1.2.11
 [x] Swiss System: define a starting pitch number for a tournament (needed when two tournaments take place in parallel, e.g. pro and amateur)
 

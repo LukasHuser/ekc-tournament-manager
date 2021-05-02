@@ -62,7 +62,7 @@
     /* define country-selectmenu */
     $( ".ekc-country-selectmenu" ).country_selectmenu({
       open: function() {
-        $('div.ui-selectmenu-menu li.ui-menu-item').each(function(idx){
+        $('div.ui-selectmenu-menu li.ui-menu-item div.ui-menu-item-wrapper').each(function(idx){
           if ($('span', this).length == 0) {
             $(this).prepend( $('<span>&nbsp;&nbsp;</span>') );
             $(this).prepend( $('<span></span>').addClass( $('select option').eq(idx).attr('class') ) );
