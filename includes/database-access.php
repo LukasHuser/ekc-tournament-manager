@@ -949,6 +949,15 @@ class Ekc_Database_Access {
 		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'team2_id' => $team_id ) );
 	}
 
+	public function delete_results_for_round( $tournament_round ) {
+		if ( ! $tournament_round ) {
+			return;
+		}
+
+		global $wpdb;
+		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'tournament_round' => $tournament_round ) );
+	}
+
 	/***************************************************************************************************************************
 	 * Swiss System
 	 ***************************************************************************************************************************/

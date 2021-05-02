@@ -8,6 +8,8 @@ CHANGELOG ekc-tournament
 
 # Version 1.2.12
 [x] Updated css for jQuery UI Version 1.12.1
+[x] Confirmation popups for delete operations (using jQuery Confirm)
+[x] Swiss System: Possibility to delete the current round (i.e. when a round has been started too early, with missing results etc.)
 
 # Version 1.2.11
 [x] Swiss System: define a starting pitch number for a tournament (needed when two tournaments take place in parallel, e.g. pro and amateur)

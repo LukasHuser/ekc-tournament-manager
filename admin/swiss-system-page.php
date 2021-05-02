@@ -29,6 +29,10 @@ class Ekc_Swiss_System_Admin_Page {
       $this->random_seed( $tournament_id );
       $this->show_swiss_system( $tournament_id, null, true );
     }
+    elseif ( $action === 'delete-round' ) {
+      $this->delete_round( $tournament_id );
+      $this->show_swiss_system( $tournament_id, null, true );
+    }
 		else {
 			// handle POST
       $db = new Ekc_Database_Access();
@@ -127,8 +131,10 @@ class Ekc_Swiss_System_Admin_Page {
     $this->show_ranking_link( $tournament_id );
 
     // show a link to the results of each round that has already been played
-    for ( $round = 1; $round <= $current_round; $round++ ) {
-      $this->show_round_link( $tournament, $round );
+    $this->show_round_links( $tournament, $current_round );
+
+    if ( intval( $current_round ) === intval( $tournament_round ) ) {
+      $this->show_delete_round_link( $tournament, $current_round );
     }
 
     if ( ! $show_ranking && $tournament->get_swiss_system_round_time() > 0 && $current_round > 0 ) {
@@ -154,13 +160,23 @@ class Ekc_Swiss_System_Admin_Page {
 <?php
   }
 
-  private function show_round_link( $tournament, $round ) {
-    $display_round = 'round ' . $round;
-    if ( $round > $tournament->get_swiss_system_rounds() ) {
-      $display_round = 'additional round ' . ($round - $tournament->get_swiss_system_rounds() );
+  private function show_round_links( $tournament, $current_round ) {
+    for ( $round = 1; $round <= $current_round; $round++ ) {
+      $display_round = 'round ' . $round;
+      if ( $round > $tournament->get_swiss_system_rounds() ) {
+        $display_round = 'additional round ' . ($round - $tournament->get_swiss_system_rounds() );
+      }
+      ?>
+      <a href="?page=ekc-swiss&amp;action=swiss-system&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $round ) ?>"><?php esc_html_e( $display_round ) ?></a> &nbsp;
+      <?php
     }
+  }
+
+  private function show_delete_round_link( $tournament, $current_round ) {
     ?>
-    <a href="?page=ekc-swiss&amp;action=swiss-system&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $round ) ?>"><?php esc_html_e( $display_round ) ?></a> &nbsp;
+    <span class="delete" style="text-align:right; display:block" >
+    <a href="?page=ekc-swiss&amp;action=delete-round&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>">delete round <?php esc_html_e( $current_round ) ?></a> &nbsp;
+    </span>
     <?php
   }
 
@@ -186,7 +202,7 @@ class Ekc_Swiss_System_Admin_Page {
 <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
   <fieldset>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary"><?php esc_html_e( $button_label ) ?></button>
+        <button type="submit" class="ekc-button ekc-button-primary button"><?php esc_html_e( $button_label ) ?></button>
         <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
         <input id="tournamentround" name="tournamentround" type="hidden" value="<?php esc_html_e( $next_round ) ?>" />
         <input id="action" name="action" type="hidden" value="swiss-system-new-round" />
@@ -243,7 +259,7 @@ class Ekc_Swiss_System_Admin_Page {
       </tbody>
     </table>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary">Save all results for round <?php esc_html_e( $round ) ?></button>
+        <button type="submit" class="ekc-button ekc-button-primary button">Save all results for round <?php esc_html_e( $round ) ?></button>
         <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
         <input id="tournamentround" name="tournamentround" type="hidden" value="<?php esc_html_e( $round ) ?>" />
         <input id="action" name="action" type="hidden" value="swiss-system-store-round" />
@@ -332,7 +348,7 @@ class Ekc_Swiss_System_Admin_Page {
       </tbody>
     </table>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary">Save data</button>
+        <button type="submit" class="ekc-button ekc-button-primary button">Save data</button>
         <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
         <input id="action" name="action" type="hidden" value="swiss-system-store-ranking" />
     </div>
@@ -420,6 +436,12 @@ class Ekc_Swiss_System_Admin_Page {
       $db->update_team( $team );
       $i++;
     }
+  }
+
+  private function delete_round( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $current_round = $db->get_current_swiss_system_round( $tournament_id );
+    $db->delete_results_for_round( $current_round );
   }
 }
 

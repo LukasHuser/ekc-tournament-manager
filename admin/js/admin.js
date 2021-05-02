@@ -33,6 +33,20 @@
     /* use jquery css style for all form inputs in admin view */
     $('input').addClass("ui-widget ui-widget-content ui-corner-all");
 
+    /* Confirmation popup for deletions */
+    /* matches all links of the following form: <span class="delete"><a><a/></span> */
+    $('span.delete a').confirm({
+      title: "Confirm deletion",
+      content: "Deletions cannot be reverted. Do you want to continue?",
+      useBootstrap: false,
+      buttons: {
+        delete: function(){
+            location.href = this.$target.attr('href');
+        },
+        cancel: function(){}
+    }
+    });
+
     /* add datepicker  */
     $( ".ekc-datepicker" ).datepicker({
       dateFormat: "yy-mm-dd"
@@ -43,7 +57,6 @@
 
     /* define selectmenu */
     $( ".ekc-selectmenu" ).selectmenu();
-
 
     /************************************************************************/
     /* country-selectmenu: extend selectmenu */
