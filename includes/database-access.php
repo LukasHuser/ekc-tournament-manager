@@ -204,10 +204,15 @@ class Ekc_Database_Access {
 		return $result;
 	}
 
-	public function store_tournament_round_start( $tournament_id, $round ) {
+	public function delete_tournament_round_start( $tournament_id, $round ) {
 		global $wpdb;
 		$wpdb->delete( $wpdb->prefix . 'ekc_tournament_round', array( 'tournament_id' => $tournament_id, 'tournament_round' => $round ) );
+	}
 
+	public function store_tournament_round_start( $tournament_id, $round ) {
+		$this->delete_tournament_round_start( $tournament_id, $round );
+
+		global $wpdb;
 		$wpdb->insert( 
 			$wpdb->prefix . 'ekc_tournament_round', 
 			array( 'tournament_id'		=> $tournament_id,
@@ -949,13 +954,16 @@ class Ekc_Database_Access {
 		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'team2_id' => $team_id ) );
 	}
 
-	public function delete_results_for_round( $tournament_round ) {
-		if ( ! $tournament_round ) {
+	public function delete_results_for_round( $tournament_id, $tournament_round ) {
+		if ( ! $tournament_id || ! $tournament_round ) {
 			return;
 		}
 
 		global $wpdb;
-		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'tournament_round' => $tournament_round ) );
+		$wpdb->delete( $wpdb->prefix . 'ekc_result', array(
+			'tournament_id' => $tournament_id,
+			'tournament_round' => $tournament_round
+			 ) );
 	}
 
 	/***************************************************************************************************************************
