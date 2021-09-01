@@ -649,7 +649,7 @@ class Ekc_Shortcode_Helper {
 
 		if ( $round_start_time ) {
 		  $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
-		  $round_end_date->add(new DateInterval('PT' . $tournament->get_swiss_system_round_time() . 'M')); // add minutes
+		  $round_end_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_round_time() + 1) . 'M')); // add minutes
 		  $now = new DateTime();
 		  $time_left = '0';
 		  if ( $round_end_date > $now ) {

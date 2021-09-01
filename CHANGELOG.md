@@ -6,6 +6,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 
+# Version 1.2.13
+[x] Fix timer: off by one minute
+
 # Version 1.2.12
 [x] Updated css for jQuery UI Version 1.12.1
 [x] Confirmation popups for delete operations (using jQuery Confirm)
