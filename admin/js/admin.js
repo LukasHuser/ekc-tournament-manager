@@ -271,12 +271,24 @@
       var postTournamentResult = function( a ) {
         var resultId = $(a).data("resultid");
 
+        var team1_score = $("#team1-score-" + resultId);
+        var team2_score = $("#team2-score-" + resultId);
+        var is_result_missing = (team1_score.val() === "") || (team2_score.val() === "");
+        if (is_result_missing) {
+          team1_score.parent().addClass('ekc-result-missing');
+          team2_score.parent().addClass('ekc-result-missing');
+        }
+        else {
+          team1_score.parent().removeClass('ekc-result-missing');
+          team2_score.parent().removeClass('ekc-result-missing');
+        }
+
         var postParams = new URLSearchParams();
         postParams.append("pitch-" + resultId, $("#pitch-" + resultId).val());
         postParams.append("team1-" + resultId, $("#team1-" + resultId).val());
         postParams.append("team2-" + resultId, $("#team2-" + resultId).val());
-        postParams.append("team1-score-" + resultId, $("#team1-score-" + resultId).val());
-        postParams.append("team2-score-" + resultId, $("#team2-score-" + resultId).val());
+        postParams.append("team1-score-" + resultId, team1_score.val());
+        postParams.append("team2-score-" + resultId, team2_score.val());
         postParams.append("team1-placeholder-" + resultId, $("#team1-placeholder-" + resultId).val());
         postParams.append("team2-placeholder-" + resultId, $("#team2-placeholder-" + resultId).val());
         postParams.append("resultid", resultId);
