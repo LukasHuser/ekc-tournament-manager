@@ -68,6 +68,7 @@ class Ekc_Database_Setup {
 			tournament_id integer(10) NOT NULL,
 			name varchar(500) NOT NULL,
 			country varchar(20),
+			club varchar(500),
 			is_active bit(1),
 			email varchar(500),
 			phone varchar(50),

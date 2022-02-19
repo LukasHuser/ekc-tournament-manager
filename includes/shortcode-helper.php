@@ -57,6 +57,7 @@ class Ekc_Shortcode_Helper {
 				'sort' => 'asc',
 				'waitlist' => 'false',
 				'country' => 'true',
+				'club' => 'false',
 			),
 			$atts,
 			'ekc-teams'
@@ -66,6 +67,7 @@ class Ekc_Shortcode_Helper {
 		$sort = $atts['sort'];
 		$is_wait_list =  filter_var( $atts['waitlist'], FILTER_VALIDATE_BOOLEAN );
 		$show_country = filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
+		$show_club = filter_var( $atts['club'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( trim( $tournament_code_name ) === '' ) {
 			return '';
@@ -92,7 +94,7 @@ class Ekc_Shortcode_Helper {
 			if ( $is_sort_desc ) {
 				$c += count( $teams );
 			}
-			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country );
+			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country, $show_club );
 		}
 		else {
 			$teams = $db->get_active_teams($tournament->get_tournament_id(), $limit, $sort);
@@ -101,22 +103,28 @@ class Ekc_Shortcode_Helper {
 			if ( $is_sort_desc ) {
 				$c = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
 			}
-			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country );
+			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country, $show_club );
 		}
 	}
 
-	private function create_teams_table( $teams, $tournament, $counter, $is_sort_desc, $show_country ) {
+	private function create_teams_table( $teams, $tournament, $counter, $is_sort_desc, $show_country, $show_club ) {
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$header = array();
 		$header[] = array('<span class="dashicons dashicons-arrow-down-alt"></span>', 'ekc-column-no');
 		if ( $show_country ) {
 			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
 		}
-		if ( ! $is_single_player ) {
+		if ( $is_single_player ) {
+			$header[] = array('Player', 'ekc-column-player');
+		}
+		else {
 			$header[] = array('Team', 'ekc-column-team');
 		}
-		if ( $tournament->is_player_names_required() || $is_single_player ) {	
-			$header[] = array($is_single_player ? 'Player' : 'Players', 'ekc-column-player');
+		if ( $show_club ) {
+			$header[] = array('Club / City', 'ekc-column-club');
+		}
+		if ( ! $is_single_player && $tournament->is_player_names_required() ) {	
+			$header[] = array('Players', 'ekc-column-players');
 		}
 		$html_header = $this->html_table_head($header);
 		$html_body = '';
@@ -127,10 +135,11 @@ class Ekc_Shortcode_Helper {
 			if ( $show_country ) {
 				$row[] = $this->html_flag( esc_html($team->get_country()) );
 			}
-			if ( ! $is_single_player || ! $tournament->is_player_names_required() ) {
-				$row[] = esc_html($team->get_name());
+			$row[] = esc_html($team->get_name());
+			if ( $show_club ) {
+				$row[] = esc_html($team->get_club());
 			}			
-			if ( $tournament->is_player_names_required() ) {
+			if ( ! $is_single_player && $tournament->is_player_names_required() ) {
 				$first = true;
 				$row_content = '';	
 				for ($i = 0; $i < 6; $i++) {

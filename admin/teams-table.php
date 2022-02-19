@@ -14,13 +14,12 @@ class Ekc_Teams_Table extends WP_List_Table {
 			'name'				=> 'Name',
 			'is_active'			=> 'Active',
 			'country'			=> 'Country',
+			'club'              => 'Club / City',
 			'email'				=> 'E-mail',
 			'phone'				=> 'Phone',
 			'registration_date'	=> 'Registered',
 			'registration_order' => 'Order',
 			'is_on_wait_list'	=> 'Waiting list',
-			'camping_count' 	=> 'Camping',
-			'breakfast_count'	=> 'Breakfast',
 			'seeding_score'		=> 'Seeding score',
 			'players'			=> 'Players',
 		);
@@ -35,11 +34,10 @@ class Ekc_Teams_Table extends WP_List_Table {
 		  'name' 		=> array('name', false),
 		  'is_active'	=> array('is_active', false),
 		  'country'		=> array('country', false),
+		  'club'        => array('club', false),
 		  'registration_date'	=> array('registration_date', true),
 		  'registration_order'	=> array('registration_order', false),
 		  'is_on_wait_list'	=> array('is_on_wait_list', false),
-		  'camping_count'	=> array('camping_count', false),
-		  'breakfast_count' => array('breakfast_count', false),
 		  'seeding_score'	=> array('seeding_score', false)
 		);
 		return $sortable_columns;
@@ -118,12 +116,11 @@ class Ekc_Teams_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch( $column_name ) { 
 			case 'country':
+			case 'club':
 			case 'email':
 			case 'phone':
 			case 'registration_date':
 			case 'registration_order':
-			case 'camping_count':
-			case 'breakfast_count':
 			case 'seeding_score':
 			case 'players':
 			return $item[ $column_name ];

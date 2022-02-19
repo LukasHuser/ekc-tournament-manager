@@ -11,6 +11,7 @@ class Ekc_Team implements JsonSerializable {
 	private $tournament_id;
 	private $name;
 	private $country;
+	private $club;
 	private $is_active;
 	private $email;
 	private $phone;
@@ -56,6 +57,14 @@ class Ekc_Team implements JsonSerializable {
 
 	public function set_country(string $country) {
 		$this->country = $country;
+	}
+
+	public function get_club() {
+		return $this->club;
+	}
+
+	public function set_club(string $club) {
+		$this->club = $club;
 	}
 
 	public function is_active() {

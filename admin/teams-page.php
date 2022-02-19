@@ -64,7 +64,10 @@ class Ekc_Teams_Admin_Page {
 		elseif ( isset($_POST['player1country'] ) ) {
 			$team->set_country( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['player1country'] ) ) ) );
 		}
-		if ( isset($_POST['active'] ) ) {
+		if ( isset($_POST['club'] ) ) {
+			$team->set_club( sanitize_text_field( wp_unslash( $_POST['club'] ) ) );
+		}
+    if ( isset($_POST['active'] ) ) {
 			$team->set_active( filter_var( $_POST['active'], FILTER_VALIDATE_BOOLEAN ) );
     }
     if ( isset($_POST['waitlist'] ) ) {
@@ -191,6 +194,10 @@ class Ekc_Teams_Admin_Page {
             <input id="waitlist" name="waitlist" type="checkbox" value="true" />
           </div>
           <div class="ekc-control-group">
+            <label for="club">Sports club / city</label>
+            <input id="club" name="club" type="text"  maxlength="500" />
+          </div>
+          <div class="ekc-control-group">
           <label for="registrationorder">Order (used in registration list / waiting list)</label>
             <input id="registrationorder" name="registrationorder" type="number" step="any" placeholder="1.0" />
           </div>
@@ -315,6 +322,10 @@ class Ekc_Teams_Admin_Page {
           <div class="ekc-control-group">
             <label for="waitlist">Is on waiting list</label>
             <input id="waitlist" name="waitlist" type="checkbox" value="true" <?php $team->is_on_wait_list() ? _e( "checked" ) : _e('') ?>/>
+          </div>
+          <div class="ekc-control-group">
+            <label for="club">Sports club / city</label>
+            <input id="club" name="club" type="text" maxlength="500" value="<?php esc_html_e( $team->get_club() ) ?>" />
           </div>
           <div class="ekc-control-group">
             <label for="registrationorder">Order (used in registration list / waiting list)</label>
