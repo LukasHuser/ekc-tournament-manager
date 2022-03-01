@@ -735,10 +735,16 @@ class Ekc_Shortcode_Helper {
 	}
 
 	private function create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $url_path ) {
-		$html = '<form class="ekc-form" method="post" action="' . $url_path . '" accept-charset="utf-8">';
+		// onsubmit handler for form defined in public.js
+		$data_result_id = "";
+		if ( count( $current_round_result ) > 0 ) {
+			$data_result_id = ' data-resultid="' . $current_round_result[0]->get_result_id() . '" ';
+		}
+		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . 'method="post" action="' . $url_path . '" accept-charset="utf-8">';
 		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country, true );
 		$html .= '<div class="ekc-controls">';
 		$html .= '<button type="submit" class="ekc-button ekc-button-primary">Save result for round ' . $current_round . '</button>';
+		$html .= '<p id="ekc-result-validation" class="ekc-validation-error"></p>';
 		$html .= '<input id="action" name="action" type="hidden" value="storeresult" />';
 		$html .= '</div>';
 		$html .= '</form>';

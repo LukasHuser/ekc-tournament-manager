@@ -10,6 +10,7 @@ CHANGELOG ekc-tournament
 [x] Removed attributes 'camping count' and 'breakfast count' from teams overview table
 [x] Swiss System: save single result: mark missing results
 [x] Swiss System: validate missing results before starting next round
+[x] Swiss System: validate result on shareable link page
 
 # Version 1.2.13
 [x] Fix timer: off by one minute

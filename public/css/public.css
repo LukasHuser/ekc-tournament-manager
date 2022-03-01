@@ -4,6 +4,10 @@
     color: #888;
 }
 
+.ekc-validation-error {
+    color: #f00;
+}
+
 .ekc-hidden {
     visibility: hidden;
 }
