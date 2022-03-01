@@ -9,6 +9,7 @@ CHANGELOG ekc-tournament
 [x] Additional attribute on teams: sports club / city (optional column for registration table)
 [x] Removed attributes 'camping count' and 'breakfast count' from teams overview table
 [x] Swiss System: save single result: mark missing results
+[x] Swiss System: validate missing results before starting next round
 
 # Version 1.2.13
 [x] Fix timer: off by one minute

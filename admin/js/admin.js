@@ -59,6 +59,7 @@
     $( ".ekc-selectmenu" ).selectmenu();
 
     /************************************************************************/
+
     /* country-selectmenu: extend selectmenu */
     $.widget( "ekc.country_selectmenu", $.ui.selectmenu, {
 
@@ -100,6 +101,7 @@
     });
 
     /***************************************************************************/
+
     /* combobox: extend autocomplete */
     /* based on demo from http://jqueryui.com/autocomplete/#combobox */
       $.widget( "ekc.teams_combobox", {
@@ -267,7 +269,9 @@
    
       $( ".ekc-teams-combobox" ).teams_combobox();
 
-      // save a single tournament result (instead of submitting the whole form)
+      /***************************************************************************/
+
+      /* save a single tournament result (instead of submitting the whole form) */
       var postTournamentResult = function( a ) {
         var resultId = $(a).data("resultid");
 
@@ -275,12 +279,12 @@
         var team2_score = $("#team2-score-" + resultId);
         var is_result_missing = (team1_score.val() === "") || (team2_score.val() === "");
         if (is_result_missing) {
-          team1_score.parent().addClass('ekc-result-missing');
-          team2_score.parent().addClass('ekc-result-missing');
+          team1_score.parent().addClass("ekc-result-missing");
+          team2_score.parent().addClass("ekc-result-missing");
         }
         else {
-          team1_score.parent().removeClass('ekc-result-missing');
-          team2_score.parent().removeClass('ekc-result-missing');
+          team1_score.parent().removeClass("ekc-result-missing");
+          team2_score.parent().removeClass("ekc-result-missing");
         }
 
         var postParams = new URLSearchParams();
@@ -306,6 +310,48 @@
         return false;
       }); 
 
+      /* validate if all results have been entered. */
+      var validateResults = function() {      
+        var has_missing_results = false;
+        var missing_results_text = "The following results are missing: ";
+        $(".ekc-result-missing").each(function() {
+          var result_id = $(this).data("resultid");
+          if ( result_id ) {
+            var team1_id = $("#team1-" + result_id).val();
+            var team2_id = $("#team2-" + result_id).val();
+            var pitch = $("#pitch-" + result_id).val();
+            var team1_name = team1_id;
+            var team2_name = team2_id; 
+            if ( ekc.teamsDropDownData ) {
+              team1_name = ekc.teamsDropDownData[team1_id];
+              team2_name = ekc.teamsDropDownData[team2_id];
+            }
+            if ( has_missing_results ) {
+              // ignore on first result
+              missing_results_text += ", ";
+            }
+            missing_results_text += team1_name + " vs " + team2_name; 
+            if ( pitch ) {
+              missing_results_text += " (pitch " + pitch + ")"; 
+            }
+            has_missing_results = true;
+          }
+        });
+
+        if ( has_missing_results ) {
+          $( "#swiss-system-new-round-form-validation-text" ).text(missing_results_text);
+        }
+        else {
+          $( "#swiss-system-new-round-form-validation-text" ).text("");
+        }
+        
+        return !has_missing_results;
+      };
+
+      $( "#swiss-system-new-round-form" ).submit(function(event){
+        return validateResults();
+      }); 
+      
   });
 
 })( jQuery );
