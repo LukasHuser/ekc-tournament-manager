@@ -5,6 +5,9 @@ CHANGELOG ekc-tournament
 [3] team / tournament: form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 
+# Version 1.2.15
+[x] Support for field 'club' in Elementor forms
+
 # Version 1.2.14
 [x] Additional attribute on teams: sports club / city (optional column for registration table)
 [x] Removed attributes 'camping count' and 'breakfast count' from teams overview table

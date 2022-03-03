@@ -120,6 +120,7 @@ class Ekc_Form_Action_Team_Registration extends Action_Base {
 		$email = $this->get_field_value( $fields, 'email' );
 		$phone = $this->get_field_value( $fields, 'phone' );
 		$country = $this->get_field_value( $fields, 'country' );
+		$club = $this->get_field_value( $fields, 'club' );
 
 		$team = new Ekc_Team();
 		$team->set_tournament_id( $tournament->get_tournament_id() );
@@ -129,6 +130,7 @@ class Ekc_Form_Action_Team_Registration extends Action_Base {
 		$team->set_email( $email );
 		$team->set_phone( $phone );
 		$team->set_country( $country );
+		$team->set_club( $club );
 		
 		$players = array();
 		if ( $team_name ) {
