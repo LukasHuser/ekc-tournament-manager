@@ -58,9 +58,10 @@ class Ekc_Database_Access {
 				'swiss_system_additional_rounds'	=> $tournament->get_swiss_system_additional_rounds(),
 				'swiss_system_slide_match_rounds'	=> $tournament->get_swiss_system_slide_match_rounds(),
 				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
+				'swiss_system_tiebreak_time'	=> $tournament->get_swiss_system_tiebreak_time(), 
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 			), 
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
@@ -87,10 +88,11 @@ class Ekc_Database_Access {
 				'swiss_system_additional_rounds'	=> $tournament->get_swiss_system_additional_rounds(),
 				'swiss_system_slide_match_rounds'	=> $tournament->get_swiss_system_slide_match_rounds(),
 				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
+				'swiss_system_tiebreak_time'	=> $tournament->get_swiss_system_tiebreak_time(), 
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
@@ -122,7 +124,7 @@ class Ekc_Database_Access {
 				   is_player_names_required, is_auto_backup_enabled, 
 				   tournament_system, elimination_rounds, elimination_max_points_per_round, 
 				   swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, 
-				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_start_pitch, 
+				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time, swiss_system_start_pitch, 
 				   shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  tournament_id = %d
@@ -146,7 +148,7 @@ class Ekc_Database_Access {
 				   is_player_names_required, is_auto_backup_enabled, 
 				   tournament_system, elimination_rounds, elimination_max_points_per_round, 
 				   swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, 
-				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_start_pitch, 
+				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time, swiss_system_start_pitch, 
 				   shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  code_name = %s
@@ -180,6 +182,7 @@ class Ekc_Database_Access {
 		$tournament->set_swiss_system_additional_rounds( $row->swiss_system_additional_rounds );
 		$tournament->set_swiss_system_slide_match_rounds( $row->swiss_system_slide_match_rounds );
 		$tournament->set_swiss_system_round_time( $row->swiss_system_round_time );
+		$tournament->set_swiss_system_tiebreak_time( $row->swiss_system_tiebreak_time );
 		$tournament->set_swiss_system_start_pitch( $row->swiss_system_start_pitch );
 		$tournament->set_shareable_link_url_prefix( $row->shareable_link_url_prefix );
 		$tournament->set_shareable_link_email_text( $row->shareable_link_email_text );
@@ -340,7 +343,7 @@ class Ekc_Database_Access {
 			SELECT t.team_id, t.tournament_id, t.name, 
 			       LOWER(t.country) as country, t.club,
 				   t.is_active, t.email, t.phone, t.registration_date, 
-				   t.camping_count, t.breakfast_count, 
+				   t.camping_count, t.breakfast_count, t.is_registration_fee_paid,
 				   t.is_on_wait_list, t.registration_order, 
 				   t.seeding_score, t.initial_score, t.virtual_rank, 
 				   t.shareable_link_id
@@ -385,6 +388,7 @@ class Ekc_Database_Access {
 		$team->set_registration_date( strval( $row->registration_date ));
 		$team->set_camping_count( $row->camping_count );
 		$team->set_breakfast_count( $row->breakfast_count );
+		$team->set_registration_fee_paid( boolval( $row->is_registration_fee_paid ));
 		$team->set_on_wait_list( boolval( $row->is_on_wait_list ));
 		$team->set_registration_order( $row->registration_order );
 		$team->set_seeding_score( $row->seeding_score );
@@ -428,7 +432,7 @@ class Ekc_Database_Access {
 			SELECT t.team_id, t.tournament_id, t.name, 
 			       LOWER(t.country) as country, t.club,
 				   t.is_active, t.email, t.phone, t.registration_date, 
-				   t.camping_count, t.breakfast_count, 
+				   t.camping_count, t.breakfast_count, t.is_registration_fee_paid,
 				   t.is_on_wait_list, t.registration_order, 
 				   t.seeding_score, t.initial_score, t.virtual_rank, 
 				   t.shareable_link_id 
@@ -461,7 +465,7 @@ class Ekc_Database_Access {
 			SELECT t.team_id, t.tournament_id, t.name, 
 			       LOWER(t.country) as country, t.club, 
 				   t.is_active, t.email, t.phone, t.registration_date, 
-				   t.camping_count, t.breakfast_count, 
+				   t.camping_count, t.breakfast_count, t.is_registration_fee_paid,
 				   t.is_on_wait_list, t.registration_order, 
 				   t.seeding_score, t.initial_score, t.virtual_rank, 
 				   t.shareable_link_id
@@ -547,7 +551,7 @@ class Ekc_Database_Access {
 			SELECT  'team_id', 'name',
 			        'country', 'club',
 			        'active', 'email', 'phone', 'registration_date', 'order', 
-					'camping', 'breakfast', 
+					'camping', 'breakfast', 'registration_fee_paid',
 					'wait_list', 'seeding_score', 'initial_score', 'virtual_rank',
 					'players'
 			UNION ALL
@@ -556,6 +560,7 @@ class Ekc_Database_Access {
 					case when t.is_active = 1 then 'yes' else 'no' end as is_active, 
 					t.email, t.phone, t.registration_date, t.registration_order, 
 					t.camping_count, t.breakfast_count, 
+					case when t.is_registration_fee_paid = 1 then 'yes' else 'no' end as registration_fee_paid,
 					case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list, 
 					t.seeding_score, t.initial_score, t.virtual_rank,
                     GROUP_CONCAT( CONCAT(p.first_name, ' ', p.last_name, ' (', p.country, ')') SEPARATOR ', ') as players
@@ -563,7 +568,7 @@ class Ekc_Database_Access {
 			LEFT OUTER JOIN {$wpdb->prefix}ekc_player p
 			ON t.team_id = p.team_id
 			WHERE t.tournament_id = %d
-			GROUP BY t.team_id, t.registration_order, t.name, t.country, t.club, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
+			GROUP BY t.team_id, t.registration_order, t.name, t.country, t.club, t.is_active, t.email, t.phone, t.registration_date, t.camping_count, t.breakfast_count, t.is_registration_fee_paid, t.is_on_wait_list, t.seeding_score, t.initial_score, t.virtual_rank
 			",
 			$tournament_id),
 		ARRAY_A );
@@ -586,13 +591,14 @@ class Ekc_Database_Access {
 				'registration_date'	=> $team->get_registration_date(),
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
+				'is_registration_fee_paid'	=> intval( $team->is_registration_fee_paid()),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list()),
 				'registration_order' => $team->get_registration_order(),
 				'seeding_score'	=> $team->get_seeding_score(),
 				'initial_score'	=> $team->get_initial_score(),
 				'virtual_rank'	=> $team->get_virtual_rank(),
 			), 
-			array( '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ) 
+			array( '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ) 
 		);
 
 		$team_id = $wpdb->insert_id;
@@ -628,6 +634,7 @@ class Ekc_Database_Access {
 				'phone'			=> $this->truncate_string( $team->get_phone(), 50 ),
 				'camping_count'	=> $team->get_camping_count(),
 				'breakfast_count'	=> $team->get_breakfast_count(),
+				'is_registration_fee_paid'	=> intval( $team->is_registration_fee_paid() ),
 				'is_on_wait_list'	=> intval( $team->is_on_wait_list() ),
 				'registration_order' => $team->get_registration_order(),
 				'seeding_score'	=> $team->get_seeding_score(),
@@ -635,7 +642,7 @@ class Ekc_Database_Access {
 				'virtual_rank'	=> $team->get_virtual_rank(),
 			),
 			array( 'team_id'		=> $team->get_team_id() ),
-			array( '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ),
+			array( '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%d' ),
 			array( '%d' )
 		);
 
@@ -650,7 +657,7 @@ class Ekc_Database_Access {
 			SELECT team_id, tournament_id, name, 
 			       LOWER(country) as country, club, 
 				   is_active, email, phone, registration_date, 
-				   camping_count, breakfast_count, 
+				   camping_count, breakfast_count, is_registration_fee_paid,
 				   is_on_wait_list, registration_order, 
 				   seeding_score, initial_score, virtual_rank, 
 				   shareable_link_id 

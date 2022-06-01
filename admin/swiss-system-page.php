@@ -137,7 +137,7 @@ class Ekc_Swiss_System_Admin_Page {
       $this->show_delete_round_link( $tournament, $current_round );
     }
 
-    if ( ! $show_ranking && $tournament->get_swiss_system_round_time() > 0 && $current_round > 0 ) {
+    if ( ! $show_ranking && $current_round > 0 ) {
       $this->show_timer( $tournament, $current_round );
     }
 
@@ -215,20 +215,45 @@ class Ekc_Swiss_System_Admin_Page {
   }
 
   private function show_timer( $tournament, $current_round ) {
+    if ( ! $tournament->get_swiss_system_round_time() > 0 && ! $tournament->get_swiss_system_tiebreak_time() > 0) {
+      return;
+    }
+
     $db = new Ekc_Database_Access();
     $round_start_time = $db->get_tournament_round_start( $tournament->get_tournament_id(), $current_round );
 
     if ( $round_start_time ) {
-      $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
-      $round_end_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_round_time() + 1) . 'M')); // add minutes
       $now = new DateTime();
-      $time_left = '0';
-      if ( $round_end_date > $now ) {
-        $time_left = $now->diff( $round_end_date )->format('%i');
+      ?><p>round <?php _e( $current_round ) ?> started at <?php _e( $round_start_time ) ?>.<?php    
+
+      $is_round_finished = false;
+      if ( $tournament->get_swiss_system_round_time() > 0 ) {
+        $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
+        $round_end_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_round_time()) . 'M')); // add minutes
+        $time_left = 0;
+        if ( $round_end_date > $now ) {
+          $time_left = intval( $now->diff( $round_end_date )->format('%i') ) + 1; // i for minutes, +1 for 'rounding up' 
+        }
+        else {
+          $is_round_finished = true;
+        }
+        ?> <strong><?php _e( $time_left ) ?></strong> minutes left for round.<?php
       }
-      ?> 
-      <p>round <?php _e( $current_round ) ?> started at <?php _e( $round_start_time ) ?>. <strong><?php _e( $time_left ) ?></strong> minutes left.
-      &nbsp;<a href="?page=ekc-swiss&amp;action=swiss-system-start-timer&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $current_round ) ?>">reset timer</a> &nbsp;
+      if ( ! $is_round_finished && $tournament->get_swiss_system_tiebreak_time() > 0 ) {
+        $tiebreak_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
+        $tiebreak_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_tiebreak_time()) . 'M')); // add minutes
+        if ( $tiebreak_date > $now ) {
+          $time_until_tiebreak = intval( $now->diff( $tiebreak_date )->format('%i') ) + 1; // i for minutes, +1 for 'rounding up'
+          ?> <strong>&nbsp;<?php _e( $time_until_tiebreak ) ?></strong> minutes until tie break.<?php
+        }
+        else {
+          $time_since_tiebreak = intval( $tiebreak_date->diff( $now )->format('%i') ); // i for minutes
+          if ( $time_since_tiebreak < 30 ) {
+            ?> <strong>&nbsp;<?php _e( $time_since_tiebreak ) ?></strong> minutes since tie break.<?php
+          }
+        }
+      }
+      ?>&nbsp;<a href="?page=ekc-swiss&amp;action=swiss-system-start-timer&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $current_round ) ?>">reset timer</a> &nbsp;
       </p>
       <?php
     }

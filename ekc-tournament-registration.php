@@ -7,7 +7,7 @@ Description:  Allows registering teams for an EKC Kubb tournament and displaying
 			  While this plugin started as a simple team registration form, it now also features
 			  displaying of live results for elimination bracket tournaments and full management
 			  of a swiss system style tournament (with a few special rules for the EKC 1vs1 tournament).
-Version:      1.2.15
+Version:      1.2.16
 Author:       EKA European Kubb Association
 Author URI:   https://kubbeurope.com
 License:      Apache License, Version 2.0
@@ -31,8 +31,8 @@ under the License.
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) die;
 
-define( 'EKC_PLUGIN_VERSION', '1.2.15' );
-define( 'EKC_DATABASE_VERSION', '1.2.14' );
+define( 'EKC_PLUGIN_VERSION', '1.2.16' );
+define( 'EKC_DATABASE_VERSION', '1.2.16' );
 
 // Load database setup class
 require_once plugin_dir_path( __FILE__ ) . 'includes/database-setup.php';

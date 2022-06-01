@@ -18,6 +18,7 @@ class Ekc_Team implements JsonSerializable {
 	private $registration_date;
 	private $camping_count;
 	private $breakfast_count;
+	private $is_registration_fee_paid;
 	private $is_on_wait_list;
 	private $registration_order;
 	private $seeding_score;
@@ -115,6 +116,14 @@ class Ekc_Team implements JsonSerializable {
 		$this->breakfast_count = $breakfast_count;
 	}
 
+	public function is_registration_fee_paid() {
+		return $this->is_registration_fee_paid;
+	}
+
+	public function set_registration_fee_paid(bool $is_registration_fee_paid) {
+		$this->is_registration_fee_paid = $is_registration_fee_paid;
+	}
+	
 	public function is_on_wait_list() {
 		return $this->is_on_wait_list;
 	}

@@ -143,6 +143,102 @@ class Ekc_Elimination_Bracket_Helper {
 		}
 		return null;
 	}
+
+	public static function get_rank_numbers_for_result_type( $result_type ) {
+
+		// round of 8
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_1 ) {
+			return array("1", "8");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_2 ) {
+			return array("5", "4");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_3 ) {
+			return array("3", "6");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_4 ) {
+			return array("7", "2");
+		}
+
+		// round of 16
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_1 ) {
+			return array("1", "16");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_2 ) {
+			return array("9", "8");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_3 ) {
+			return array("5", "12");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_4 ) {
+			return array("13", "4");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_5 ) {
+			return array("3", "14");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_6 ) {
+			return array("11", "6");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_7 ) {
+			return array("7", "10");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_8 ) {
+			return array("15", "2");
+		}
+
+		// round of 32
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_1 ) {
+			return array("1", "32");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_2 ) {
+			return array("17", "16");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_3 ) {
+			return array("9", "24");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_4 ) {
+			return array("25", "8");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_5 ) {
+			return array("5", "28");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_6 ) {
+			return array("21", "12");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_7 ) {
+			return array("13", "20");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_8 ) {
+			return array("29", "4");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_9 ) {
+			return array("3", "30");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_10 ) {
+			return array("19", "14");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_11 ) {
+			return array("11", "22");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_12 ) {
+			return array("27", "6");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_13 ) {
+			return array("7", "26");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_14 ) {
+			return array("23", "10");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_15 ) {
+			return array("15", "18");
+		}
+		if ( $result_type === Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_16 ) {
+			return array("31", "2");
+		}		
+
+		// unknown result type
+		return array();
+	}
 }
 
 

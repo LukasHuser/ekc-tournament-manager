@@ -88,6 +88,9 @@ class Ekc_Tournaments_Admin_Page {
       if ( isset($_POST['swissroundtime'] ) ) {
 				$tournament->set_swiss_system_round_time( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissroundtime'] ) ) ) );
       }
+      if ( isset($_POST['swisstiebreaktime'] ) ) {
+				$tournament->set_swiss_system_tiebreak_time( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swisstiebreaktime'] ) ) ) );
+      }
       if ( isset($_POST['swissstartpitch'] ) ) {
 				$tournament->set_swiss_system_start_pitch( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissstartpitch'] ) ) ) );
 			}
@@ -192,7 +195,11 @@ class Ekc_Tournaments_Admin_Page {
           </div>
           <div class="ekc-control-group">
             <label for="swissroundtime">Time limit for a Swiss System round (setting a value will enable a timer)</label>
-            <input id="swissroundtime" name="swissroundtime" type="number" placeholder="30" />
+            <input id="swissroundtime" name="swissroundtime" type="number" placeholder="40" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swisstiebreaktime">Time limit until Tie Break (setting a value will enable a timer)</label>
+            <input id="swissrtiebreaktime" name="swisstiebreaktime" type="number" placeholder="30" />
           </div>
           <div class="ekc-control-group">
             <label for="swissstartpitch">Start pitch number (useful, if two tournaments run in parallel)</label>
@@ -282,7 +289,11 @@ class Ekc_Tournaments_Admin_Page {
           </div>
           <div class="ekc-control-group">
             <label for="swissroundtime">Time limit for a Swiss System round (setting a value will enable a timer)</label>
-            <input id="swissroundtime" name="swissroundtime" type="number" placeholder="30" value="<?php esc_html_e( $tournament->get_swiss_system_round_time() ) ?>" />
+            <input id="swissroundtime" name="swissroundtime" type="number" placeholder="40" value="<?php esc_html_e( $tournament->get_swiss_system_round_time() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swisstiebreaktime">Time limit until Tie Break (setting a value will enable a timer)</label>
+            <input id="swisstiebreaktime" name="swisstiebreaktime" type="number" placeholder="30" value="<?php esc_html_e( $tournament->get_swiss_system_tiebreak_time() ) ?>" />
           </div>
           <div class="ekc-control-group">
             <label for="swissstartpitch">Start pitch number (useful, if two tournaments run in parallel)</label>

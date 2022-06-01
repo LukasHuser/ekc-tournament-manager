@@ -88,6 +88,9 @@ class Ekc_Teams_Admin_Page {
 		if ( isset($_POST['breakfast'] ) ) {
 			$team->set_breakfast_count( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['breakfast'] ) ) ) );
 		}
+    if ( isset($_POST['registrationfee'] ) ) {
+			$team->set_registration_fee_paid( filter_var( $_POST['registrationfee'], FILTER_VALIDATE_BOOLEAN ) );
+		}
 		if ( isset($_POST['seedingscore'] ) ) {
 			$team->set_seeding_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['seedingscore'] ) ) ) );
     }
@@ -216,6 +219,10 @@ class Ekc_Teams_Admin_Page {
           <div class="ekc-control-group">
             <label for="breakfast">Breakfast (number of persons)</label>
             <input id="breakfast" name="breakfast" type="number" step="any" placeholder="3" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="registrationfee">Registration fee paid</label>
+            <input id="registrationfee" name="registrationfee" type="checkbox" />
           </div>
 <?php if ( $tournament->get_swiss_system_rounds() > 0 ) { ?>
           <div class="ekc-control-group">
@@ -346,6 +353,10 @@ class Ekc_Teams_Admin_Page {
           <div class="ekc-control-group">
             <label for="breakfast">Breakfast (number of persons)</label>
             <input id="breakfast" name="breakfast" type="number" step="any" placeholder="3" value="<?php esc_html_e( $team->get_breakfast_count() ) ?>"/>
+          </div>
+          <div class="ekc-control-group">
+            <label for="registrationfee">Registration fee paid</label>
+            <input id="registrationfee" name="registrationfee" type="checkbox" value="true" <?php $team->is_registration_fee_paid() ? _e( "checked" ) : _e('') ?> />
           </div>
 <?php if ( $tournament->get_swiss_system_rounds() > 0 ) { ?>
           <div class="ekc-control-group">

@@ -58,6 +58,7 @@ class Ekc_Shortcode_Helper {
 				'waitlist' => 'false',
 				'country' => 'true',
 				'club' => 'false',
+				'registration-fee' => 'false',
 			),
 			$atts,
 			'ekc-teams'
@@ -68,6 +69,7 @@ class Ekc_Shortcode_Helper {
 		$is_wait_list =  filter_var( $atts['waitlist'], FILTER_VALIDATE_BOOLEAN );
 		$show_country = filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
 		$show_club = filter_var( $atts['club'], FILTER_VALIDATE_BOOLEAN );
+		$show_registration_fee = filter_var( $atts['registration-fee'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( trim( $tournament_code_name ) === '' ) {
 			return '';
@@ -94,7 +96,7 @@ class Ekc_Shortcode_Helper {
 			if ( $is_sort_desc ) {
 				$c += count( $teams );
 			}
-			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country, $show_club );
+			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country, $show_club, $show_registration_fee );
 		}
 		else {
 			$teams = $db->get_active_teams($tournament->get_tournament_id(), $limit, $sort);
@@ -103,11 +105,11 @@ class Ekc_Shortcode_Helper {
 			if ( $is_sort_desc ) {
 				$c = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
 			}
-			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country, $show_club );
+			return $this->create_teams_table( $teams, $tournament, $c, $is_sort_desc, $show_country, $show_club, $show_registration_fee );
 		}
 	}
 
-	private function create_teams_table( $teams, $tournament, $counter, $is_sort_desc, $show_country, $show_club ) {
+	private function create_teams_table( $teams, $tournament, $counter, $is_sort_desc, $show_country, $show_club, $show_registration_fee ) {
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$header = array();
 		$header[] = array('<span class="dashicons dashicons-arrow-down-alt"></span>', 'ekc-column-no');
@@ -135,7 +137,7 @@ class Ekc_Shortcode_Helper {
 			if ( $show_country ) {
 				$row[] = $this->html_flag( esc_html($team->get_country()) );
 			}
-			$row[] = esc_html($team->get_name());
+			$row[] = $this->html_team( $team, $show_registration_fee );
 			if ( $show_club ) {
 				$row[] = esc_html($team->get_club());
 			}			
@@ -216,6 +218,10 @@ class Ekc_Shortcode_Helper {
 		return '<span></span>';
 	}
 
+	private function html_team( $team, $show_registration_fee = false ) {
+		return '<span class="' . ( $show_registration_fee && $team->is_registration_fee_paid() ? 'ekc-registration-fee' : '' ) . '">' . esc_html($team->get_name()) . '</span>';
+	}
+ 
 	public function shortcode_elimination_bracket( $atts ) {
 		// add refresh.js script when this shortcode is used
 		wp_enqueue_script( 'ekc-refresh' ); 
@@ -294,7 +300,7 @@ class Ekc_Shortcode_Helper {
 		return $this->bracket_round( 'quarterfinals', '1/4 Finals', $html );
 	}
 
-	private function bracket_round_of_16_div( $results ) {
+	private function bracket_round_of_16_div( $results, $show_country ) {
 		$db = new Ekc_Database_Access();
 		
 		$result_1_8_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_1);
@@ -313,7 +319,7 @@ class Ekc_Shortcode_Helper {
 		return $this->bracket_round( 'round-of-16', '1/8 Finals', $html );
 	}
 
-	private function bracket_round_of_32_div( $results ) {
+	private function bracket_round_of_32_div( $results, $show_country ) {
 		$db = new Ekc_Database_Access();
 
 		$result_1_16_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_1);
@@ -657,17 +663,39 @@ class Ekc_Shortcode_Helper {
 		$round_start_time = $db->get_tournament_round_start( $tournament->get_tournament_id(), $current_round );
 
 		if ( $round_start_time ) {
-		  $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
-		  $round_end_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_round_time() + 1) . 'M')); // add minutes
 		  $now = new DateTime();
-		  $time_left = '0';
-		  if ( $round_end_date > $now ) {
-			$time_left = $now->diff( $round_end_date )->format('%i');
+		  $display_text = '';
+		  $is_round_finished = false;
+		  if ( $tournament->get_swiss_system_round_time() ) {
+			  $round_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
+			  $round_end_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_round_time()) . 'M')); // add minutes
+			  $time_left = 0;
+			  if ( $round_end_date > $now ) {
+				$time_left = intval( $now->diff( $round_end_date )->format('%i') ) + 1; // i for minutes, +1 for 'rounding up'
+			  }
+			  else {
+				$is_round_finished = true;
+			  }
+			  $display_text .= 'Round '. $current_round . ': ' . $time_left . ' minutes left.';
 		  }
-		  return 'Round '. $current_round . ': ' . $time_left . ' minutes left.';
+		  if ( !$is_round_finished && $tournament->get_swiss_system_tiebreak_time() ) {
+			$tiebreak_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
+			$tiebreak_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_tiebreak_time()) . 'M')); // add minutes
+			if ( $tiebreak_date > $now ) {
+			  $time_until_tiebreak = intval( $now->diff( $tiebreak_date )->format('%i') ) + 1; // i for minutes, +1 for 'rounding up'
+			  $display_text .= ' Tie break starts in ' . $time_until_tiebreak . ' minutes.';
+			}
+			else {
+			  $time_since_tiebreak = intval( $tiebreak_date->diff( $now )->format('%i') ); // i for minutes
+			  if ( $time_since_tiebreak < 30) { 
+			  	$display_text .= ' Tie break since ' . $time_since_tiebreak . ' minutes.';
+			  }
+			}
+		  }
+		  return $display_text;
 		}
 
-		if ( $current_round > 0 && $tournament->get_swiss_system_round_time() ) {
+		if ( $current_round > 0 && ( $tournament->get_swiss_system_round_time() || $tournament->get_swiss_system_tiebreak_time() )) {
 			return 'Round ' . $current_round . ' not started yet.';
 		}
 		return '';
