@@ -53,6 +53,7 @@ class Ekc_Tournament_Registration {
 		$this->add_shortcodes();
 		$this->add_elementor_widgets();
 		$this->elementor_module_extensions();
+		$this->contact_form_7_integration();
 	}
 
 	private function check_database_version() {
@@ -130,6 +131,14 @@ class Ekc_Tournament_Registration {
 	private function elementor_module_extensions() {	
 		$module_helper = new Ekc_Module_Helper();
 		$this->loader->add_action( 'elementor_pro/init', $module_helper, 'elementor_forms_module_extension' );
+	}
+
+	private function contact_form_7_integration() {
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/modules/contact-form-7/contact-form-7-support.php';
+
+		$contact_form_7_support = new Ekc_Contact_Form_7_Support();
+		$this->loader->add_filter( 'shortcode_atts_wpcf7', $contact_form_7_support, 'custom_shortcode_atts_wpcf7_filter', 10, 3 );
+		$this->loader->add_action( 'wpcf7_submit', $contact_form_7_support, 'wpcf7_submit', 10, 2 );
 	}
 
 	private function load_model() {

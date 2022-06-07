@@ -6,6 +6,9 @@ CHANGELOG ekc-tournament
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
 [2] post-redirect-get and/or get-redirect-get for timer, start round, delete round etc.
 
+# Version 1.2.17
+[x] Support for Contact Form 7 plugin
+
 # Version 1.2.16
 [x] Bugfix: missing flags on elimination bracket
 [x] Elimination bracket: pre-defined positions in bracket for each rank
