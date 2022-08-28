@@ -7,7 +7,7 @@
  */
 class Ekc_Tournament_Backup implements JsonSerializable {
 
-	public const DATA_MODEL_VERSION = 5;
+	public const DATA_MODEL_VERSION = 6;
 
 	private $version = Ekc_Tournament_Backup::DATA_MODEL_VERSION;
 	private $export_date;

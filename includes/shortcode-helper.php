@@ -554,6 +554,7 @@ class Ekc_Shortcode_Helper {
 
 	private function create_swiss_round_table( $tournament, $results_for_round, $round, $show_country, $score_as_input = false ) {
 		$db = new Ekc_Database_Access();
+		$swiss_helper = new Ekc_Swiss_System_Helper();
 		$is_single_player = Ekc_Drop_Down_Helper::TEAM_SIZE_1 === $tournament->get_team_size();
 		$is_additional_round = $round > $tournament->get_swiss_system_rounds();
 		$max_points_per_round = $tournament->get_swiss_system_max_points_per_round();
@@ -594,6 +595,9 @@ class Ekc_Shortcode_Helper {
 			if ($team1) {
 				$team1_name = $team1->get_name();
 			}
+			else if ( Ekc_Team::is_bye_id( $result->get_team1_id() ) ) {
+				$team1_name = 'BYE';
+			}
 			$row[] = $team1_name;
 			$team1_score = '';
 			if ( ! is_null( $result->get_team1_score() ) ) {
@@ -618,6 +622,9 @@ class Ekc_Shortcode_Helper {
 			$team2_name = '';
 			if ($team2) {
 				$team2_name = $team2->get_name();
+			}
+			else if ( Ekc_Team::is_bye_id( $result->get_team2_id() ) ) {
+				$team2_name = 'BYE';
 			}
 			$row[] = $team2_name;
 			$team2_score = '';

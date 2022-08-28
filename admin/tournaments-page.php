@@ -94,6 +94,9 @@ class Ekc_Tournaments_Admin_Page {
       if ( isset($_POST['swissstartpitch'] ) ) {
 				$tournament->set_swiss_system_start_pitch( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissstartpitch'] ) ) ) );
 			}
+      if ( isset($_POST['swisspitchlimit'] ) ) {
+				$tournament->set_swiss_system_pitch_limit( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swisspitchlimit'] ) ) ) );
+			}
 			if ($has_data) {
 				$db = new Ekc_Database_Access();
 				if ( $action === 'new' ) {
@@ -205,6 +208,10 @@ class Ekc_Tournaments_Admin_Page {
             <label for="swissstartpitch">Start pitch number (useful, if two tournaments run in parallel)</label>
             <input id="swissstartpitch" name="swissstartpitch" type="number" placeholder="1" />
           </div>
+          <div class="ekc-control-group">
+            <label for="swisspitchlimit">Number of available pitches (optional). If the number of teams exceeds the number of pitches, additional BYEs will be added to the tournament.</label>
+            <input id="swisspitchlimit" name="swisspitchlimit" type="number" />
+          </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Create tournament</button>
             <input id="tournamentid" name="tournamentid" type="hidden" />
@@ -298,6 +305,10 @@ class Ekc_Tournaments_Admin_Page {
           <div class="ekc-control-group">
             <label for="swissstartpitch">Start pitch number (useful, if two tournaments run in parallel)</label>
             <input id="swissstartpitch" name="swissstartpitch" type="number" placeholder="1" value="<?php esc_html_e( $tournament->get_swiss_system_start_pitch() ) ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="swisspitchlimit">Number of available pitches (optional). If the number of teams exceeds the number of pitches, additional BYEs will be added to the tournament.</label>
+            <input id="swisspitchlimit" name="swisspitchlimit" type="number" value="<?php esc_html_e( $tournament->get_swiss_system_pitch_limit() ) ?>" />
           </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save tournament</button>

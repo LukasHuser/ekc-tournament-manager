@@ -60,8 +60,9 @@ class Ekc_Database_Access {
 				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
 				'swiss_system_tiebreak_time'	=> $tournament->get_swiss_system_tiebreak_time(), 
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
+				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
@@ -90,9 +91,10 @@ class Ekc_Database_Access {
 				'swiss_system_round_time'	=> $tournament->get_swiss_system_round_time(),
 				'swiss_system_tiebreak_time'	=> $tournament->get_swiss_system_tiebreak_time(), 
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
+				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
@@ -124,7 +126,8 @@ class Ekc_Database_Access {
 				   is_player_names_required, is_auto_backup_enabled, 
 				   tournament_system, elimination_rounds, elimination_max_points_per_round, 
 				   swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, 
-				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time, swiss_system_start_pitch, 
+				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time, 
+				   swiss_system_start_pitch, swiss_system_pitch_limit, 
 				   shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  tournament_id = %d
@@ -148,7 +151,8 @@ class Ekc_Database_Access {
 				   is_player_names_required, is_auto_backup_enabled, 
 				   tournament_system, elimination_rounds, elimination_max_points_per_round, 
 				   swiss_system_rounds, swiss_system_max_points_per_round, swiss_system_additional_rounds, 
-				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time, swiss_system_start_pitch, 
+				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time,
+				   swiss_system_start_pitch, swiss_system_pitch_limit, 
 				   shareable_link_url_prefix, shareable_link_email_text, shareable_link_sender_email
 			FROM   {$wpdb->prefix}ekc_tournament
 			WHERE  code_name = %s
@@ -184,6 +188,7 @@ class Ekc_Database_Access {
 		$tournament->set_swiss_system_round_time( $row->swiss_system_round_time );
 		$tournament->set_swiss_system_tiebreak_time( $row->swiss_system_tiebreak_time );
 		$tournament->set_swiss_system_start_pitch( $row->swiss_system_start_pitch );
+		$tournament->set_swiss_system_pitch_limit( $row->swiss_system_pitch_limit );
 		$tournament->set_shareable_link_url_prefix( $row->shareable_link_url_prefix );
 		$tournament->set_shareable_link_email_text( $row->shareable_link_email_text );
 		$tournament->set_shareable_link_sender_email( $row->shareable_link_sender_email );
@@ -328,6 +333,38 @@ class Ekc_Database_Access {
 			$tournament_code_name
 		));		
 		return $result;
+	}
+
+	public function get_teams_ordered_by_seeding( $tournament_id, $limit = 0 ) {
+		global $wpdb;
+		$limit = filter_var( $limit, FILTER_VALIDATE_INT );
+		$sql_limit = $limit > 0 ? ' LIMIT ' . $limit : '';
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT t.team_id, t.tournament_id, t.name, 
+			       LOWER(t.country) as country, t.club,
+				   t.is_active, t.email, t.phone, t.registration_date, 
+				   t.camping_count, t.breakfast_count, t.is_registration_fee_paid,
+				   t.is_on_wait_list, t.registration_order, 
+				   t.seeding_score, t.initial_score, t.virtual_rank, 
+				   t.shareable_link_id
+			FROM   {$wpdb->prefix}ekc_team t
+			ORDER BY t.seeding_score DESC
+			{$sql_limit}",
+			$tournament_id
+		));
+
+		$player_map = $this->get_players_map( $tournament_id, true );
+		$teams = array();
+		foreach ( $results as $row ) {
+			$team = $this->create_team_from_table_row( $row );
+			if ( array_key_exists( $team->get_team_id(), $player_map )) {
+				$team->set_players( $player_map[$team->get_team_id()] );
+			}
+			$teams[] = $team;
+		}
+		return $teams;
 	}
 
 	public function get_active_teams( $tournament_id, $limit = 0, $sort = 'asc') {

@@ -168,4 +168,9 @@ class Ekc_Tournament_Registration_Admin {
 		$backup_page = new Ekc_Tournaments_Backup_Page();
 		return $backup_page->download_backup_file();
 	}
+
+	public function intercept_redirect() {
+		$swiss_system_page = new Ekc_Swiss_System_Admin_Page();
+		return $swiss_system_page->intercept_redirect();
+	}
 }

@@ -116,11 +116,19 @@ class Ekc_Drop_Down_Helper {
 public static function teams_drop_down_data( $tournament_id ) {
 	$db = new Ekc_Database_Access();
 	$teams = $db->get_active_teams( $tournament_id );
-	$bye = new Ekc_Team();
-	$bye->set_team_id( Ekc_Team::TEAM_ID_BYE );
-	$bye->set_name( 'BYE' );
-	$teams[] = $bye;
 	$result = array();
+
+	$helper = new Ekc_Swiss_System_Helper();
+	$tournament = $db->get_tournament_by_id( $tournament_id );
+	if ( $helper->is_pitch_limit_mode( $tournament ) ) {
+		$teams = array_merge( $teams, $helper->get_byes_for_pitch_limit_mode( $tournament ) );
+	}
+	else if ( count($teams) % 2 == 1 ) {
+		$bye = new Ekc_Team();
+		$bye->set_team_id( Ekc_Team::TEAM_ID_BYE );
+		$bye->set_name( 'BYE' );
+		$teams[] = $bye;
+	}
 
 	?>
 	<script>

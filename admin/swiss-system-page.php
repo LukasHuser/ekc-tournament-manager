@@ -5,8 +5,27 @@
  */
 class Ekc_Swiss_System_Admin_Page {
 
+  public function intercept_redirect() {
+    $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+    if ( ! $page === 'ekc-swiss' ) {
+      return;
+    }
+
+    $action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+    if ( ! $action ) {
+      $action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+    }
+    if ( $action === 'swiss-system-start-timer'
+      || $action === 'delete-round'
+      || $action === 'swiss-system-store-round'
+      || $action === 'swiss-system-new-round') {
+        $this->create_swiss_system_page();
+      }
+  }
+
 	public function create_swiss_system_page() {
 	
+    $admin_helper = new Ekc_Admin_Helper();
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
     $tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
     $team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
@@ -16,7 +35,7 @@ class Ekc_Swiss_System_Admin_Page {
     }
     elseif ( $action === 'swiss-system-start-timer' ) {
       $this->start_timer( $tournament_id, $tournament_round );
-      $this->show_swiss_system( $tournament_id, $tournament_round );
+      $admin_helper->swiss_system_redirect( $tournament_id, $tournament_round );
     }
     elseif ( $action === 'swiss-system-ranking' ) {
       $this->show_swiss_system( $tournament_id, null, true );
@@ -31,7 +50,7 @@ class Ekc_Swiss_System_Admin_Page {
     }
     elseif ( $action === 'delete-round' ) {
       $this->delete_round( $tournament_id );
-      $this->show_swiss_system( $tournament_id, null, true );
+      $admin_helper->swiss_system_redirect( $tournament_id, null );
     }
 		else {
 			// handle POST
@@ -48,15 +67,19 @@ class Ekc_Swiss_System_Admin_Page {
           $helper = new Ekc_Backup_Helper();
           $helper->store_backup( $tournament_id );
         }
-        $this->show_swiss_system( $tournament_id, $tournament_round );
+        $admin_helper->swiss_system_redirect( $tournament_id, $tournament_round );
       }
       elseif ( $action === 'swiss-system-store-result' ) {
         $existing_result = $db->get_tournament_result_by_id( $result_id );
         $this->update_results( array( $existing_result ) );
+        // no answer needed - handled by ajax call
       }
       elseif ( $action === 'swiss-system-new-round' ) {
-        Ekc_Swiss_System_Helper::calculate_and_store_next_round( $tournament, $tournament_round );
-        $this->show_swiss_system( $tournament_id, $tournament_round );
+        $existing_results = $db->get_tournament_results( $tournament_id, Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, '', $tournament_round );
+        if ( ! $existing_results ) {
+          Ekc_Swiss_System_Helper::calculate_and_store_next_round( $tournament, $tournament_round );
+        }
+        $admin_helper->swiss_system_redirect( $tournament_id, $tournament_round );
       }
       elseif ( $action === 'swiss-system-store-ranking' ) {
         $this->store_ranking( $tournament_id );
@@ -187,6 +210,7 @@ class Ekc_Swiss_System_Admin_Page {
   }
 
   private function show_start_round_button( $tournament, $next_round ) {
+    $button_disabled = '';
     $button_label = 'Start round ' . $next_round;
     if ( $next_round > $tournament->get_swiss_system_rounds() ) {
       $button_label = 'Start additional round ' . ($next_round - $tournament->get_swiss_system_rounds() );
@@ -197,13 +221,28 @@ class Ekc_Swiss_System_Admin_Page {
            Make sure that all players/teams on the waiting list are set to inactive!</p>
         <p>If possible, always try to run a Swiss System tournament with an even number of players/teams.
            If the number of players/teams is odd, an additional player/team "BYE" is automatically added.</p> <?php
+      
+      if ( $tournament->get_swiss_system_pitch_limit() ) {
+        $helper = new Ekc_Swiss_System_Helper();
+        if ( $helper->is_pitch_limit_mode( $tournament ) ) {
+          if ( $helper->is_pitch_limit_valid( $tournament ) ) {
+            ?><p>Note: The number of players/teams exceeds the number of available pitches for this tournament. 
+            Additional "BYEs" will be added to match the number of players/teams.</p><?php
+          }
+          else {
+            $button_disabled = 'disabled';
+            ?><p><strong>Warning:</strong> The number of players/teams exceeds the number of available pitches for this tournament. 
+            Please reduce the number of players/teams or the number of rounds, or increase the number of available pitches.</p><?php
+          }
+        } 
+      } 
     }
 ?>
 <!-- onsubmit handler for validation defined in admin.js -->
-<form class="ekc-form" id="swiss-system-new-round-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+<form class="ekc-form confirm" id="swiss-system-new-round-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
   <fieldset>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary button"><?php esc_html_e( $button_label ) ?></button>
+        <button type="submit" <?php esc_html_e( $button_disabled ) ?> class="ekc-button ekc-button-primary button"><?php esc_html_e( $button_label ) ?></button>
         <p id="swiss-system-new-round-form-validation-text"></p>
         <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
         <input id="tournamentround" name="tournamentround" type="hidden" value="<?php esc_html_e( $next_round ) ?>" />

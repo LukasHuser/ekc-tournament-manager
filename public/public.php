@@ -93,8 +93,7 @@ class Ekc_Tournament_Registration_Public {
 			$helper = new Ekc_Shortcode_Helper();
 			$helper->shortcode_shareable_link_handle_post();
 
-			// set http header
-			header( "Location: {$_SERVER['REQUEST_URI']}", true, 303 );
+			wp_safe_redirect($_SERVER['REQUEST_URI'], 303);
 			
 			// exit script - do not write any output
 			exit;

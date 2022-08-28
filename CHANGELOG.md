@@ -2,9 +2,12 @@ CHANGELOG ekc-tournament
 ========================
 
 ## TODO
-[3] team / tournament: form input/label alignment  
+[3] team / tournament: Re-design form input/label alignment  
 [3] performance: drop down lists as key / value (integer keys instead of string keys) 
-[2] post-redirect-get and/or get-redirect-get for timer, start round, delete round etc.
+
+# Version 1.2.18
+[x] Swiss System: Pitch limit mode, if number of teams exceeds number of available pitches.
+[x] Swiss System: Avoid duplicate execution of non-idempotent actions: Confirmation box for forms (prevent double click). URL redirect after POST and/or GET requests (prevent page reload).
 
 # Version 1.2.17
 [x] Support for Contact Form 7 plugin

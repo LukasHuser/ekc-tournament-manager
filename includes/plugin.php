@@ -79,6 +79,7 @@ class Ekc_Tournament_Registration {
 		}
 
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/admin-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/tournaments-page.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/tournaments-table.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/teams-page.php';
@@ -98,6 +99,10 @@ class Ekc_Tournament_Registration {
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'export_teams_as_csv' );
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'download_backup_file' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_tournament_menu' );
+
+		// for the redirect pattern to work, we need to write http headers before any output is written
+		// we use the admin_init hook 
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_redirect' );
 	}
 
 	/**

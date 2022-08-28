@@ -7,6 +7,10 @@ class Ekc_Team implements JsonSerializable {
 
 	const TEAM_ID_BYE = 999999999;
 
+	public static function is_bye_id( $team_id ) {
+		return $team_id >= Ekc_Team::TEAM_ID_BYE;
+	}
+
 	private $team_id;
 	private $tournament_id;
 	private $name;

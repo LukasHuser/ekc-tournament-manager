@@ -52,7 +52,45 @@ class Ekc_Swiss_System_Helper {
 			$current_ranking = $current_ranking_without_top_teams;
 		}
 		
-		
+		// special pitch limit mode with additional BYEs if number of teams exceeds available pitches
+		$bye_matchups = array();
+		if ( $helper->is_pitch_limit_mode( $tournament ) ) {
+			$teams_count = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
+			$byes_per_round = $teams_count - ($tournament->get_swiss_system_pitch_limit() * 2);
+			$total_number_of_byes = $byes_per_round * $tournament->get_swiss_system_rounds();
+			$teams_without_bye_count = $teams_count - $total_number_of_byes;
+			$teams_without_bye = array();
+			if ( $teams_without_bye_count > 0 ) {
+	 			// The top seeded teams in the tournament do not get a BYE
+				$teams_without_bye = $db->get_teams_ordered_by_seeding( $tournament->get_tournament_id(), $teams_without_bye_count );
+			}
+
+			// highest ranked teams according to current ranking get a BYE, if they weren't matched against a BYE already
+			$current_ranking_without_byes = array();
+			$additional_bye_id = Ekc_Team::TEAM_ID_BYE + 1;
+			$byes_left = $byes_per_round;
+			
+			foreach( $current_ranking as $team ) {
+				if ( $team->get_team_id() === Ekc_Team::TEAM_ID_BYE ) {
+					continue;
+				}
+				if ( $byes_left > 0 && $helper->has_bye( $team, $teams_without_bye, $all_results ) ) {
+					$additional_bye =  new Ekc_Swiss_System_Team();
+					$additional_bye->set_team_id( $additional_bye_id );
+					$additional_bye->set_score( 0 );
+					$additional_bye->set_opponent_score( 0 );
+					$additional_bye_id++;
+					$matchup = array( $team, $additional_bye );
+					$bye_matchups[] = $matchup;
+					$byes_left--;
+				}
+				else {
+					$current_ranking_without_byes[] = $team;
+				}
+			}
+			$current_ranking = $current_ranking_without_byes;
+		}
+
 		$matchups = array();
 		if ( $next_round <= $tournament->get_swiss_system_slide_match_rounds() ) {
 			// do match slide
@@ -64,10 +102,10 @@ class Ekc_Swiss_System_Helper {
 			$matchups = $helper->match_top( $current_ranking, $all_results );
 		}
 
-		$helper->store_matchups( $tournament, $next_round, $matchups, $virtual_matchups );
+		$helper->store_matchups( $tournament, $next_round, $matchups, $virtual_matchups, $bye_matchups );
 	}
 
-	private function store_matchups( $tournament, $next_round, $matchups, $virtual_matchups ) {
+	private function store_matchups( $tournament, $next_round, $matchups, $virtual_matchups, $bye_matchups ) {
 		$db = new Ekc_Database_Access();
 		$tournament_id = $tournament->get_tournament_id();
 		$pitch = 1;
@@ -93,6 +131,14 @@ class Ekc_Swiss_System_Helper {
 
 			$db->insert_tournament_result( $result );
 			$pitch++;
+		}
+
+		foreach ( $bye_matchups as $matchup ) {
+			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
+			$result->set_virtual_result( false );
+			$result->set_pitch( '-' );
+
+			$db->insert_tournament_result( $result );
 		}
 	}
 	
@@ -273,6 +319,66 @@ class Ekc_Swiss_System_Helper {
 			}
 		}
 		return $matchups;
+	}
+
+
+	/***************************************************************************************************************************
+	 * Pitch limit mode
+	 ***************************************************************************************************************************/
+
+	public function is_pitch_limit_mode( $tournament ) {
+		$pitches = $tournament->get_swiss_system_pitch_limit();
+		if ( $pitches ) {
+			$db = new Ekc_Database_Access();
+			$teams = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
+			return $teams > ($pitches * 2) + 1;
+		}
+		return false;
+	}
+
+	public function is_pitch_limit_valid( $tournament ) {
+		$db = new Ekc_Database_Access();
+		$teams_count = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
+		$byes_per_round = $teams_count - ($tournament->get_swiss_system_pitch_limit() * 2);
+		$total_number_of_byes = $byes_per_round * $tournament->get_swiss_system_rounds();
+
+		return $teams_count >= $total_number_of_byes;
+	}
+
+	private function has_bye( $team, $teams_without_bye, $all_results ) {
+		foreach( $teams_without_bye as $team_without_bye ) {
+			if ( intval($team->get_team_id()) === intval($team_without_bye->get_team_id()) ) {
+				return false;
+			}
+		}
+		foreach( $all_results as $result ) {
+			if ( intval($result->get_team1_id()) === intval($team->get_team_id()) && Ekc_Team::is_bye_id( $result->get_team2_id() ) ) {
+				return false;
+			}
+			if ( intval($result->get_team2_id()) === intval($team->get_team_id()) && Ekc_Team::is_bye_id( $result->get_team1_id() ) ) {
+				return false;
+			} 
+		}
+		return true;
+	}
+
+	public function get_byes_for_pitch_limit_mode( $tournament ) {
+		$db = new Ekc_Database_Access();
+		if ( $this->is_pitch_limit_mode( $tournament ) ) {
+			$teams_count = $db->get_active_teams_count_by_tournament_id( $tournament->get_tournament_id() );
+			$byes_per_round = $teams_count - ($tournament->get_swiss_system_pitch_limit() * 2);
+			$byes = array();
+			$additional_bye_id = Ekc_Team::TEAM_ID_BYE + 1;
+			for ($i=0; $i<$byes_per_round; $i++) {
+				$additional_bye =  new Ekc_Team();
+				$additional_bye->set_team_id( $additional_bye_id );
+				$additional_bye->set_name( 'BYE ' . ($i + 1) );
+				$byes[] = $additional_bye;
+				$additional_bye_id++;
+			}
+			return $byes;
+		}
+		return array();
 	}
 }
 

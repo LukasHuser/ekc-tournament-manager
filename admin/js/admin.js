@@ -47,6 +47,32 @@
     }
     });
 
+    /* Confirmation popup for non-idempotent operations (such as starting a new swiss system round) */
+    /* matches all forms of the following form: <form class="confirm"></form> */
+    
+    // FIXME does not work together with validateResults
+    
+    /*
+    $('form.confirm').submit(function(event){
+      event.preventDefault();
+      var form = $(this)[0];
+
+      $.confirm({
+        title: "Confirm action",
+        content: "Do you want to continue?",
+        useBootstrap: false,
+        buttons: {
+          ok: function(){
+              form.submit(function(event){
+                return validateResults();
+              });
+          },
+          cancel: function(){}
+        }
+      });
+    });
+    */
+
     /* add datepicker  */
     $( ".ekc-datepicker" ).datepicker({
       dateFormat: "yy-mm-dd"
