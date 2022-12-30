@@ -3,7 +3,11 @@ CHANGELOG ekc-tournament
 
 ## TODO
 [3] team / tournament: Re-design form input/label alignment  
-[3] performance: drop down lists as key / value (integer keys instead of string keys) 
+[3] performance: drop down lists as key / value (integer keys instead of string keys)
+[2] drop down widget too small for long team names
+
+# Version 1.2.19
+[x] Compatibilty for Elementor 3.9.2
 
 # Version 1.2.18
 [x] Swiss System: Pitch limit mode, if number of teams exceeds number of available pitches.
