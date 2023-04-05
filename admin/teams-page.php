@@ -175,7 +175,7 @@ class Ekc_Teams_Admin_Page {
 		$tournament = $db->get_tournament_by_id( $tournament_id );
 ?>
   <div class="wrap">
-      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>" accept-charset="utf-8">
         <fieldset>
         <legend>Create a new team</legend>
 <?php if ( $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 || ! $tournament->is_player_names_required() ) { ?>
@@ -309,7 +309,7 @@ class Ekc_Teams_Admin_Page {
 		$tournament = $db->get_tournament_by_id($team->get_tournament_id());
 ?>
   <div class="wrap">
-      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>&amp;tournamentid=<?php esc_html_e($tournament->get_tournament_id() ) ?>" accept-charset="utf-8">
         <fieldset>
         <legend>Edit team</legend>
 <?php if ( $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 || ! $tournament->is_player_names_required() ) { ?>
