@@ -115,7 +115,7 @@ class Ekc_Tournaments_Admin_Page {
 ?>
 <div class="wrap">
 
-  <h1 class="wp-heading-inline"><?php _e( 'EKC Tournament Registration' ); ?></h1>
+  <h1 class="wp-heading-inline"><?php _e( 'EKC Tournament Manager' ); ?></h1>
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=new" class="page-title-action"><?php _e( 'New tournament' ); ?></a>
   <a href="?page=ekc-backup" class="page-title-action"><?php _e( 'Show backups' ); ?></a>
 

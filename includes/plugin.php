@@ -7,7 +7,7 @@
  * Maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  */
-class Ekc_Tournament_Registration {
+class Ekc_Tournament_Manager {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -39,7 +39,7 @@ class Ekc_Tournament_Registration {
 	 */
 	public function __construct() {
 		$this->version = EKC_PLUGIN_VERSION;
-		$this->plugin_name = 'EKC Tournament Registration';
+		$this->plugin_name = 'EKC Tournament Manager';
 
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/loader.php';
 		$this->loader = new Ekc_Loader();
@@ -91,7 +91,7 @@ class Ekc_Tournament_Registration {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-page.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-table.php';
 
-		$plugin_admin = new Ekc_Tournament_Registration_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Ekc_Tournament_Manager_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -113,7 +113,7 @@ class Ekc_Tournament_Registration {
 	 */
 	private function define_public_hooks() {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/public.php';
-		$plugin_public = new Ekc_Tournament_Registration_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Ekc_Tournament_Manager_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -206,5 +206,4 @@ class Ekc_Tournament_Registration {
 	public function get_version() {
 		return $this->version;
 	}
-
 }

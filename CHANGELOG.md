@@ -1,10 +1,10 @@
-CHANGELOG ekc-tournament
-========================
+CHANGELOG EKC Tournament Manager
+================================
 
-## TODO
-* (3) team / tournament: Re-design form input/label alignment  
-* (3) performance: drop down lists as key / value (integer keys instead of string keys)
-* (2) drop down widget too small for long team names
+## Version 2.0.0 / 2023-04-10
+* Re-name plugin to "EKC Tournament Manager"
+* Changed license to GPL v3
+* Use EKA Logo in admin menu
 
 ## Version 1.2.19
 * Compatibilty for Elementor 3.9.2

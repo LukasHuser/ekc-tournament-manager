@@ -3,7 +3,7 @@
 /**
  * The public-facing functionality of the plugin.
  */
-class Ekc_Tournament_Registration_Public {
+class Ekc_Tournament_Manager_Public {
 
 	/**
 	 * The ID of this plugin.

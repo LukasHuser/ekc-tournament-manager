@@ -6,7 +6,7 @@
 class Deactivator {
 
 	/**
-	 * TODO Probably nothing to do here...
+	 * Nothing to do here...
 	 */
 	public static function deactivate() {
 
