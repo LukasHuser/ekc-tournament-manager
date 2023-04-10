@@ -38,6 +38,11 @@ by Brandon Semilla\
 licensed under the MIT license\
 https://codepen.io/semibran/pen/VjmPJd
 
+jQuery-confirm\
+by Boniface Pereira\
+licensed under the MIT license\
+https://github.com/craftpip/jquery-confirm
+
 WordPress Plugin Boilerplate\
 by Devin Vinson\
 licensed under the GPL v2 or later\
