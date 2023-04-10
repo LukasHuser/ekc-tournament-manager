@@ -159,24 +159,24 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 	const COUNTRY_CZ = 'cz';
 	const COUNTRY_FR = 'fr';
 	const COUNTRY_DE = 'de';
-	const COUNTRY_IT = 'it';
-	const COUNTRY_ES = 'es';
-	const COUNTRY_SE = 'se';
-	const COUNTRY_CH = 'ch';
-	const COUNTRY_GB = 'gb';
-
-	const COUNTRY_DK = 'dk';
-	const COUNTRY_FI = 'fi';
-	const COUNTRY_GR = 'gr';
 	const COUNTRY_IE = 'ie';
-	const COUNTRY_LI = 'li';
+	const COUNTRY_IT = 'it';
 	const COUNTRY_LU = 'lu';
 	const COUNTRY_NL = 'nl';
 	const COUNTRY_NO = 'no';
 	const COUNTRY_PL = 'pl';
+	const COUNTRY_ES = 'es';
+	const COUNTRY_SE = 'se';
+	const COUNTRY_CH = 'ch';
+	const COUNTRY_GB = 'gb';
+	const COUNTRY_US = 'us';
+
+	const COUNTRY_DK = 'dk';
+	const COUNTRY_FI = 'fi';
+	const COUNTRY_GR = 'gr';
+	const COUNTRY_LI = 'li';
 	const COUNTRY_PT = 'pt';
 	const COUNTRY_TR = 'tr';
-	const COUNTRY_US = 'us';
 
 	const COUNTRY_UNDEFINED = 'eu'; // use 'eu' as iso code, this corresponds to the european flag in the drop down
 
@@ -186,26 +186,26 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 		Ekc_Drop_Down_Helper::COUNTRY_CZ => 'Czech Republic',
 		Ekc_Drop_Down_Helper::COUNTRY_FR => 'France',
 		Ekc_Drop_Down_Helper::COUNTRY_DE => 'Germany',
+		Ekc_Drop_Down_Helper::COUNTRY_IE => 'Ireland',
 		Ekc_Drop_Down_Helper::COUNTRY_IT => 'Italy',
+		Ekc_Drop_Down_Helper::COUNTRY_LU => 'Luxembourg',
 		Ekc_Drop_Down_Helper::COUNTRY_NL => 'Netherlands',
 		Ekc_Drop_Down_Helper::COUNTRY_NO => 'Norway',
+		Ekc_Drop_Down_Helper::COUNTRY_PL => 'Poland',
 		Ekc_Drop_Down_Helper::COUNTRY_ES => 'Spain',
 		Ekc_Drop_Down_Helper::COUNTRY_SE => 'Sweden',
 		Ekc_Drop_Down_Helper::COUNTRY_CH => 'Switzerland',
 		Ekc_Drop_Down_Helper::COUNTRY_GB => 'United Kingdom',
+		Ekc_Drop_Down_Helper::COUNTRY_US => 'USA',
 	);
 
 	const COUNTRY_OTHER = array(
 		Ekc_Drop_Down_Helper::COUNTRY_DK => 'Denmark',
 		Ekc_Drop_Down_Helper::COUNTRY_FI => 'Finland',
 		Ekc_Drop_Down_Helper::COUNTRY_GR => 'Greece',
-		Ekc_Drop_Down_Helper::COUNTRY_IE => 'Ireland',
 		Ekc_Drop_Down_Helper::COUNTRY_LI => 'Liechtenstein',
-		Ekc_Drop_Down_Helper::COUNTRY_LU => 'Luxembourg',
-		Ekc_Drop_Down_Helper::COUNTRY_PL => 'Poland',
 		Ekc_Drop_Down_Helper::COUNTRY_PT => 'Portugal',
 		Ekc_Drop_Down_Helper::COUNTRY_TR => 'Turkey',
-		Ekc_Drop_Down_Helper::COUNTRY_US => 'USA',
 	);
 
 	const COUNTRY_SPECIAL = array(
