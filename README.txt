@@ -27,12 +27,12 @@ This plugin provides support for [Elementor](https://elementor.com) and [Contact
 
 == Documentation ==
 
-See [Documentation](TODO Docs URL)
+See [Documentation](https://github.com/LukasHuser/ekc-tournament-manager/blob/main/doc/ekc-tournament-manager.md) on Github.
 
 == Changelog ==
 
-See [Changelog](TODO Github URL) on Github.
+See [Changelog](https://github.com/LukasHuser/ekc-tournament-manager/blob/main/CHANGELOG.md) on Github.
 
 == Source Code ==
 
-Source Code on Github: [TODO](TODO Github URL)
+Source code on Github: https://github.com/LukasHuser/ekc-tournament-manager

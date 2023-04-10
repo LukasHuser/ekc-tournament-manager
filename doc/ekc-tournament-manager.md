@@ -16,7 +16,7 @@ or install the plugin 'EKC Tournament Manager' through the WordPress plugin stor
 
 EKC Tournament Manager is free and open source software licensed under the [GPL v3 or later](http://www.gnu.org/licenses/gpl-3.0.html).
 
-The source code is available on Github: [TODO Github URL] 
+The source code is available on Github: https://github.com/LukasHuser/ekc-tournament-manager 
 
 ## WordPress Shortcode Reference
 
