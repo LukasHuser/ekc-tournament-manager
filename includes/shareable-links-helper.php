@@ -53,8 +53,6 @@ class Ekc_Shareable_Links_Helper {
 		$email_content = $this->replace_placeholder( $tournament->get_shareable_link_email_text(), $team->get_name(), $url );
 		$sender_email = $tournament->get_shareable_link_sender_email();
 
-		// convert new lines to html <br>
-		$email_content = nl2br( $email_content );
 		if ( $team->get_email() && $team->get_shareable_link_id() ) {
 			$this->send_mail( $team->get_email(), $tournament->get_name(), $email_content, $sender_email );
 		}

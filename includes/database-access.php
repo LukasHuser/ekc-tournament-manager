@@ -190,9 +190,21 @@ class Ekc_Database_Access {
 		$tournament->set_swiss_system_start_pitch( $row->swiss_system_start_pitch );
 		$tournament->set_swiss_system_pitch_limit( $row->swiss_system_pitch_limit );
 		$tournament->set_shareable_link_url_prefix( $row->shareable_link_url_prefix );
-		$tournament->set_shareable_link_email_text( $row->shareable_link_email_text );
+		$tournament->set_shareable_link_email_text( $this->transform_legacy_email_text( $row->shareable_link_email_text ) );
 		$tournament->set_shareable_link_sender_email( $row->shareable_link_sender_email );
 		return $tournament;
+	}
+
+	/**
+	 * Legacy support for old email text: add <p> and <br> tags if required, by calling wpautop()
+	 */
+	private function transform_legacy_email_text( $email_text ) {
+		// if text starts with an opening html bracket "<"
+		if ( strncmp($email_text, "<", 1) === 0 ) {
+			return $email_text;
+		}
+		// else add <p> and <br>
+		return wpautop( $email_text );
 	}
 
 

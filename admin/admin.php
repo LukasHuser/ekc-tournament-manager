@@ -39,44 +39,27 @@ class Ekc_Tournament_Manager_Admin {
 	 * Register the stylesheets for the admin area.
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Plugin_Name_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Plugin_Name_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
 		wp_enqueue_style( 'jquery-ui-theme', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.min.css', array(), $this->version, 'all' );
 		wp_enqueue_style( 'jquery-confirm', plugin_dir_url( __FILE__ ) . 'css/jquery-confirm.min.css', array(), $this->version, 'all' );
 		wp_enqueue_style( 'selectmenu-flags', plugin_dir_url( __FILE__ ) . 'css/flag-icon.min.css', array(), $this->version, 'all' );
 		wp_enqueue_style( $this->plugin_name . '-admin', plugin_dir_url( __FILE__ ) . 'css/admin.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
 	 * Register the JavaScript for the admin area.
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Plugin_Name_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Plugin_Name_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
 		wp_enqueue_script( 'jquery-confirm', plugin_dir_url( __FILE__ ) . 'js/jquery-confirm.min.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name . '-admin', plugin_dir_url( __FILE__ ) . 'js/admin.js', array( 'jquery', 'jquery-ui-core', 'jquery-ui-button', 'jquery-ui-menu', 'jquery-ui-tooltip', 'jquery-ui-datepicker', 'jquery-ui-selectmenu', 'jquery-ui-autocomplete' ), $this->version, false );
+	}
 
+	/**
+	 * Callback for filter 'mce_external_plugins'.
+	 * Returns a map with TinyMCE plugin name to plugin url.
+	 */
+	public function tinymce_external_plugins( $plugins ) {
+		$plugins['ekc-emoticons'] = plugin_dir_url( __FILE__ ) . 'tinymce/plugins/ekc-emoticons/plugin.js';
+		return $plugins;
 	}
 
 	public function add_tournament_menu() {

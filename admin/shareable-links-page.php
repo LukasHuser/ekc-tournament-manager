@@ -104,10 +104,22 @@ class Ekc_Shareable_links_Admin_Page {
           </div>
           <div class="ekc-control-group">
             <p>E-mail content supports the following placeholders:<br/>
-              ${team} will be replaced by the team name.<br/>
-              ${url} will be replaced by the full shareable link url.<br/>
-              You can use html in this e-mail text.</p>
-            <textarea id="emailcontent" name="emailcontent" cols="50" rows="5"><?php esc_html_e( $email_content ) ?></textarea>
+              <b>${team}</b> will be replaced by the team name.<br/>
+              <b>${url}</b> will be replaced by the full shareable link url.
+            </p>
+              <?php
+                $editor_settings = array(
+                  'tinymce' => array(
+                    'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,bullist,numlist,removeformat,|,link,unlink,image,emoticons,undo,redo',
+                    'toolbar2' => '',
+                  ),
+                  'wpautop' => false,
+                  'textarea_rows' => 15,
+                  'quicktags' => true,
+                  'media_buttons' => false,
+                );
+                wp_editor( $email_content, 'emailcontent', $editor_settings );
+              ?>        
           </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save</button>
@@ -116,7 +128,7 @@ class Ekc_Shareable_links_Admin_Page {
         </fieldset>
       </form>
     <?php
-      }
+  }
   
 	public function show_shareable_links_table( $tournament_id ) {
 		$links_table = new Ekc_Shareable_Links_Table( $tournament_id );

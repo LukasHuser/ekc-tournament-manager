@@ -1,6 +1,10 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.0.1 / 2023-04-20
+* Use built-in tinymce editor for shareable link e-mails
+* Custom tinymce plugin for emojis
+
 ## Version 2.0.0 / 2023-04-10
 * Re-name plugin to "EKC Tournament Manager"
 * Changed license to GPL v3

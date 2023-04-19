@@ -96,6 +96,8 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		$this->loader->add_filter( 'mce_external_plugins', $plugin_admin, 'tinymce_external_plugins' );
+
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'export_teams_as_csv' );
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'download_backup_file' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_tournament_menu' );
