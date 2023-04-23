@@ -1,6 +1,9 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.0.2 / 2023-04-23
+* Update JsonMapper library (Support for PHP >= 7.4)
+
 ## Version 2.0.1 / 2023-04-20
 * Use built-in tinymce editor for shareable link e-mails
 * Custom tinymce plugin for emojis
