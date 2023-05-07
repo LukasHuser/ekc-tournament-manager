@@ -27,9 +27,9 @@ class Ekc_Backup_Helper {
 	}
 
 	private function pretty_filesize( $bytes, $decimals = 2 ) {
-		$sz = 'BKMGTP';
+		$sz = 'BKMGTP'; // bytes, kilo, mega, giga, tera, peta
 		$factor = floor( (strlen( $bytes ) - 1) / 3 );
-		return sprintf( "%.{$decimals}f", $bytes / pow( 1024, $factor )) . @$sz[$factor];
+		return sprintf( "%.{$decimals}f", $bytes / pow( 1024, $factor )) . $sz[intval($factor)];
 	}
 
 	public function export_as_json( $tournament_id ) {
