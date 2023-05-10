@@ -1,6 +1,10 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.0.3 / 2023-05-11
+* Additional input validation
+* Backups: Support for PHP 8
+
 ## Version 2.0.2 / 2023-04-23
 * Update JsonMapper library (Support for PHP >= 7.4)
 
