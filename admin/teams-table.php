@@ -50,14 +50,17 @@ class Ekc_Teams_Table extends WP_List_Table {
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
 		$db = new Ekc_Database_Access();
-		$teams = $db->get_all_teams_as_table( $this->tournament_id, $_REQUEST['orderby'], $_REQUEST['order'], $this->get_filter() );
+		$order_by_column = isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null;  
+		$order = isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null;
+		// $order_by_column and $order are validated in get_all_teams_as_table
+		$teams = $db->get_all_teams_as_table( $this->tournament_id, $order_by_column, $order, $this->get_filter() );
 		$this->items = $teams;
 	}
 
 	private function get_filter() {
 		$filter = array();
 		if ( isset( $_REQUEST['filter-active'] ) ) {
-			$filter_active = $_REQUEST['filter-active'];
+			$filter_active = sanitize_text_field( wp_unslash( $_REQUEST['filter-active'] ) );
 			if ( $filter_active === 'yes' ) {
 				$filter['is_active'] = '1';
 			}
@@ -66,7 +69,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 			}
 		}
 		if ( isset( $_REQUEST['filter-wait-list'] ) ) {
-			$filter_wait_list = $_REQUEST['filter-wait-list'];
+			$filter_wait_list = sanitize_text_field( wp_unslash( $_REQUEST['filter-wait-list'] ) );
 			if ( $filter_wait_list === 'yes' ) {
 				$filter['is_on_wait_list'] = '1';
 			}
@@ -75,7 +78,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 			}
 		}
 		if ( isset( $_REQUEST['filter-country'] ) ) {
-			$filter_country = $_REQUEST['filter-country'];
+			$filter_country = sanitize_text_field( wp_unslash( $_REQUEST['filter-country'] ) );
 			if ( in_array( $filter_country, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
 				$filter['country'] = $filter_country;
 			}
@@ -85,7 +88,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 	function column_name( $item ) {
 		$actions = array();
-		$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', $_REQUEST['page'], 'edit', $item['team_id'], $_REQUEST['tournamentid']);
+		$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', esc_html( $_REQUEST['page'] ), 'edit', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
 
 		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
 	}
@@ -93,10 +96,10 @@ class Ekc_Teams_Table extends WP_List_Table {
 	function column_is_active( $item ) {
 		$actions = array();
 		if ( filter_var($item['is_active'], FILTER_VALIDATE_BOOLEAN) ) {
-			$actions['inactivate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Inactivate</a>', $_REQUEST['page'], 'inactivate', $item['team_id'], $_REQUEST['tournamentid']);
+			$actions['inactivate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Inactivate</a>', esc_html( $_REQUEST['page'] ), 'inactivate', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
 		}
 		else {
-			$actions['activate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Activate</a>', $_REQUEST['page'], 'activate', $item['team_id'], $_REQUEST['tournamentid']);
+			$actions['activate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Activate</a>', esc_html( $_REQUEST['page'] ), 'activate', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
 		}
 		return sprintf('%s %s', $item['is_active'], $this->row_actions($actions) );
 	}
@@ -104,10 +107,10 @@ class Ekc_Teams_Table extends WP_List_Table {
 	function column_is_on_wait_list( $item ) {
 		$actions = array();
 		if ( filter_var($item['is_on_wait_list'], FILTER_VALIDATE_BOOLEAN) ) {
-			$actions['offwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Remove</a>', $_REQUEST['page'], 'offwaitlist', $item['team_id'], $_REQUEST['tournamentid']);
+			$actions['offwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Remove</a>', esc_html( $_REQUEST['page'] ), 'offwaitlist', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
 		}
 		else {
-			$actions['onwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Add</a>', $_REQUEST['page'], 'onwaitlist', $item['team_id'], $_REQUEST['tournamentid']);
+			$actions['onwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Add</a>', esc_html( $_REQUEST['page'] ), 'onwaitlist', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
 		}
 
 		return sprintf('%s %s', $item['is_on_wait_list'], $this->row_actions($actions) );

@@ -39,7 +39,10 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
 		$db = new Ekc_Database_Access();
-		$teams = $db->get_all_shareable_links_as_table( $this->tournament_id, $_REQUEST['orderby'], $_REQUEST['order'], $this->get_filter() );
+		$order_by_column = isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null;  
+		$order = isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null;
+		// $order_by_column and $order are validated in get_all_shareable_links_as_table
+		$teams = $db->get_all_shareable_links_as_table( $this->tournament_id, $order_by_column, $order, $this->get_filter() );
 		
 		$this->items = $this->append_shareable_link( $teams );
 	}
@@ -67,7 +70,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 	private function get_filter() {
 		$filter = array();
 		if ( isset( $_REQUEST['filter-active'] ) ) {
-			$filter_active = $_REQUEST['filter-active'];
+			$filter_active = sanitize_text_field( wp_unslash( $_REQUEST['filter-active'] ) );
 			if ( $filter_active === 'yes' ) {
 				$filter['is_active'] = '1';
 			}
@@ -76,7 +79,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 			}
 		}
 		if ( isset( $_REQUEST['filter-country'] ) ) {
-			$filter_country = $_REQUEST['filter-country'];
+			$filter_country = sanitize_text_field( wp_unslash( $_REQUEST['filter-country'] ) );
 			if ( in_array( $filter_country, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
 				$filter['country'] = $filter_country;
 			}
@@ -86,8 +89,8 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 
 	function column_name( $item ) {
 		$actions = array();
-		$actions['generate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Generate link</a>', $_REQUEST['page'], 'generate', $item['team_id'], $_REQUEST['tournamentid']);
-		$actions['send'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Send link</a>', $_REQUEST['page'], 'send', $item['team_id'], $_REQUEST['tournamentid']);
+		$actions['generate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Generate link</a>', esc_html( $_REQUEST['page'] ), 'generate', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+		$actions['send'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Send link</a>', esc_html( $_REQUEST['page'] ), 'send', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
 
 		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
 	}

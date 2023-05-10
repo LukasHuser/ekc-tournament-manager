@@ -46,14 +46,24 @@ class Ekc_Shareable_links_Admin_Page {
   private function handle_post( $tournament_id ) {
     $url_prefix = '';
     $email_content = '';
+    $sender_email = '';
 		if ( isset($_POST['urlprefix'] ) ) {
-			$url_prefix = sanitize_text_field( wp_unslash( $_POST['urlprefix'] ) );
+			$url_prefix = sanitize_url( wp_unslash( $_POST['urlprefix'] ) );
     }
     if ( isset($_POST['emailcontent'] ) ) {
-			$email_content = wp_unslash( $_POST['emailcontent'] );
+			$email_content = wp_kses_post( wp_unslash( $_POST['emailcontent'] ) );
     }
     if ( isset($_POST['senderemail'] ) ) {
-			$sender_email =  wp_unslash( $_POST['senderemail'] );
+      // Supported formats: plain e-mail address (fullname@mail.tld) or mailbox address (Full Name <fullname@mail.tld>).
+      // Parse an validate e-mail address separately.
+			$sender_email_raw = wp_unslash( $_POST['senderemail'] );
+      $mailbox_parts = explode('<', $sender_email_raw );
+      if ( count( $mailbox_parts ) > 1 ) {
+        $sender_email = sanitize_text_field( $mailbox_parts[0] ) . ' <' . sanitize_email( $mailbox_parts[1] ) . '>';
+      }
+      else {
+        $sender_email = sanitize_email( $sender_email_raw );
+      }
     }
     if ( $tournament_id ) {
       $helper = new Ekc_Shareable_Links_Helper();

@@ -31,10 +31,12 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
 		$data = $this->tournaments_backup_data;
-		if( $_REQUEST['orderby'] === 'file_name' ) {
+		$order_by_column = isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null;  
+		$order = isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null;
+		if( $order_by_column === 'file_name' ) {
 			uasort($data, array( $this, 'sort_by_file_name' ) );
 		}
-		if ( $_REQUEST['order'] === 'desc' ) {
+		if ( $order === 'desc' ) {
 			$data = array_reverse( $data );
 		}
 		
@@ -48,8 +50,8 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 	function column_file_name( $item ) {
 		$file_name_encoded = rawurlencode( $item['file_name'] );
 		$actions = array(
-			'download' => sprintf('<a href="?page=%s&amp;action=%s&amp;backup=%s">Download</a>', $_REQUEST['page'], 'download', $file_name_encoded ),
-			'delete' => sprintf('<a href="?page=%s&amp;action=%s&amp;backup=%s">Delete</a>', $_REQUEST['page'], 'delete', $file_name_encoded ),
+			'download' => sprintf('<a href="?page=%s&amp;action=%s&amp;backup=%s">Download</a>', esc_html( $_REQUEST['page'] ), 'download', $file_name_encoded ),
+			'delete' => sprintf('<a href="?page=%s&amp;action=%s&amp;backup=%s">Delete</a>', esc_html( $_REQUEST['page'] ), 'delete', $file_name_encoded ),
 			'jsonimport' => sprintf('<a href="?page=%s&amp;action=%s&amp;backup=%s">Import</a>', 'ekc-tournaments', 'jsonimport', $file_name_encoded ),
 		);
 
