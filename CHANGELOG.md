@@ -1,6 +1,9 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.0.4 / 2023-05-13
+* Set WordPress stable tag to 2.0.4
+
 ## Version 2.0.3 / 2023-05-11
 * Additional input validation
 * Backups: Support for PHP 8
