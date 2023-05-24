@@ -13,9 +13,8 @@ Developed for and used at the EKC European Kubb Championships.
 
 == Description ==
 
-This plugin allows you to manage [Swiss system](https://en.wikipedia.org/wiki/Swiss-system_tournament) style tournaments,
-including registration of teams and players. It is developed for and used at the 
-[EKC European Kubb Championships](https://kubbeurope.com). 
+This plugin allows you to manage [Swiss system](https://en.wikipedia.org/wiki/Swiss-system_tournament) style tournaments, including registration of teams and players.
+It is developed for and used at the [EKC European Kubb Championships](https://kubbeurope.com). 
 
 This plugin provides support for [Elementor](https://elementor.com) and [Contact Form 7](https://contactform7.com) registration forms.
 
@@ -35,4 +34,4 @@ See [Changelog](https://github.com/LukasHuser/ekc-tournament-manager/blob/main/C
 
 == Source Code ==
 
-Source code on Github: https://github.com/LukasHuser/ekc-tournament-manager
+Source code on Github: <https://github.com/LukasHuser/ekc-tournament-manager>
