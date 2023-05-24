@@ -1,6 +1,9 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.0.5 / 2023-06-24
+* Store backup data in wp-content/uploads instead of the plugin directory
+
 ## Version 2.0.4 / 2023-05-13
 * Set WordPress stable tag to 2.0.4
 
