@@ -6,7 +6,13 @@
 class Ekc_Backup_Helper {
 
 	public function backup_path() {
-		return plugin_dir_path( dirname( __FILE__, 2 ) ) . 'backup_data/';
+		$upload_dir = wp_upload_dir();
+		$upload_basedir = $upload_dir['basedir']; // /path/to/wp-content/uploads
+		$backup_dir = $upload_basedir . '/ekc-tournament-manager/backup_data/';
+		if ( ! file_exists( $backup_dir ) ) {
+			wp_mkdir_p( $backup_dir );
+		}
+		return $backup_dir;
 	}
 
 	public function safe_move_uploaded_file( $original_name, $temp_file ) {
