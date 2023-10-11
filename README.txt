@@ -26,7 +26,9 @@ This plugin provides support for [Elementor](https://elementor.com) and [Contact
 
 == Documentation ==
 
-See [Documentation](https://github.com/LukasHuser/ekc-tournament-manager/blob/main/doc/ekc-tournament-manager.md) on Github.
+Information about this plugin, including a step-by-step tutorial, is available at <https://kubb.live/ekc-tournament-manager>
+
+[Technical documentation](https://github.com/LukasHuser/ekc-tournament-manager/blob/main/doc/ekc-tournament-manager.md) is available on Github.
 
 == Changelog ==
 
