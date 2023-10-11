@@ -78,13 +78,14 @@ class Ekc_Backup_Helper {
 		$tournament_id = $db->insert_tournament( $import->get_tournament() );
 
 		$helper = new Ekc_Shareable_Links_Helper();
-		$helper->store_shareable_links_content( $tournament_id, '', $import->get_tournament()->get_shareable_link_email_text(), $import->get_tournament()->get_shareable_link_sender_email() );
+		$helper->store_shareable_links_content( $tournament_id, $import->get_tournament()->get_shareable_link_url_prefix(), $import->get_tournament()->get_shareable_link_email_text(), $import->get_tournament()->get_shareable_link_sender_email() );
 		
 		$team_id_map = array();
 		foreach ( $import->get_teams() as $team ) {
 			$old_team_id = $team->get_team_id();
 			$team->set_tournament_id( $tournament_id );
 			$new_team_id = $db->insert_team( $team );
+			$db->update_shareable_link_id( $new_team_id, $team->get_shareable_link_id() );
 			$team_id_map[$old_team_id] = $new_team_id;
 		}
 		foreach ( $import->get_results() as $result ) {
