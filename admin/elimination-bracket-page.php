@@ -30,7 +30,8 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $helper->store_backup( $tournament_id );
         }
       }
-			$this->show_elimination_bracket( $tournament_id );
+      $admin_helper = new Ekc_Admin_Helper();
+      $admin_helper->elimination_bracket_redirect( $tournament_id );
 		}
   }
   

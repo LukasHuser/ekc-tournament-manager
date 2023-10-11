@@ -55,14 +55,31 @@ class Ekc_Admin_Helper {
 	 * Redirect to same url and enforce a GET reload to avoid re-sending form data through POST,
      * or re-executing an action trough GET parameter 'action'. 
      *
-     * Tournament id and round are added as get parameters (if provided) 
+     * Tournament id and round are added as get parameters (if provided). 
 	 * 
      * return HTTP 303 See Other
 	 * see https://en.wikipedia.org/wiki/HTTP_303
 	 */
 	public function swiss_system_redirect( $tournament_id, $tournament_round ) {
+        $this-redirect_internal( 'swiss-system', $tournament_id, $tournament_round );
+	}
+
+    /**
+	 * Redirect to same url and enforce a GET reload to avoid re-sending form data through POST,
+     * or re-executing an action trough GET parameter 'action'. 
+     *
+     * Tournament id is added as get parameters (if provided).
+	 * 
+     * return HTTP 303 See Other
+	 * see https://en.wikipedia.org/wiki/HTTP_303
+	 */
+	public function elimination_bracket_redirect( $tournament_id ) {
+        $this->redirect_internal( 'elimination-bracket', $tournament_id, null );
+	}
+
+    private function redirect_internal( $action, $tournament_id, $tournament_round ) {
         $redirect_url = $_SERVER['REQUEST_URI'];
-        $redirect_url = $this->add_or_replace_url_parameter( $redirect_url, 'action', 'swiss-system' );
+        $redirect_url = $this->add_or_replace_url_parameter( $redirect_url, 'action', $action );
         if ( $tournament_id ) {
             $redirect_url = $this->add_or_replace_url_parameter( $redirect_url, 'tournamentid', $tournament_id );
         }
@@ -73,7 +90,7 @@ class Ekc_Admin_Helper {
         wp_safe_redirect( $redirect_url, 303);
 		// exit script - do not write any output
 		exit;
-	}
+    }
 
     private function add_or_replace_url_parameter( $url, $param, $param_value ) {
         $base_url = strtok( $url, '?' );
