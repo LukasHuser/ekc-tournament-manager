@@ -85,7 +85,8 @@ class Ekc_Database_Setup {
 			virtual_rank integer(10),
 			shareable_link_id varchar(50),
 			PRIMARY KEY  (team_id),
-			KEY i_tournament_id (tournament_id)
+			KEY i_tournament_id (tournament_id),
+			KEY i_shareable_link_id (shareable_link_id)
 		) $charset_collate;";
 
 		$player_table_sql = 
