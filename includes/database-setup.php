@@ -50,7 +50,7 @@ class Ekc_Database_Setup {
 			swiss_system_start_pitch integer(10),
 			swiss_system_pitch_limit integer(10),
 			shareable_link_url_prefix varchar(500),
-			shareable_link_email_text varchar(5000),
+			shareable_link_email_text mediumtext,
 			shareable_link_sender_email varchar(500),
 			PRIMARY KEY  (tournament_id),
 			UNIQUE KEY uc_code_name (code_name)

@@ -863,7 +863,7 @@ class Ekc_Database_Access {
 			array( 
 				'shareable_link_url_prefix'	=> $this->truncate_string( $tournament->get_shareable_link_url_prefix(), 500 ),
 				'shareable_link_sender_email'	=> $this->truncate_string( $tournament->get_shareable_link_sender_email(), 500 ),
-				'shareable_link_email_text' => $this->truncate_string( $tournament->get_shareable_link_email_text(), 5000 ),
+				'shareable_link_email_text' => $this->truncate_string( $tournament->get_shareable_link_email_text(), 100000 ),
 			),
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
 			array( '%s' ),
