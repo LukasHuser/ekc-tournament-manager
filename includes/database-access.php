@@ -1134,17 +1134,18 @@ class Ekc_Database_Access {
 		);
 
 		// temporary table 3: opponent score per team
+		// the opponent score is calculated without the score of direct matches
 		$wpdb->query( $wpdb->prepare( 
 			"
 			CREATE TEMPORARY TABLE {$wpdb->prefix}ekc_temp_opponent_score
 			SELECT x.team_id team_id, SUM(x.opp_score) opponent_score
 			FROM (
-			  SELECT rx.team1_id team_id, s.score opp_score
+			  SELECT rx.team1_id team_id, s.score - rx.team2_score opp_score 
 			  FROM   {$wpdb->prefix}ekc_result rx
 			  JOIN   {$wpdb->prefix}ekc_temp_score1 s on s.team_id = rx.team2_id
 			  WHERE  rx.tournament_id = %d and rx.stage = %s
 			  UNION ALL
-			  SELECT rx.team2_id team_id, s.score opp_score
+			  SELECT rx.team2_id team_id, s.score - rx.team1_score opp_score
 			  FROM   {$wpdb->prefix}ekc_result rx
 			  JOIN   {$wpdb->prefix}ekc_temp_score2 s on s.team_id = rx.team1_id
 			  WHERE  rx.tournament_id = %d and rx.stage = %s) x
