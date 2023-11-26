@@ -171,6 +171,7 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 	const COUNTRY_GB = 'gb';
 	const COUNTRY_US = 'us';
 
+	const COUNTRY_HR = 'hr';
 	const COUNTRY_DK = 'dk';
 	const COUNTRY_FI = 'fi';
 	const COUNTRY_GR = 'gr';
@@ -200,6 +201,7 @@ public static function teams_drop_down($id, $selected_key, $selected_value ) {
 	);
 
 	const COUNTRY_OTHER = array(
+		Ekc_Drop_Down_Helper::COUNTRY_HR => 'Croatia',
 		Ekc_Drop_Down_Helper::COUNTRY_DK => 'Denmark',
 		Ekc_Drop_Down_Helper::COUNTRY_FI => 'Finland',
 		Ekc_Drop_Down_Helper::COUNTRY_GR => 'Greece',
