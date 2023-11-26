@@ -21,6 +21,7 @@
 }
 
 .ekc-combobox-input {
+  width: 35ch;
   margin: 0;
   padding: 5px 10px;
 }
