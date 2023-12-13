@@ -6,8 +6,23 @@
  */
 class Ekc_Elimination_Bracket_Admin_Page {
 
+  public function intercept_redirect() {
+    $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+    if ( ! $page === 'ekc-bracket' ) {
+      return;
+    }
+
+    $action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+    if ( ! $action ) {
+      $action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+    }
+    if ( $action === 'elimination-bracket-store') {
+        $this->create_elimination_bracket_page();
+    }
+  }
+
 	public function create_elimination_bracket_page() {
-	
+
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
 		if ( $action === 'elimination-bracket' ) {
@@ -29,9 +44,9 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $helper = new Ekc_Backup_Helper();
           $helper->store_backup( $tournament_id );
         }
+        $admin_helper = new Ekc_Admin_Helper();
+        $admin_helper->elimination_bracket_redirect( $tournament_id );
       }
-      $admin_helper = new Ekc_Admin_Helper();
-      $admin_helper->elimination_bracket_redirect( $tournament_id );
 		}
   }
   

@@ -61,7 +61,7 @@ class Ekc_Admin_Helper {
 	 * see https://en.wikipedia.org/wiki/HTTP_303
 	 */
 	public function swiss_system_redirect( $tournament_id, $tournament_round ) {
-        $this-redirect_internal( 'swiss-system', $tournament_id, $tournament_round );
+        $this->redirect_internal( 'swiss-system', $tournament_id, $tournament_round );
 	}
 
     /**

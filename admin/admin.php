@@ -153,8 +153,13 @@ class Ekc_Tournament_Manager_Admin {
 		return $backup_page->download_backup_file();
 	}
 
-	public function intercept_redirect() {
+	public function intercept_swiss_system_redirect() {
 		$swiss_system_page = new Ekc_Swiss_System_Admin_Page();
 		return $swiss_system_page->intercept_redirect();
+	}
+
+	public function intercept_elimination_bracket_redirect() {
+		$elimination_bracket_page = new Ekc_Elimination_Bracket_Admin_Page();
+		return $elimination_bracket_page->intercept_redirect();
 	}
 }

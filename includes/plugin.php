@@ -104,7 +104,8 @@ class Ekc_Tournament_Manager {
 
 		// for the redirect pattern to work, we need to write http headers before any output is written
 		// we use the admin_init hook 
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_redirect' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_swiss_system_redirect' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_elimination_bracket_redirect' );
 	}
 
 	/**
