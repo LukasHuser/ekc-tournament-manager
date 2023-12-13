@@ -163,6 +163,8 @@ class Ekc_Tournament_Manager {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/elimination-bracket-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/swiss-system-team.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/swiss-system-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/nation-trophy-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/nation-trophy-rank-description.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/backup/tournament-backup.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/backup/backup-helper.php';
 	}

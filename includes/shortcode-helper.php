@@ -11,6 +11,7 @@ class Ekc_Shortcode_Helper {
 		add_shortcode( 'ekc-elimination-bracket', array ( $this, 'shortcode_elimination_bracket' ) );
 		add_shortcode( 'ekc-swiss-system', array ( $this, 'shortcode_swiss_system' ) );
 		add_shortcode( 'ekc-link', array( $this, 'shortcode_shareable_link') );
+		add_shortcode( 'ekc-nation-trophy', array( $this, 'shortcode_nation_trophy' ) );
 	}
 
 	public function shortcode_registered_teams_count( $atts ) {
@@ -154,7 +155,7 @@ class Ekc_Shortcode_Helper {
 				}
 				$row[] = $row_content;
 			}
-			$html_body .= $this->html_table_row( $row );
+			$html_body .= $this->html_team_table_row( $row );
 			if ( $is_sort_desc ) {
 				$counter--;
 			}
@@ -164,10 +165,10 @@ class Ekc_Shortcode_Helper {
 		}
 		$html_body = $this->html_table_body($html_body);
 		
-		return $this->html_table( $html_header . $html_body );
+		return $this->html_team_table( $html_header . $html_body );
 	}
 
-	private function html_table( $inner ) {
+	private function html_team_table( $inner ) {
 		return '<table class="ekc-table ekc-team-table">' . $inner . '</table>';
 	}
 
@@ -188,7 +189,7 @@ class Ekc_Shortcode_Helper {
 		return '<tbody class="ekc-tbody">' . $inner . '</tbody>';
 	}
 
-	private function html_table_row( $row, $id = '', $is_excluded = false, $rowspan = '' ) {
+	private function html_team_table_row( $row, $id = '', $is_excluded = false, $rowspan = '' ) {
 		$id_part = $id ? ' id="' . esc_html( $id ) . '" ' : '';
 		$excluded_part = $is_excluded ? ' ekc-excluded-team' : '';
 		$result = '<tr' . $id_part .  ' class="ekc-tr' . $excluded_part . '">';
@@ -544,12 +545,12 @@ class Ekc_Shortcode_Helper {
 			}
 			$row[] = esc_html($team->get_name());
 			$row[] = strval( $ranking->get_total_score() ) . '&nbsp;/&nbsp;' . strval( $ranking->get_opponent_score() );
-			$html_body .= $this->html_table_row( $row, 'rank-' . $counter, $is_excluded );
+			$html_body .= $this->html_team_table_row( $row, 'rank-' . $counter, $is_excluded );
 			$counter++;
 		}
 		$html_body = $this->html_table_body($html_body);
 		
-		return $this->html_table( $html_header . $html_body );
+		return $this->html_team_table( $html_header . $html_body );
 	}
 
 	private function create_swiss_round_table( $tournament, $results_for_round, $round, $show_country, $score_as_input = false ) {
@@ -607,7 +608,7 @@ class Ekc_Shortcode_Helper {
 				$team1_score = $this->html_score_input( $team1_score, 'team1-score-' . $result->get_result_id(), $max_points_per_round );
 			}
 			$row[] = $team1_score;
-			$html_body .= $this->html_table_row( $row, 'pitch-' . $result->get_pitch(), false, 'rowspan' );
+			$html_body .= $this->html_team_table_row( $row, 'pitch-' . $result->get_pitch(), false, 'rowspan' );
 
 			// row for team2
 			$row = array();
@@ -635,11 +636,11 @@ class Ekc_Shortcode_Helper {
 				$team2_score = $this->html_score_input( $team2_score, 'team2-score-' . $result->get_result_id(), $max_points_per_round );
 			}
 			$row[] = $team2_score;
-			$html_body .= $this->html_table_row( $row, '', false, 'rowspan-omit' );
+			$html_body .= $this->html_team_table_row( $row, '', false, 'rowspan-omit' );
 		}
 		$html_body = $this->html_table_body($html_body);
 		
-		return $this->html_table( $html_header . $html_body );
+		return $this->html_team_table( $html_header . $html_body );
 	}
 
 	private function html_score_input( $score_value, $html_id, $max_points_per_round ) {
@@ -814,5 +815,102 @@ class Ekc_Shortcode_Helper {
 		}
 		$db = new Ekc_Database_Access();
 		$db->update_tournament_result( $existing_result );
+	}
+
+	public function shortcode_nation_trophy( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'tournament-1vs1' => '',
+				'tournament-3vs3' => '',
+				'tournament-6vs6' => '',
+			),
+			$atts,
+			'ekc-nation-trophy'
+		);
+		$tournament_1vs1_code_name = $atts['tournament-1vs1'];
+		$tournament_3vs3_code_name = $atts['tournament-3vs3'];
+		$tournament_6vs6_code_name = $atts['tournament-6vs6'];
+		
+		if ( trim( $tournament_1vs1_code_name ) === ''
+			|| trim( $tournament_3vs3_code_name ) === '' 
+			|| trim( $tournament_6vs6_code_name ) === '') {
+			return '';
+		}
+
+		$db = new Ekc_Database_Access();
+		$helper = new Ekc_Nation_Trophy_Helper();
+
+		$country_total_score = array(); // map: country code => total score for country
+		$country_teams = array(); // map: country code => ordered list of team ids (sorted by tournament and score)
+		$team_description = array(); // map: team_id => Ekc_Nation_Trophy_Rank_Description
+		$helper->collect_nation_trophy_results( $tournament_6vs6_code_name, Ekc_Nation_Trophy_Helper::NATION_TROPHY_TOURNAMENT_TYPE_6VS6, $country_total_score, $country_teams, $team_description );
+		$helper->collect_nation_trophy_results( $tournament_3vs3_code_name, Ekc_Nation_Trophy_Helper::NATION_TROPHY_TOURNAMENT_TYPE_3VS3, $country_total_score, $country_teams, $team_description );
+		$helper->collect_nation_trophy_results( $tournament_1vs1_code_name, Ekc_Nation_Trophy_Helper::NATION_TROPHY_TOURNAMENT_TYPE_1VS1, $country_total_score, $country_teams, $team_description );
+		
+		arsort( $country_total_score ); // sort descending by value
+
+		// add a separate table body with an expandable header row for each country
+		$html_table = '';
+		$counter = 1;
+		
+		foreach ( $country_total_score as $country_code => $country_score ) {
+			$html_body = $this->html_nation_trophy_header_row( $counter, $country_code, $country_score );
+			foreach ( $country_teams[$country_code] as $team_id ) {
+				$team = $db->get_team_by_id( $team_id );
+				$html_body .= $this->html_nation_trophy_table_row( $team->get_name(), $team_description[$team_id] );
+			}
+			
+			$html_body = $this->html_table_body($html_body); // wrap with <tbody>
+			$html_table .= $html_body;
+			$counter++;
+		}
+		
+		return $this->html_nation_trophy_table( $html_table );
+	}
+
+	private function html_nation_trophy_table( $html_body ) {
+		$html = '<table class="ekc-expandable-table ekc-nation-trophy-table">';
+		$html .= '<colgroup class="ekc-colgroup">';
+        $html .= '<col class="ekc-col ekc-column-nation-trophy-rank">';
+        $html .= '<col class="ekc-col ekc-column-nation-trophy-country">';
+        $html .= '<col class="ekc-col ekc-column-nation-trophy-tournament">';
+        $html .= '<col class="ekc-col ekc-column-nation-trophy-score">';
+		$html .= '</colgroup>';
+		$html .= $html_body . '</table>';
+		return $html;
+	}
+
+	private function html_nation_trophy_header_row( $rank, $country_code, $score ) {
+		$country_name = $this->get_country_name( $country_code );
+		$html = '<tr class="ekc-tr ekc-expandable-header-row">';
+		$html .= '<td class="ekc-td"><span class="dashicons dashicons-arrow-right"></span>' . esc_html( $rank ) . '</td>';
+		$html .= '<td class="ekc-td ekc-td-right-open">' . $this->html_flag( esc_html( $country_code ) ) . '&nbsp;&nbsp;' . esc_html( $country_name ) . '</td>';
+		$html .= '<td class="ekc-td ekc-td-left-open"></td>';
+		$html .= '<td class="ekc-td">' . esc_html( $score ) . '</td>';
+		return $html . '</tr>';
+	}
+
+	private function get_country_name( $country_code ) {
+		$country_name = Ekc_Drop_Down_Helper::COUNTRY_COMMON[$country_code];
+		if ( !$country_name ) {
+			$country_name =  Ekc_Drop_Down_Helper::COUNTRY_OTHER[$country_code];
+		}
+		if ( !$country_name ) {
+			$country_name =  Ekc_Drop_Down_Helper::COUNTRY_SPECIAL[$country_code];
+		}
+		return $country_name;
+	}
+
+	private function html_nation_trophy_table_row( $team_name, $rank_description ) {
+		$score_html = '-';
+		if ( $rank_description->get_score() > 0 ) {
+			$score_html = esc_html( $rank_description->get_score() );
+		}
+		$html = '<tr class="ekc-tr ekc-expandable-row">';
+		$html .= '<td class="ekc-td"></td>';
+		$html .= '<td class="ekc-td ekc-td-right-open">' . esc_html( $team_name ) . '</td>';
+		$html .= '<td class="ekc-td ekc-td-left-open">' . esc_html( $rank_description->get_description() ) . '</td>';
+		$html .= '<td class="ekc-td">' . $score_html . '</td>';
+		return $html . '</tr>';
 	}
 }

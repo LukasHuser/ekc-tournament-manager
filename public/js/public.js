@@ -60,4 +60,12 @@
 
   });
 
+  /* Expandable table rows */
+  $(function() {
+    $('.ekc-expandable-header-row').on('click', function() {
+		$(this).find('.dashicons').toggleClass('dashicons-arrow-down dashicons-arrow-right');
+        $(this).toggleClass('ekc-header-row-expanded').parent().children('.ekc-expandable-row').toggle();
+    })
+  });
+
 })( jQuery );

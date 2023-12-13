@@ -12,6 +12,7 @@
     visibility: hidden;
 }
 
+/* Registration fees */
 .ekc-registration-fee::before {
     content: "";
     background: #33aa33;
@@ -21,4 +22,56 @@
     display: inline-block;
     vertical-align: middle;
     margin-right: 0.3em;
+}
+
+/* Table */
+td.ekc-td-left-open {
+    border-left: none;
+} 
+
+td.ekc-td-right-open {
+    border-right: none;
+}
+
+/* Teams table */
+col.ekc-column-rank {
+    width: 10%;
+}
+
+col.ekc-column-no {
+    width: 10%;
+}
+
+col.ekc-column-country {
+    width: 10%;
+}
+
+col.ekc-column-score {
+    width: 15%;
+}
+
+/* Expandable table rows */
+tr.ekc-expandable-row {
+    display: none; /* expandable rows are collapsed by default */
+}
+
+tr.ekc-expandable-header-row td {
+    font-weight: bold;
+}
+
+/* Nation trophy table */
+col.ekc-column-nation-trophy-rank {
+    width: 10%;
+}
+
+col.ekc-column-nation-trophy-country {
+    width: 45%;
+}
+
+col.ekc-column-nation-trophy-tournament {
+    width: 30%;
+}
+
+col.ekc-column-nation-trophy-score {
+    width: 15%;
 }

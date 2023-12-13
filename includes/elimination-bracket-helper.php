@@ -135,6 +135,26 @@ class Ekc_Elimination_Bracket_Helper {
 		return array();
 	}
 
+	public static function is_1_16_finals( $result_type ) {
+		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_18_FINALS );
+	}
+
+	public static function is_1_8_finals( $result_type ) {
+		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS );
+	}
+
+	public static function is_1_4_finals( $result_type ) {
+		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS );
+	}
+
+	public static function is_1_2_finals( $result_type ) {
+		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS );
+	}
+
+	public static function is_finals( $result_type ) {
+		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS );
+	}
+
 	public static function get_result_for_result_type( $results, $result_type ) {
 		foreach ( $results as $result ) {
 		  if ( $result->get_result_Type() === $result_type ) {

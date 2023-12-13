@@ -146,6 +146,24 @@ The unique `linkid` allows to resolve the tournament, team and all results.
 3. Show the remaining time of the current round. The tournament and the current round are resolved through the `linkid`:\
 `[ekc-link type="timer"]`
 
+### ekc-nation-trophy
+
+An EKC European Kubb Champonships event consists of multiple separate tournaments, i.e. a 1vs1, 3vs3 and 6vs6 tournament.
+From these tournaments an overall nation score is calculated.
+
+#### Parameters
+
+| Parameter | Description | Default Value |
+| --------- | ----------- | ------------- |
+| **`tournament-1vs1`** | Tournament code name (as defined in tournament registration) of the 1vs1 tournament. Mandatory. | none |
+| **`tournament-3vs3`** | Tournament code name (as defined in tournament registration) of the 3vs3 tournament. Mandatory. | none |
+| **`tournament-6vs6`** | Tournament code name (as defined in tournament registration) of the 6vs6 tournament. Mandatory. | none |
+
+#### Examples
+
+1. Show the nation trophy scores for an EKC event with three tournaments (1vs1, 3vs3, 6vs6):\
+`[ekc-nation-trophy tournament-1vs1="EKC23-1" tournament-3vs3="EKC23-3" tournament-6vs6="EKC23-6"]`
+
 ## Contact Form 7 Integration
 
 Registration forms built with the popular WordPress plugin [Contact Form 7](https://contactform7.com) can be stored directly to the EKC Tournament Manager database.
