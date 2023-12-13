@@ -120,7 +120,10 @@ class Ekc_Database_Setup {
 			PRIMARY KEY  (result_id),
 			KEY i_tournament_id (tournament_id),
 			KEY i_team1_id (team1_id),
-			KEY i_team2_id (team2_id)
+			KEY i_team2_id (team2_id),
+    		KEY i_stage (stage),
+    		KEY i_result_type (result_type),
+    		KEY i_tournament_round (tournament_round)
 		) $charset_collate;";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
