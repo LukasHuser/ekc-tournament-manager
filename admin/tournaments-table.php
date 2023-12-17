@@ -71,6 +71,7 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 		$actions = array();
 		$actions['delete'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Delete</a>', esc_html( $_REQUEST['page'] ), 'delete', esc_html( $item['tournament_id'] ) );
 		$actions['backup'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Backup</a>', esc_html( $_REQUEST['page'] ), 'backup', esc_html( $item['tournament_id'] ) );
+		$actions['result-log'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">Result Log</a>', 'ekc-result-log', esc_html( $item['tournament_id'] ) );
 
 		return sprintf('%s %s', $item['swiss_system_rounds'], $this->row_actions($actions) );
 	}

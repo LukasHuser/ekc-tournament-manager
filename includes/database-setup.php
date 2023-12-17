@@ -23,6 +23,7 @@ class Ekc_Database_Setup {
 		$team_table       = $wpdb->prefix . "ekc_team";
 		$player_table     = $wpdb->prefix . "ekc_player";
 		$result_table     = $wpdb->prefix . "ekc_result";
+		$result_log_table = $wpdb->prefix . "ekc_result_log";
 
 
 		$charset_collate = $wpdb->get_charset_collate();
@@ -126,12 +127,26 @@ class Ekc_Database_Setup {
     		KEY i_tournament_round (tournament_round)
 		) $charset_collate;";
 
+		$result_log_table_sql = 
+			"CREATE TABLE $result_log_table (
+			result_log_id integer(10) NOT NULL AUTO_INCREMENT,
+			result_id integer(10) NOT NULL,
+		    log_time datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3), /* fractional seconds (milliseconds) */
+    		log_team_id integer(10),
+			team1_score double precision,
+			team2_score double precision,
+			PRIMARY KEY (result_log_id),
+			KEY i_result_id (result_id),
+			KEY i_log_team_id (log_team_id)
+		) $charset_collate;";
+
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $tournament_table_sql );
 		dbDelta( $tournament_round_table_sql );
 		dbDelta( $team_table_sql );
 		dbDelta( $player_table_sql );
 		dbDelta( $result_table_sql );
+		dbDelta( $result_log_table_sql );
 
 		update_option(self::DATABASE_VERSION_OPTION, EKC_DATABASE_VERSION);
 	}

@@ -111,6 +111,14 @@ class Ekc_Tournament_Manager_Admin {
 	        'manage_options',
 	        'ekc-backup',
 	        array( $this, 'create_tournaments_backup_page' ) );
+
+		add_submenu_page(
+				NULL,
+				'Result Log',
+				'EKC Result Log',
+				'manage_options',
+				'ekc-result-log',
+				array( $this, 'create_result_log_page' ) );
 	}
 
 	public function create_tournaments_page() {
@@ -141,6 +149,11 @@ class Ekc_Tournament_Manager_Admin {
 	public function create_tournaments_backup_page() {
 		$backup_page = new Ekc_Tournaments_Backup_Page();
 		return $backup_page->create_tournaments_backup_page();
+	}
+
+	public function create_result_log_page() {
+		$result_log_page = new Ekc_Result_Log_Page();
+		return $result_log_page->create_result_log_page();
 	}
 
 	public function export_teams_as_csv() {

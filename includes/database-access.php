@@ -113,6 +113,16 @@ class Ekc_Database_Access {
 			$this->delete_players($team_id);
 			$wpdb->delete( $wpdb->prefix . 'ekc_team', array( 'team_id' => $team_id ) );				
 		}
+
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->prefix}ekc_result_log
+			 WHERE result_id IN(
+				SELECT r.result_id
+				FROM   {$wpdb->prefix}ekc_result r
+				WHERE  r.tournament_id = %d)",
+			$tournament_id
+		) );
+
 		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'tournament_id' => $tournament_id ) );
 		$wpdb->delete( $wpdb->prefix . 'ekc_tournament', array( 'tournament_id' => $tournament_id ) );
 	}
@@ -931,6 +941,42 @@ class Ekc_Database_Access {
 	 * Results
 	 ***************************************************************************************************************************/
 
+	 public function get_result_log_as_table( $tournament_id, $sort_column = 'log_time', $sort = 'asc' ) {
+		global $wpdb;
+		$sql_sort = $this->create_result_log_sort_column_sql( $sort_column, '') . ' ' . ($sort === 'desc' ? 'DESC' : 'ASC');
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT date_format(l.log_time, '%%Y-%%m-%%d %%H:%%i:%%s') as log_time,
+			       coalesce(t1.name, 'BYE') as team1,
+				   coalesce(t2.name, 'BYE') as team2,
+				   concat(l.team1_score, ' : ', l.team2_score) as result,
+				   case when r.tournament_round is not null then concat(r.stage, ' round ', r.tournament_round) else '' end as stage,
+				   concat(tl.name, ' (', tl.shareable_link_id, ')') as log_team 
+			FROM   {$wpdb->prefix}ekc_result_log l 
+			JOIN   {$wpdb->prefix}ekc_result r         ON l.result_id = r.result_id
+			LEFT OUTER JOIN {$wpdb->prefix}ekc_team t1 ON r.team1_id = t1.team_id
+			LEFT OUTER JOIN {$wpdb->prefix}ekc_team t2 ON r.team2_id = t2.team_id
+			LEFT OUTER JOIN {$wpdb->prefix}ekc_team tl ON l.log_team_id = tl.team_id			
+			WHERE r.tournament_id = %d
+			ORDER BY {$sql_sort}
+			",
+			$tournament_id),
+		ARRAY_A );
+
+		return $results;
+	}
+
+	private function create_result_log_sort_column_sql( $column, $table_alias ) {
+		$sql_alias = $table_alias ? $table_alias . '.' : '';
+		$valid_columns = array(
+		  'log_time', 'team1', 'team2', 'result', 'stage', 'log_team'
+		);
+		if ( in_array( $column, $valid_columns, true) ) {
+			return $sql_alias . $column;
+		}
+		return $sql_alias . 'log_time'; // default sort column
+	}
+
 	public function get_tournament_results( $tournament_id, $stage = '', $result_type = '', $tournament_round = 0) {
 		$binds = array($tournament_id);
 		$sql_stage = '';
@@ -1061,12 +1107,37 @@ class Ekc_Database_Access {
 		return $tournament_result->get_result_id();
 	}
 
+	public function insert_tournament_result_log( $tournament_result, $log_team_id ) {
+		global $wpdb;
+		$wpdb->insert( 
+			$wpdb->prefix . 'ekc_result_log', 
+			array( 
+				'result_id'		=> $tournament_result->get_result_id(),
+				'log_team_id'	=> $log_team_id, /* log_time has a default value of CURRENT_TIMESTAMP */
+				'team1_score'	=> $tournament_result->get_team1_score(),
+				'team2_score'	=> $tournament_result->get_team2_score(),
+			), 
+			array( '%d', '%d', '%d', '%d' ) 
+		);
+
+		return $wpdb->insert_id;
+	}
+
 	public function delete_results_for_team( $team_id ) {
 		if ( ! $team_id ) {
 			return;
 		}
 
 		global $wpdb;
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->prefix}ekc_result_log
+			 WHERE result_id IN(
+				SELECT r.result_id
+				FROM   {$wpdb->prefix}ekc_result r
+				WHERE  r.team1_id = %d
+				OR     r.team2_id = %d)",
+			array( $team_id, $team_id )
+		) );
 		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'team1_id' => $team_id ) );
 		$wpdb->delete( $wpdb->prefix . 'ekc_result', array( 'team2_id' => $team_id ) );
 	}
@@ -1077,10 +1148,20 @@ class Ekc_Database_Access {
 		}
 
 		global $wpdb;
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->prefix}ekc_result_log
+			 WHERE result_id IN(
+				SELECT r.result_id
+				FROM   {$wpdb->prefix}ekc_result r
+				WHERE  r.tournament_id = %d
+				AND    r.tournament_round = %d)",
+			array( $tournament_id, $tournament_round )
+		) );
+
 		$wpdb->delete( $wpdb->prefix . 'ekc_result', array(
 			'tournament_id' => $tournament_id,
 			'tournament_round' => $tournament_round
-			 ) );
+		) );
 	}
 
 	/***************************************************************************************************************************

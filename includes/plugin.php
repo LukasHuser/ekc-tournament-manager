@@ -90,6 +90,8 @@ class Ekc_Tournament_Manager {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/tournaments-backup-table.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-page.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-table.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/result-log-page.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/result-log-table.php';
 
 		$plugin_admin = new Ekc_Tournament_Manager_Admin( $this->get_plugin_name(), $this->get_version() );
 

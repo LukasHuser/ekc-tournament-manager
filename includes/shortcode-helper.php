@@ -800,11 +800,11 @@ class Ekc_Shortcode_Helper {
 			
 			$current_result = $this->get_results_for_round( $current_round_results, $current_round, $team->get_team_id() );
 			
-			$this->store_result( $current_result[0] );
+			$this->store_result( $current_result[0], $team->get_team_id() );
 		}
 	}
 		
-	private function store_result( $existing_result ) {
+	private function store_result( $existing_result, $log_team_id ) {
 		$team1_score_id = 'team1-score-' . $existing_result->get_result_id();
 		$team2_score_id = 'team2-score-' . $existing_result->get_result_id();
 		if ( isset( $_POST[ $team1_score_id ] ) ) {
@@ -815,6 +815,7 @@ class Ekc_Shortcode_Helper {
 		}
 		$db = new Ekc_Database_Access();
 		$db->update_tournament_result( $existing_result );
+		$db->insert_tournament_result_log( $existing_result, $log_team_id );
 	}
 
 	public function shortcode_nation_trophy( $atts ) {
