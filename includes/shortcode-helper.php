@@ -873,6 +873,7 @@ class Ekc_Shortcode_Helper {
 		$html = '<table class="ekc-expandable-table ekc-nation-trophy-table">';
 		$html .= '<colgroup class="ekc-colgroup">';
         $html .= '<col class="ekc-col ekc-column-nation-trophy-rank">';
+		$html .= '<col class="ekc-col ekc-column-nation-trophy-flag">';
         $html .= '<col class="ekc-col ekc-column-nation-trophy-country">';
         $html .= '<col class="ekc-col ekc-column-nation-trophy-tournament">';
         $html .= '<col class="ekc-col ekc-column-nation-trophy-score">';
@@ -884,8 +885,9 @@ class Ekc_Shortcode_Helper {
 	private function html_nation_trophy_header_row( $rank, $country_code, $score ) {
 		$country_name = $this->get_country_name( $country_code );
 		$html = '<tr class="ekc-tr ekc-expandable-header-row">';
-		$html .= '<td class="ekc-td"><span class="dashicons dashicons-arrow-right"></span>' . esc_html( $rank ) . '</td>';
-		$html .= '<td class="ekc-td ekc-td-right-open">' . $this->html_flag( esc_html( $country_code ) ) . '&nbsp;&nbsp;' . esc_html( $country_name ) . '</td>';
+		$html .= '<td class="ekc-td ekc-td-right-open"><span class="dashicons dashicons-arrow-right"></span>' . esc_html( $rank ) . '</td>';
+		$html .= '<td class="ekc-td ekc-td-left-open">' . $this->html_flag( esc_html( $country_code ) ) . '</td>';
+		$html .= '<td class="ekc-td ekc-td-right-open">' . esc_html( $country_name ) . '</td>';
 		$html .= '<td class="ekc-td ekc-td-left-open"></td>';
 		$html .= '<td class="ekc-td">' . esc_html( $score ) . '</td>';
 		return $html . '</tr>';
@@ -908,7 +910,7 @@ class Ekc_Shortcode_Helper {
 			$score_html = esc_html( $rank_description->get_score() );
 		}
 		$html = '<tr class="ekc-tr ekc-expandable-row">';
-		$html .= '<td class="ekc-td"></td>';
+		$html .= '<td class="ekc-td" colspan="2"></td>';
 		$html .= '<td class="ekc-td ekc-td-right-open">' . esc_html( $team_name ) . '</td>';
 		$html .= '<td class="ekc-td ekc-td-left-open">' . esc_html( $rank_description->get_description() ) . '</td>';
 		$html .= '<td class="ekc-td">' . $score_html . '</td>';

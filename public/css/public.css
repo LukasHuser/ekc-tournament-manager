@@ -61,11 +61,15 @@ tr.ekc-expandable-header-row td {
 
 /* Nation trophy table */
 col.ekc-column-nation-trophy-rank {
-    width: 10%;
+    width: 8%;
+}
+
+col.ekc-column-nation-trophy-flag {
+    width: 7%;
 }
 
 col.ekc-column-nation-trophy-country {
-    width: 45%;
+    width: 40%;
 }
 
 col.ekc-column-nation-trophy-tournament {
