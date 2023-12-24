@@ -42,6 +42,10 @@ col.ekc-column-no {
     width: 10%;
 }
 
+col.ekc-column-pitch {
+    width: 10%;
+}
+
 col.ekc-column-country {
     width: 10%;
 }
