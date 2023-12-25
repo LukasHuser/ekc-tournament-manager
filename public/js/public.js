@@ -47,15 +47,37 @@
           }
         });
 
+		$("#ekc-result-validation").removeClass("ekc-validation-error ekc-validation-success").html(''); // clear any content
 		if (!is_valid) {
-		  $("#ekc-result-validation").html("<br>The sum of both scores must not be greater than " + max_value);
+			$( "#ekc-result-validation" ).addClass( "ekc-validation-error" ).html('<br><span class="dashicons dashicons-no"></span> The sum of both scores must not be greater than ' + max_value);
 		}
 
         return is_valid;
       };
 
       $( "#ekc-result-form" ).submit(function(event){
-        return validateResult();
+        if (validateResult()) {
+			var nonce = $("#ekc-result-form").data("nonce");
+			var link_id = $("#ekc-result-form").data("linkid");
+			var result_id = $("#ekc-result-form").data("resultid");
+            var team1_score_id = "team1-score-" + result_id;
+			var team2_score_id = "team2-score-" + result_id;
+			var team1_score = $('#' + team1_score_id).val();
+            var team2_score = $('#' + team2_score_id).val();
+
+			var post_data = {
+				"action": "ekc_public_swiss_system_store_result",
+				"linkid": link_id,
+				"nonce": nonce
+			};
+			post_data[team1_score_id] = team1_score;
+			post_data[team2_score_id] = team2_score; 
+	  
+			$.post(ekc_ajax.ajax_url, post_data, function( result ) {
+				$( "#ekc-result-validation" ).addClass( "ekc-validation-success" ).html( result );
+			});
+		}
+		return false;
       }); 
 
   });

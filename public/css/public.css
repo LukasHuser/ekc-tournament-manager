@@ -8,6 +8,10 @@
     color: #f00;
 }
 
+.ekc-validation-success {
+    color: #33aa33;
+}
+
 .ekc-hidden {
     visibility: hidden;
 }

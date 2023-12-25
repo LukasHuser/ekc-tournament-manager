@@ -76,27 +76,14 @@ class Ekc_Tournament_Manager_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/public.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script( $this->plugin_name, 'ekc_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 
 		/* we only register (not enqueue) the refresh script, it will be enqueued by the shortcode which actually requires the script */
 		wp_register_script( 'ekc-refresh', plugin_dir_url( __FILE__ ) . 'js/refresh.js', array( 'jquery' ), $this->version, false );
 	}
 
-	/**
-	 * redirect to same url and enforce a GET reload to avoid re-sending form data through POST 
-	 * return HTTP 303 See Other
-	 * see https://en.wikipedia.org/wiki/HTTP_303
-	 */
-	public function post_redirect_get() {
-		$action = ( isset( $_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-		if ( $action === 'storeresult' ) {
-			// store result
-			$helper = new Ekc_Shortcode_Helper();
-			$helper->shortcode_shareable_link_handle_post();
-
-			wp_safe_redirect($_SERVER['REQUEST_URI'], 303);
-			
-			// exit script - do not write any output
-			exit;
-		}
+	public function shareable_link_handle_post() {
+		$helper = new Ekc_Shortcode_Helper();
+		$helper->shortcode_shareable_link_handle_post();
 	}
 }

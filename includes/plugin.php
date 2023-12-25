@@ -104,6 +104,9 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'download_backup_file' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_tournament_menu' );
 
+		// Admin ajax calls
+		$this->loader->add_action( 'wp_ajax_ekc_admin_swiss_system_store_result', $plugin_admin, 'create_swiss_system_page' );
+
 		// for the redirect pattern to work, we need to write http headers before any output is written
 		// we use the admin_init hook 
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_swiss_system_redirect' );
@@ -123,9 +126,8 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		
-		// for the post-redirect-get pattern to work, we need to write http headers before any output is written
-		// we use the template_redirect hook 
-		$this->loader->add_action( 'template_redirect', $plugin_public, 'post_redirect_get' );
+		// Public ajax calls
+		$this->loader->add_action( 'wp_ajax_ekc_public_swiss_system_store_result', $plugin_public, 'shareable_link_handle_post' );
 	}
 
 	private function add_shortcodes() {

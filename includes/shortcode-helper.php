@@ -720,9 +720,6 @@ class Ekc_Shortcode_Helper {
 		);
 
 		$link_id = ( isset($_GET['linkid'] ) ) ? sanitize_text_field( wp_unslash( $_GET['linkid'] ) ) : '';
-		$page_id = ( isset($_GET['page_id'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page_id'] ) ) : '';
-		
-		$url_path = '?'. ($page_id ? 'page_id=' . $page_id . '&' : '') . 'linkid=' . $link_id;
 
 		$db = new Ekc_Database_Access();
 		$team = $db->get_team_by_shareable_link_id( $link_id );
@@ -757,7 +754,7 @@ class Ekc_Shortcode_Helper {
 		$html = '<p><a href="' . $_SERVER['REQUEST_URI'] . '">Reload page</a></p>';
 		if (count( $current_round_result ) > 0) {
 			$html .= '<h3>Round ' . $current_round  . '</h3>';
-			$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $url_path );
+			$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $link_id );
 		}	
 
 		for ( $round = $current_round - 1; $round > 0; $round-- ) {
@@ -770,38 +767,50 @@ class Ekc_Shortcode_Helper {
 		return $html;
 	}
 
-	private function create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $url_path ) {
+	private function create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $link_id ) {
 		// onsubmit handler for form defined in public.js
 		$data_result_id = "";
 		if ( count( $current_round_result ) > 0 ) {
 			$data_result_id = ' data-resultid="' . $current_round_result[0]->get_result_id() . '" ';
 		}
-		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . 'method="post" action="' . $url_path . '" accept-charset="utf-8">';
+		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . ' data-linkid="' . $link_id . '" data-nonce="' . wp_create_nonce( 'ekc_public_swiss_system_store_result' ) . '">';
 		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country, true );
 		$html .= '<div class="ekc-controls">';
-		$html .= '<button type="submit" class="ekc-button ekc-button-primary">Save result for round ' . $current_round . '</button>';
-		$html .= '<p id="ekc-result-validation" class="ekc-validation-error"></p>';
-		$html .= '<input id="action" name="action" type="hidden" value="storeresult" />';
+		$html .= '<button class="ekc-button ekc-button-primary">Save result for round ' . $current_round . '</button>';
+		$html .= '<p id="ekc-result-validation"></p>';
 		$html .= '</div>';
 		$html .= '</form>';
 		return $html;
 	}
 	
 	public function shortcode_shareable_link_handle_post() {
-		$link_id = ( isset( $_GET['linkid'] ) ) ? sanitize_text_field( wp_unslash( $_GET['linkid'] ) ) : '';
+		$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+		$link_id = ( isset( $_POST['linkid'] ) ) ? sanitize_text_field( wp_unslash( $_POST['linkid'] ) ) : '';
 		
-		$db = new Ekc_Database_Access();
-		$team = $db->get_team_by_shareable_link_id( $link_id );
-		
-		if ( $team ) {
-			$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
-			$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
-			$current_round_results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, null, $current_round );
+		if ( $action === 'ekc_public_swiss_system_store_result' ) {
+			if ( !check_ajax_referer( 'ekc_public_swiss_system_store_result', 'nonce' ) ) {
+				_e('<span class="dashicons dashicons-no"></span>Failed to store result');
+			  	wp_die();
+			}
 			
-			$current_result = $this->get_results_for_round( $current_round_results, $current_round, $team->get_team_id() );
+			$db = new Ekc_Database_Access();
+			$team = $db->get_team_by_shareable_link_id( $link_id );
+			if ( $team ) {
+				$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
+				$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
+				$current_round_results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, null, $current_round );
 			
-			$this->store_result( $current_result[0], $team->get_team_id() );
-		}
+				$current_result = $this->get_results_for_round( $current_round_results, $current_round, $team->get_team_id() );
+			
+				$this->store_result( $current_result[0], $team->get_team_id() );
+				_e('<span class="dashicons dashicons-yes"></span> Result saved');
+				wp_die();
+			}
+
+			// Fallback
+			_e('<span class="dashicons dashicons-no"></span>Failed to store result');
+			wp_die();
+	  	}
 	}
 		
 	private function store_result( $existing_result, $log_team_id ) {
