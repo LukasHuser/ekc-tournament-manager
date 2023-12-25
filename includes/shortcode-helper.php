@@ -14,6 +14,10 @@ class Ekc_Shortcode_Helper {
 		add_shortcode( 'ekc-nation-trophy', array( $this, 'shortcode_nation_trophy' ) );
 	}
 
+	/***************************************************************************************************************************
+	 * Teams
+	 ***************************************************************************************************************************/
+
 	public function shortcode_registered_teams_count( $atts ) {
 		$atts = shortcode_atts(
 			array(
@@ -223,6 +227,10 @@ class Ekc_Shortcode_Helper {
 		return '<span class="' . ( $show_registration_fee && $team->is_registration_fee_paid() ? 'ekc-registration-fee' : '' ) . '">' . esc_html($team->get_name()) . '</span>';
 	}
  
+	/***************************************************************************************************************************
+	 * Elimination Bracket
+	 ***************************************************************************************************************************/
+
 	public function shortcode_elimination_bracket( $atts ) {
 		// add refresh.js script when this shortcode is used
 		wp_enqueue_script( 'ekc-refresh' ); 
@@ -454,6 +462,10 @@ class Ekc_Shortcode_Helper {
 			return 'participants-4';
 		}
 	}
+
+	/***************************************************************************************************************************
+	 * Swiss System
+	 ***************************************************************************************************************************/
 
 	public function shortcode_swiss_system( $atts ) {
 		// add refresh.js script when this shortcode is used
@@ -709,6 +721,10 @@ class Ekc_Shortcode_Helper {
 		return '';
 	}
 
+	/***************************************************************************************************************************
+	 * Shareable Links
+	 ***************************************************************************************************************************/
+
 	public function shortcode_shareable_link( $atts ) {
 		$atts = shortcode_atts(
 			array(
@@ -826,6 +842,10 @@ class Ekc_Shortcode_Helper {
 		$db->update_tournament_result( $existing_result );
 		$db->insert_tournament_result_log( $existing_result, $log_team_id );
 	}
+
+	/***************************************************************************************************************************
+	 * Nation Trophy
+	 ***************************************************************************************************************************/
 
 	public function shortcode_nation_trophy( $atts ) {
 		$atts = shortcode_atts(
