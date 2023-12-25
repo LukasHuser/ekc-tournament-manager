@@ -12,6 +12,10 @@
     color: #33aa33;
 }
 
+.ekc-validation-success span.dashicons, .ekc-validation-error span.dashicons {
+    vertical-align: middle; /* required for dashicons, if used inside a validation message */
+}
+
 .ekc-hidden {
     visibility: hidden;
 }
