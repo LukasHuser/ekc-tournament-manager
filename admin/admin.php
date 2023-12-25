@@ -51,6 +51,7 @@ class Ekc_Tournament_Manager_Admin {
 	public function enqueue_scripts() {
 		wp_enqueue_script( 'jquery-confirm', plugin_dir_url( __FILE__ ) . 'js/jquery-confirm.min.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name . '-admin', plugin_dir_url( __FILE__ ) . 'js/admin.js', array( 'jquery', 'jquery-ui-core', 'jquery-ui-button', 'jquery-ui-menu', 'jquery-ui-tooltip', 'jquery-ui-datepicker', 'jquery-ui-selectmenu', 'jquery-ui-autocomplete' ), $this->version, false );
+		wp_localize_script( $this->plugin_name . '-admin', 'ekc_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 	}
 
 	/**

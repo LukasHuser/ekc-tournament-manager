@@ -69,10 +69,15 @@ class Ekc_Swiss_System_Admin_Page {
         }
         $admin_helper->swiss_system_redirect( $tournament_id, $tournament_round );
       }
-      elseif ( $action === 'swiss-system-store-result' ) {
+      elseif ( $action === 'ekc_admin_swiss_system_store_result' ) {
+        if ( !check_ajax_referer( 'ekc_admin_swiss_system_store_result', 'nonce' ) ) {
+          _e('<span class="dashicons dashicons-no"></span>');
+          wp_die();
+        }
         $existing_result = $db->get_tournament_result_by_id( $result_id );
         $this->update_results( array( $existing_result ) );
-        // no answer needed - handled by ajax call
+        _e('<span class="dashicons dashicons-yes"></span>');
+        wp_die();
       }
       elseif ( $action === 'swiss-system-new-round' ) {
         $existing_results = $db->get_tournament_results( $tournament_id, Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, '', $tournament_round );
@@ -308,7 +313,7 @@ class Ekc_Swiss_System_Admin_Page {
   private function show_swiss_round( $tournament, $results_for_round, $round ) {
     $teams = Ekc_Drop_Down_Helper::teams_drop_down_data( $tournament->get_tournament_id() );
 ?>
-<form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+<form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8" data-nonce="<?php esc_html_e( wp_create_nonce( 'ekc_admin_swiss_system_store_result' ) ) ?>">
   <fieldset>
     <legend><h3>Results for round <?php esc_html_e( $round ) ?></h3></legend>
     <table>
@@ -351,7 +356,7 @@ class Ekc_Swiss_System_Admin_Page {
     <input id="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team1_placeholder() ) ?>" /></div>
   </td>
   <td><div class="ekc-control-group<?php $is_result_missing ? _e( ' ekc-result-missing' ) : _e( '' ) ?> " data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>"><input id="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team1_score() ) ?>" /></div></td>
-  <td><a class="ekc-post-result" href="javascript:void(0);" data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>">Save result</a></td> <!-- see admin.js for onClick handler -->
+  <td><a class="ekc-post-result" href="javascript:void(0);" data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>">Save result</a><span id="post-result-<?php esc_html_e( $result->get_result_id() ) ?>"></span></td> <!-- see admin.js for onClick handler -->
 </tr>
 <tr>
   <td></td>

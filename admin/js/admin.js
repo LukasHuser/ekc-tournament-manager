@@ -47,32 +47,6 @@
     }
     });
 
-    /* Confirmation popup for non-idempotent operations (such as starting a new swiss system round) */
-    /* matches all forms of the following form: <form class="confirm"></form> */
-    
-    // FIXME does not work together with validateResults
-    
-    /*
-    $('form.confirm').submit(function(event){
-      event.preventDefault();
-      var form = $(this)[0];
-
-      $.confirm({
-        title: "Confirm action",
-        content: "Do you want to continue?",
-        useBootstrap: false,
-        buttons: {
-          ok: function(){
-              form.submit(function(event){
-                return validateResults();
-              });
-          },
-          cancel: function(){}
-        }
-      });
-    });
-    */
-
     /* add datepicker  */
     $( ".ekc-datepicker" ).datepicker({
       dateFormat: "yy-mm-dd"
@@ -299,10 +273,11 @@
 
       /* save a single tournament result (instead of submitting the whole form) */
       var postTournamentResult = function( a ) {
-        var resultId = $(a).data("resultid");
+        var result_id = $(a).data("resultid");
+        var nonce = $(a).parents(".ekc-form").data("nonce"); // nonce data is stored on parent form (need to travel up a few levels in the DOM)
 
-        var team1_score = $("#team1-score-" + resultId);
-        var team2_score = $("#team2-score-" + resultId);
+        var team1_score = $("#team1-score-" + result_id);
+        var team2_score = $("#team2-score-" + result_id);
         var is_result_missing = (team1_score.val() === "") || (team2_score.val() === "");
         if (is_result_missing) {
           team1_score.parent().addClass("ekc-result-missing");
@@ -313,22 +288,22 @@
           team2_score.parent().removeClass("ekc-result-missing");
         }
 
-        var postParams = new URLSearchParams();
-        postParams.append("pitch-" + resultId, $("#pitch-" + resultId).val());
-        postParams.append("team1-" + resultId, $("#team1-" + resultId).val());
-        postParams.append("team2-" + resultId, $("#team2-" + resultId).val());
-        postParams.append("team1-score-" + resultId, team1_score.val());
-        postParams.append("team2-score-" + resultId, team2_score.val());
-        postParams.append("team1-placeholder-" + resultId, $("#team1-placeholder-" + resultId).val());
-        postParams.append("team2-placeholder-" + resultId, $("#team2-placeholder-" + resultId).val());
-        postParams.append("resultid", resultId);
-        postParams.append("action", "swiss-system-store-result");
+        var post_data = {
+          "action": "ekc_admin_swiss_system_store_result",
+          "resultid": result_id,
+          "nonce": nonce
+        };
+        post_data["pitch-" + result_id] = $("#pitch-" + result_id).val();
+        post_data["team1-" + result_id] = $("#team1-" + result_id).val();
+        post_data["team2-" + result_id] = $("#team2-" + result_id).val();
+        post_data["team1-score-" + result_id] = team1_score.val();
+        post_data["team2-score-" + result_id] = team2_score.val();
+        post_data["team1-placeholder-" + result_id] = $("#team1-placeholder-" + result_id).val();
+        post_data["team2-placeholder-" + result_id] = $("#team2-placeholder-" + result_id).val();
 
-        var requestParam = new URLSearchParams(window.location.search);
-        var request = new XMLHttpRequest();
-        request.open("POST", "?page=" + requestParam.get("page"));
-        request.setRequestHeader("Content-Type", 'application\/x-www-form-urlencoded');
-        request.send(postParams.toString());
+        $.post(ekc_ajax.ajax_url, post_data, function( result ) {
+          $( "#post-result-" + result_id ).html( result );
+        });
       };
 
       $( ".ekc-post-result" ).click(function(){
