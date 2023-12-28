@@ -7,7 +7,7 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 			'code_name'			=> 'Code Name',
 			'name'				=> 'Name',
 			'team_size'			=> 'Team size',
-			'tournament_date'		=> 'Date',
+			'tournament_date'	=> 'Date',
 			'max_teams'			=> 'Max teams',
 			'is_wait_list_enabled'		=> 'Wait list',
 			'is_player_names_required'	=> 'Player names required',
@@ -49,8 +49,8 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 
 	function column_code_name( $item ) {
 		$actions = array();
-		$actions['teams'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">Teams</a>', 'ekc-teams', esc_html( $item['tournament_id'] ) );
-		$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Edit</a>', esc_html( $_REQUEST['page'] ), 'edit', esc_html( $item['tournament_id'] ) );
+		$actions['teams'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">%s</a>', 'ekc-teams', esc_html( $item['tournament_id'] ), __('Teams') );
+		$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'edit', esc_html( $item['tournament_id'] ), __('Edit') );
 
 		return sprintf('%s %s', $item['code_name'], $this->row_actions($actions) );
 	}
@@ -59,19 +59,20 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 		$actions = array();
 
 		if ( $item['elimination_rounds'] ) {
-			$actions['elimination-bracket'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Elimination bracket</a>', 'ekc-bracket', 'elimination-bracket', esc_html( $item['tournament_id'] ) );
+			$actions['elimination-bracket'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', 'ekc-bracket', 'elimination-bracket', esc_html( $item['tournament_id'] ), __('Elimination Bracket') );
 		}
 		if ( $item['swiss_system_rounds'] > 0 ) {
-			$actions['swiss-system'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Swiss System</a>', 'ekc-swiss', 'swiss-system', esc_html( $item['tournament_id'] ) );
+			$actions['swiss-system'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', 'ekc-swiss', 'swiss-system', esc_html( $item['tournament_id'] ), __('Swiss System') );
 		}
 		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
 	}
 
 	function column_swiss_system_rounds( $item ) {
 		$actions = array();
-		$actions['delete'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Delete</a>', esc_html( $_REQUEST['page'] ), 'delete', esc_html( $item['tournament_id'] ) );
-		$actions['backup'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">Backup</a>', esc_html( $_REQUEST['page'] ), 'backup', esc_html( $item['tournament_id'] ) );
-		$actions['result-log'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">Result Log</a>', 'ekc-result-log', esc_html( $item['tournament_id'] ) );
+		$actions['copy'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'copy', esc_html( $item['tournament_id'] ), __('Copy') );
+		$actions['result-log'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">%s</a>', 'ekc-result-log', esc_html( $item['tournament_id'] ), __('Result Log') );
+		$actions['backup'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'backup', esc_html( $item['tournament_id'] ), __('Backup') );
+		$actions['delete'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'delete', esc_html( $item['tournament_id'] ), __('Delete') );
 
 		return sprintf('%s %s', $item['swiss_system_rounds'], $this->row_actions($actions) );
 	}
