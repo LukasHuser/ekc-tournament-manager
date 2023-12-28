@@ -161,13 +161,13 @@ class Ekc_Tournaments_Admin_Page {
         <fieldset>
         <legend><?php esc_html_e( $legend_text ) ?></legend>
           <div class="ekc-control-group">
-            <label for="codename"><?php _e('Code name') ?></label>
-            <input id="codename" name="codename" type="text" maxlength="50" value="<?php $tournament ? esc_html_e( $tournament->get_code_name() ) : _e('') ?>" class="ekc-required" required />
+            <label for="codename" class="ekc-required"><?php _e('Code name') ?></label>
+            <input id="codename" name="codename" type="text" maxlength="50" value="<?php $tournament ? esc_html_e( $tournament->get_code_name() ) : _e('') ?>" required />
           </div>
           <div class="ekc-control-group">
-            <label for="name"><?php _e('Name') ?></label>
-            <input id="name" name="name" type="text" maxlength="500" value="<?php $tournament ? esc_html_e( $tournament->get_name() ) : _e('') ?>" class="ekc-required" required />
-          </div>         
+            <label for="name" class="ekc-required"><?php _e('Name') ?></label>
+            <input id="name" name="name" type="text" maxlength="500" value="<?php $tournament ? esc_html_e( $tournament->get_name() ) : _e('') ?>" required />
+          </div>
           <div class="ekc-control-group">
             <label for="teamsize"><?php _e('Team size') ?></label>
             <?php Ekc_Drop_Down_Helper::team_size_drop_down("teamsize", $tournament ? $tournament->get_team_size() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>

@@ -180,8 +180,8 @@ class Ekc_Teams_Admin_Page {
         <legend>Create a new team</legend>
 <?php if ( $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 || ! $tournament->is_player_names_required() ) { ?>
           <div class="ekc-control-group">
-            <label for="name">Name <span class="ekc-required">*</span></label>
-            <input id="name" name="name" type="text" placeholder="Name" maxlength="500" required />
+            <label for="name" class="ekc-required">Name</label>
+            <input id="name" name="name" type="text" maxlength="500" required />
           </div>         
           <div class="ekc-control-group">
             <label for="country">Country</label>
@@ -314,8 +314,8 @@ class Ekc_Teams_Admin_Page {
         <legend>Edit team</legend>
 <?php if ( $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 || ! $tournament->is_player_names_required() ) { ?>
           <div class="ekc-control-group">
-            <label for="name">Name <span class="ekc-required">*</span></label>
-            <input id="name" name="name" type="text" placeholder="Name" maxlength="500" required value="<?php esc_html_e( $team->get_name() ) ?>" />
+            <label for="name" class="ekc-required">Name</label>
+            <input id="name" name="name" type="text" maxlength="500" required value="<?php esc_html_e( $team->get_name() ) ?>" />
           </div>         
           <div class="ekc-control-group">
             <label for="country">Country</label>

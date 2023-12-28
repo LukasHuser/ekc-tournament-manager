@@ -3,6 +3,11 @@
 .ekc-button {
   margin-top: 0.8em;
 }
+
+/* required form fields */
+label.ekc-required::after {
+  content: " *";
+}
  
  /* elimination bracket */
 .columns::after {
