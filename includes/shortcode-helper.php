@@ -758,8 +758,7 @@ class Ekc_Shortcode_Helper {
 		// else: type == team-results
 
 		if ( ! $team ) {
-			return 'No data found.';
-
+			return __('No data found.');
 		}
 
 		$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
@@ -767,16 +766,16 @@ class Ekc_Shortcode_Helper {
 		$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
 		$current_round_result = $this->get_results_for_round( $all_results, $current_round, $team->get_team_id() );
 		
-		$html = '<p><a href="' . $_SERVER['REQUEST_URI'] . '">Reload page</a></p>';
+		$html = '<p><a href="' . esc_html( $_SERVER['REQUEST_URI'] ) . '">' . __('Reload page') . '</a></p>';
 		if (count( $current_round_result ) > 0) {
-			$html .= '<h3>Round ' . $current_round  . '</h3>';
+			$html .= '<h3>' . __('Round') . ' ' . esc_html($current_round)  . '</h3>';
 			$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $link_id );
 		}	
 
 		for ( $round = $current_round - 1; $round > 0; $round-- ) {
 			$result_for_round = $this->get_results_for_round( $all_results, $round, $team->get_team_id() );
 			if (count( $result_for_round ) > 0) {
-				$html .= '<h3>Round ' . $round  . '</h3>';
+				$html .= '<h3>' . __('Round') . ' ' . esc_html($round)  . '</h3>';
 				$html .= $this->create_swiss_round_table( $tournament, $result_for_round, $round, $show_country );
 			}
 		}
@@ -787,12 +786,12 @@ class Ekc_Shortcode_Helper {
 		// onsubmit handler for form defined in public.js
 		$data_result_id = "";
 		if ( count( $current_round_result ) > 0 ) {
-			$data_result_id = ' data-resultid="' . $current_round_result[0]->get_result_id() . '" ';
+			$data_result_id = ' data-resultid="' . esc_html($current_round_result[0]->get_result_id()) . '" ';
 		}
-		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . ' data-linkid="' . $link_id . '" data-nonce="' . wp_create_nonce( 'ekc_public_swiss_system_store_result' ) . '">';
+		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . ' data-linkid="' . esc_html($link_id) . '" data-nonce="' . wp_create_nonce( 'ekc_public_swiss_system_store_result' ) . '">';
 		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country, true );
 		$html .= '<div class="ekc-controls">';
-		$html .= '<button class="ekc-button ekc-button-primary">Save result for round ' . $current_round . '</button>';
+		$html .= '<button class="ekc-button ekc-button-primary">' . __('Save result for round') . ' ' . esc_html($current_round) . '</button>';
 		$html .= '<p id="ekc-result-validation"></p>';
 		$html .= '</div>';
 		$html .= '</form>';
