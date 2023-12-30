@@ -656,7 +656,7 @@ class Ekc_Shortcode_Helper {
 	}
 
 	private function html_score_input( $score_value, $html_id, $max_points_per_round ) {
-		return '<input id="' . $html_id . '" name="' . $html_id . '" type="number" step="any" min="0" max="' . $max_points_per_round . '" value="' . $score_value . '" />';
+		return '<input id="' . $html_id . '" name="' . $html_id . '" type="number" class="ekc-score-input" size="5" step="any" min="0" max="' . $max_points_per_round . '" value="' . $score_value . '" />';
 	}
 
 	private function get_results_for_round( $results, $tournament_round, $team_id = null ) {

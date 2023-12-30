@@ -60,6 +60,11 @@ col.ekc-column-country {
 
 col.ekc-column-score {
     width: 15%;
+    min-width: 6em;
+}
+
+input.ekc-score-input {
+    width: 100%;
 }
 
 /* Expandable table rows */
