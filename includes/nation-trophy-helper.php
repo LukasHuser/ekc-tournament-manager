@@ -23,7 +23,10 @@ class Ekc_Nation_Trophy_Helper {
 	 */
 	public function collect_nation_trophy_results( $tournament_code_name, $tournament_type, &$country_total_score, &$country_teams, &$team_description ) {
 		$db = new Ekc_Database_Access();
-		$tournament = $db->get_tournament_by_code_name( $tournament_code_name );	
+		$tournament = $db->get_tournament_by_code_name( $tournament_code_name );
+		if ( ! $tournament ) {
+			return;
+		}
 		$results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO, null, null );
 	
 		if ( $results ) {
