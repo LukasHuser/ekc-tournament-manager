@@ -109,15 +109,18 @@ class Ekc_Shareable_links_Admin_Page {
             <input id="urlprefix" name="urlprefix" type="text" placeholder="http://mydomain.com/mytournament/team" size="40" maxlength="500" value="<?php esc_html_e( $url_prefix ) ?>" />
           </div>
           <div class="ekc-control-group">
-            <label for="senderemail">Sender e-mail (format: &quot;name@example.com&quot; or &quot;Full Name &lt;name@example.com&gt;&quot;)</label>
-            <input id="senderemail" name="senderemail" type="text" placeholder="Full Name &lt;name@example.com&gt;" size="40" maxlength="500" value="<?php esc_html_e( $sender_email ) ?>" />
+            <label for="senderemail">Sender e-mail</label>
+            <div><input id="senderemail" name="senderemail" type="text" placeholder="Full Name &lt;name@example.com&gt;" size="40" maxlength="500" value="<?php esc_html_e( $sender_email ) ?>" />
+                 <p>Format: &quot;name@example.com&quot; or &quot;Full Name &lt;name@example.com&gt;&quot;</p></div>
           </div>
           <div class="ekc-control-group">
+            <label for="emailcontent">E-mail content</label>
             <p>E-mail content supports the following placeholders:<br/>
               <b>${team}</b> will be replaced by the team name.<br/>
               <b>${url}</b> will be replaced by the full shareable link url.
             </p>
-              <?php
+          </div><div>
+            <?php
                 $editor_settings = array(
                   'tinymce' => array(
                     'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,bullist,numlist,removeformat,|,link,unlink,image,emoticons,undo,redo',
@@ -129,7 +132,7 @@ class Ekc_Shareable_links_Admin_Page {
                   'media_buttons' => false,
                 );
                 wp_editor( $email_content, 'emailcontent', $editor_settings );
-              ?>        
+            ?>
           </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save</button>

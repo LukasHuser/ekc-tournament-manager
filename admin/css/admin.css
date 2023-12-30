@@ -1,15 +1,24 @@
-
-/* general */ 
-.ekc-button {
-  margin-top: 0.8em;
-}
-
-/* required form fields */
+/* forms */
 label.ekc-required::after {
   content: " *";
 }
+
+.ekc-controls {
+  margin-top: 1em;
+}
+
+.ekc-control-group {
+  display: grid;
+  grid-template-columns: 12em max-content;
+  margin-top: 0.7em;
+}
+
+.ekc-control-group p {
+  margin-top: 2px;
+  margin-left: 5px;
+}
  
- /* elimination bracket */
+/* elimination bracket */
 .columns::after {
   clear: both;
 }

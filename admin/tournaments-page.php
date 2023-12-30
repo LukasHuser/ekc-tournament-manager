@@ -154,88 +154,113 @@ class Ekc_Tournaments_Admin_Page {
     $this->show_tournament( 'edit', 'Edit tournament', 'Save tournament', $tournament );
   }
 
-	public function show_tournament( $action, $legend_text, $button_text, $tournament = null ) {
+	public function show_tournament( $action, $title, $button_text, $tournament = null ) {
 ?>
   <div class="wrap">
-      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+    <h1 class="wp-heading-inline"><?php esc_html_e( $title ) ?></h1>
+    <hr class="wp-header-end">
+
+    <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
         <fieldset>
-        <legend><?php esc_html_e( $legend_text ) ?></legend>
-          <div class="ekc-control-group">
-            <label for="codename" class="ekc-required"><?php _e('Code name') ?></label>
-            <input id="codename" name="codename" type="text" maxlength="50" value="<?php $tournament ? esc_html_e( $tournament->get_code_name() ) : _e('') ?>" required />
-          </div>
-          <div class="ekc-control-group">
-            <label for="name" class="ekc-required"><?php _e('Name') ?></label>
-            <input id="name" name="name" type="text" maxlength="500" value="<?php $tournament ? esc_html_e( $tournament->get_name() ) : _e('') ?>" required />
-          </div>
+        <legend><h3><?php _e( 'Tournament') ?></h3></legend>
+        <div class="ekc-control-group">
+          <label for="name" class="ekc-required"><?php _e('Name') ?></label>
+          <input id="name" name="name" type="text" maxlength="500" value="<?php $tournament ? esc_html_e( $tournament->get_name() ) : _e('') ?>" required />
+        </div>
+        <div class="ekc-control-group">
+          <label for="codename" class="ekc-required"><?php _e('Code name') ?></label>
+          <div><input id="codename" name="codename" type="text" maxlength="50" value="<?php $tournament ? esc_html_e( $tournament->get_code_name() ) : _e('') ?>" required />
+               <p>Unique, short and descriptive identifier used to reference the tournament in WP shortcodes</p></div>
+        </div>
           <div class="ekc-control-group">
             <label for="teamsize"><?php _e('Team size') ?></label>
             <?php Ekc_Drop_Down_Helper::team_size_drop_down("teamsize", $tournament ? $tournament->get_team_size() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
-          </div>
-          <div class="ekc-control-group">
-            <label for="date"><?php _e('Date') ?></label>
-            <input id="date" name="date" class="ekc-datepicker" type="text" value="<?php $tournament ? esc_html_e( $tournament->get_date() ) : _e('') ?>" />
-          </div>
-          <div class="ekc-control-group">
-            <label for="maxteams"><?php _e('Maximum number of teams') ?></label>
-            <input id="maxteams" name="maxteams" type="number" value="<?php $tournament ?  esc_html_e( $tournament->get_max_teams() ) : _e('') ?>" />
-          </div>
-          <div class="ekc-control-group">
-            <label for="waitlist"><?php _e('Wait list available') ?></label>
-            <input id="waitlist" name="waitlist" type="checkbox" value="true" <?php $tournament && $tournament->is_wait_list_enabled() ? esc_html_e( "checked" ) : _e('') ?> />
-          </div>
-          <div class="ekc-control-group">
-            <label for="playernames"><?php _e('Player names required') ?></label>
-            <input id="playernames" name="playernames" type="checkbox" value="true" <?php $tournament && $tournament->is_player_names_required() ? esc_html_e( "checked" ) : _e('') ?> />
-          </div>
-          <div class="ekc-control-group">
-            <label for="backup"><?php _e('Auto backup enabled') ?></label>
-            <input id="bakcup" name="backup" type="checkbox" value="true" <?php $tournament && $tournament->is_auto_backup_enabled() ? esc_html_e( "checked" ) : _e('') ?> />
           </div>
           <div class="ekc-control-group">
             <label for="system"><?php _e('Tournament system') ?></label>
             <?php Ekc_Drop_Down_Helper::tournament_system_drop_down("system", $tournament ? $tournament->get_tournament_system() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
           </div>
           <div class="ekc-control-group">
+            <label for="date"><?php _e('Date') ?></label>
+            <input id="date" name="date" class="ekc-datepicker" type="text" value="<?php $tournament ? esc_html_e( $tournament->get_date() ) : _e('') ?>" />
+          </div>
+          <div class="ekc-control-group">
+            <label for="maxteams"><?php _e('Teams') ?></label>
+            <div><input id="maxteams" name="maxteams" type="number" value="<?php $tournament ?  esc_html_e( $tournament->get_max_teams() ) : _e('') ?>" />
+                 <p>Maximum number of teams</p></div>
+          </div>
+          <div class="ekc-control-group">
+            <div></div>
+            <div><input id="waitlist" name="waitlist" type="checkbox" value="true" <?php $tournament && $tournament->is_wait_list_enabled() ? esc_html_e( "checked" ) : _e('') ?> />
+                 <label for="waitlist"><?php _e('Wait list available') ?></label></div>
+          </div>
+          <div class="ekc-control-group">
+            <div></div>
+            <div><input id="playernames" name="playernames" type="checkbox" value="true" <?php $tournament && $tournament->is_player_names_required() ? esc_html_e( "checked" ) : _e('') ?> />
+                 <label for="playernames"><?php _e('Player names required') ?></label></div>
+          </div>
+          <div class="ekc-control-group">
+            <div></div>
+            <div><input id="bakcup" name="backup" type="checkbox" value="true" <?php $tournament && $tournament->is_auto_backup_enabled() ? esc_html_e( "checked" ) : _e('') ?> />
+                 <label for="backup"><?php _e('Auto backup enabled') ?></label></div>
+          </div>
+        </fieldset>
+        <fieldset>
+        <legend><h3><?php _e( 'Elimination Bracket') ?></h3></legend>
+          <div class="ekc-control-group">
             <label for="eliminationrounds"><?php _e('Elimination bracket') ?></label>
             <?php Ekc_Drop_Down_Helper::elimination_bracket_drop_down("eliminationrounds", $tournament ? $tournament->get_elimination_rounds() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
           </div>
           <div class="ekc-control-group">
-            <label for="eliminationmaxpoints"><?php _e('Maximum points per round for elimination bracket') ?></label>
-            <input id="eliminationmaxpoints" name="eliminationmaxpoints" type="number" min="0" value="<?php $tournament ? esc_html_e( $tournament->get_elimination_max_points_per_round() ) : _e('') ?>" />
+            <label for="eliminationmaxpoints"><?php _e('Points per round') ?></label>
+            <div><input id="eliminationmaxpoints" name="eliminationmaxpoints" type="number" min="0" value="<?php $tournament ? esc_html_e( $tournament->get_elimination_max_points_per_round() ) : _e('') ?>" />
+                 <p>Maximum number of points per round for elimination bracket</p></div>
+          </div>
+        </fieldset>
+        <fieldset>
+        <legend><h3><?php _e( 'Swiss System') ?></h3></legend>
+          <div class="ekc-control-group">
+            <label for="swissrounds"><?php _e('Number of rounds') ?></label>
+            <div><input id="swissrounds" name="swissrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_rounds() ) : _e('') ?>" />
+                 <p>Number of rounds of Swiss System</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swissrounds"><?php _e('Number of rounds of Swiss System') ?></label>
-            <input id="swissrounds" name="swissrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_rounds() ) : _e('') ?>" />
+            <label for="swissmaxpoints"><?php _e('Points per round') ?></label>
+            <div><input id="swissmaxpoints" name="swissmaxpoints" type="number" min="0" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_max_points_per_round() ) : _e('') ?>" />
+                 <p>Maximum number of points per round for Swiss System</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swissmaxpoints"><?php _e('Maximum points per round for Swiss System') ?></label>
-            <input id="swissmaxpoints" name="swissmaxpoints" type="number" min="0" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_max_points_per_round() ) : _e('') ?>" />
+            <label for="swissslidematchrounds"><?php _e('Pairing') ?></label>
+            <div><input id="swissslidematchrounds" name="swissslidematchrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_slide_match_rounds() ) : _e('') ?>" />
+                 <p>Number of slide match rounds for Swiss System, i.e. the pairing for the first n rounds is slide match, all following rounds are top down match</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swissslidematchrounds"><?php _e('Number of slide match rounds for Swiss System (i.e. the pairing for the first n rounds is slide match, all following rounds are top down match)') ?></label>
-            <input id="swissslidematchrounds" name="swissslidematchrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_slide_match_rounds() ) : _e('') ?>" />
+            <label for="swissadditionalrounds"><?php _e('Additional rounds') ?></label>
+            <div><input id="swissadditionalrounds" name="swissadditionalrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_additional_rounds() ) : _e('') ?>" />
+                 <p>Number of additional rounds of Swiss System, i.e. ranking games after elimination bracket has started</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swissadditionalrounds"><?php _e('Number of additional rounds of Swiss System (i.e. ranking games after elimination bracket has started)') ?></label>
-            <input id="swissadditionalrounds" name="swissadditionalrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_additional_rounds() ) : _e('') ?>" />
+            <label for="swissroundtime"><?php _e('Time limit') ?></label>
+            <div><input id="swissroundtime" name="swissroundtime" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_round_time() ) : _e('') ?>" />
+                 <p>Time limit for a Swiss System round, setting a value will enable a timer</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swissroundtime"><?php _e('Time limit for a Swiss System round (setting a value will enable a timer)') ?></label>
-            <input id="swissroundtime" name="swissroundtime" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_round_time() ) : _e('') ?>" />
+            <label for="swisstiebreaktime"><?php _e('Tie break') ?></label>
+            <div><input id="swisstiebreaktime" name="swisstiebreaktime" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_tiebreak_time() ) : _e('') ?>" />
+                 <p>Time limit until tie break starts, setting a value will enable a timer</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swisstiebreaktime"><?php _e('Time limit until Tie Break (setting a value will enable a timer)') ?></label>
-            <input id="swisstiebreaktime" name="swisstiebreaktime" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_tiebreak_time() ) : _e('') ?>" />
+            <label for="swissstartpitch"><?php _e('Start pitch number') ?></label>
+            <div><input id="swissstartpitch" name="swissstartpitch" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_start_pitch() ) : _e('') ?>" />
+                 <p>Useful if two tournaments run in parallel</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="swissstartpitch"><?php _e('Start pitch number (useful, if two tournaments run in parallel)') ?></label>
-            <input id="swissstartpitch" name="swissstartpitch" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_start_pitch() ) : _e('') ?>" />
+            <label for="swisspitchlimit"><?php _e('Available pitches') ?></label>
+            <div><input id="swisspitchlimit" name="swisspitchlimit" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_pitch_limit() ) : _e('') ?>" />
+                 <p>Number of available pitches for pitch limit mode. If the number of teams exceeds the number of pitches, additional BYEs will be added to the tournament.</p></div>
           </div>
-          <div class="ekc-control-group">
-            <label for="swisspitchlimit"><?php _e('Number of available pitches (optional). If the number of teams exceeds the number of pitches, additional BYEs will be added to the tournament.') ?></label>
-            <input id="swisspitchlimit" name="swisspitchlimit" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_pitch_limit() ) : _e('') ?>" />
-          </div>
+        </fieldset>
+        <fieldset>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( $button_text ) ?></button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php $tournament && $action === 'edit' ? esc_html_e( $tournament->get_tournament_id() ) : _e('') ?>" />

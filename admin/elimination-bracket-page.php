@@ -100,7 +100,10 @@ class Ekc_Elimination_Bracket_Admin_Page {
 
 ?>
   <div class="wrap">
-    <h2><?php esc_html_e( $tournament->get_name() ) ?> elimination bracket</h2>
+    
+    <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() . ' ' ); _e('Elimination Bracket') ?></h1>
+    <hr class="wp-header-end">
+
     <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
       <fieldset>
         <div class="columns">
@@ -126,7 +129,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
 
         </div>
         <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary">Save results</button>
+            <button type="submit" class="ekc-button ekc-button-primary"><?php _e('Save results') ?></button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
             <input id="action" name="action" type="hidden" value="elimination-bracket-store" />
         </div>
@@ -141,7 +144,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <h3><?php esc_html_e( $column_name ) ?></h3>
     <table>
       <thead>
-        <tr><td>Pitch</td><td>Teams</td><td>Result</td></tr>
+        <tr><td><?php _e('Pitch') ?></td><td><?php _e('Teams') ?></td><td><?php _e('Result') ?></td></tr>
       </thead>
       <tbody>
     <?php
@@ -171,44 +174,40 @@ class Ekc_Elimination_Bracket_Admin_Page {
   private function show_result( $result, $teams, $max_points_per_round, $rank_numbers ) {
 ?>
 <tr>
-  <td><div class="ekc-control-group"><input id="pitch-<?php esc_html_e( $result->get_result_type() ) ?>" name="pitch-<?php esc_html_e( $result->get_result_type() ) ?>" type="text" maxlength="20" size="5" value="<?php esc_html_e( $result->get_pitch() ) ?>" /></div></td>
-  <td>
-    <div class="ekc-control-group"><?php 
+  <td><input id="pitch-<?php esc_html_e( $result->get_result_type() ) ?>" name="pitch-<?php esc_html_e( $result->get_result_type() ) ?>" type="text" maxlength="20" size="5" value="<?php esc_html_e( $result->get_pitch() ) ?>" /></td>
+  <td><?php 
         $team_id = Ekc_Drop_Down_Helper::none_if_empty( $result->get_team1_id() );
         $team = '';
         if ( array_key_exists( $team_id, $teams ) ) {
           $team = $teams[$team_id];
         }
         Ekc_Drop_Down_Helper::teams_drop_down("team1-" . $result->get_result_type(), $team_id, $team ) ?>
-        <input id="team1-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" name="team1-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team1_placeholder() ) ?>" /> </div>
+        <input id="team1-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" name="team1-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team1_placeholder() ) ?>" />
   </td>
-  <td><div class="ekc-control-group">
-    <input id="team1-score-<?php esc_html_e( $result->get_result_type() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_type() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team1_score() ) ?>" />
+  <td><input id="team1-score-<?php esc_html_e( $result->get_result_type() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_type() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team1_score() ) ?>" />
     <?php 
         if ( count( $rank_numbers ) > 0 ) { ?>
           <span>(<?php esc_html_e( $rank_numbers[0] ) ?>)</span><?php
         } ?>
-  </div></td>
+  </td>
 </tr>
 <tr>
   <td></td>
-  <td>
-    <div class="ekc-control-group"><?php
+  <td><?php
         $team_id = Ekc_Drop_Down_Helper::none_if_empty( $result->get_team2_id() );
         $team = '';
         if ( array_key_exists( $team_id, $teams ) ) {
           $team = $teams[$team_id];
         }
         Ekc_Drop_Down_Helper::teams_drop_down("team2-" . $result->get_result_type(), $team_id, $team ) ?>
-        <input id="team2-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" name="team2-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team2_placeholder() ) ?>" /></div>
+        <input id="team2-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" name="team2-placeholder-<?php esc_html_e( $result->get_result_type() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team2_placeholder() ) ?>" />
   </td>
-  <td><div class="ekc-control-group">
-    <input id="team2-score-<?php esc_html_e( $result->get_result_type() ) ?>" name="team2-score-<?php esc_html_e( $result->get_result_type() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team2_score() ) ?>" />
+  <td><input id="team2-score-<?php esc_html_e( $result->get_result_type() ) ?>" name="team2-score-<?php esc_html_e( $result->get_result_type() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team2_score() ) ?>" />
     <?php 
         if ( count( $rank_numbers ) > 0 ) { ?>
           <span>(<?php esc_html_e( $rank_numbers[1] ) ?>)</span><?php
         } ?>
-  </div></td>
+  </td>
 </tr>
 
 <?php
@@ -217,34 +216,30 @@ class Ekc_Elimination_Bracket_Admin_Page {
   private function empty_result( $result_type, $max_points_per_round, $rank_numbers ) {
     ?>
     <tr>
-      <td><div class="ekc-control-group"><input id="pitch-<?php esc_html_e( $result_type ) ?>" name="pitch-<?php esc_html_e( $result_type ) ?>" type="text" maxlength="20" size="5" /></div></td>
-      <td>
-        <div class="ekc-control-group"><?php
+      <td><input id="pitch-<?php esc_html_e( $result_type ) ?>" name="pitch-<?php esc_html_e( $result_type ) ?>" type="text" maxlength="20" size="5" /></td>
+      <td><?php
           Ekc_Drop_Down_Helper::teams_drop_down("team1-" . $result_type, Ekc_Drop_Down_Helper::SELECTION_NONE, '' ) ?>
-          <input id="team1-placeholder-<?php esc_html_e( $result_type ) ?>" name="team1-placeholder-<?php esc_html_e( $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" /></div>
+          <input id="team1-placeholder-<?php esc_html_e( $result_type ) ?>" name="team1-placeholder-<?php esc_html_e( $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" />
       </td>
-      <td><div class="ekc-control-group">
-        <input id="team1-score-<?php esc_html_e( $result_type ) ?>" name="team1-score-<?php esc_html_e( $result_type ) ?>" type="number" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" />
+      <td><input id="team1-score-<?php esc_html_e( $result_type ) ?>" name="team1-score-<?php esc_html_e( $result_type ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" />
         <?php
           if ( count( $rank_numbers ) > 0 ) { ?>
             <span>(<?php esc_html_e( $rank_numbers[0] ) ?>)</span><?php
           } ?>
-      </div></td>
+      </td>
     </tr>
     <tr>
       <td></td>
-      <td>
-        <div class="ekc-control-group"><?php
+      <td><?php
           Ekc_Drop_Down_Helper::teams_drop_down("team2-" . $result_type, Ekc_Drop_Down_Helper::SELECTION_NONE, '' ) ?>
-          <input id="team2-placeholder-<?php esc_html_e( $result_type ) ?>" name="team2-placeholder-<?php esc_html_e( $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" /></div>
+          <input id="team2-placeholder-<?php esc_html_e( $result_type ) ?>" name="team2-placeholder-<?php esc_html_e( $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" />
       </td>
-      <td><div class="ekc-control-group">
-        <input id="team2-score-<?php esc_html_e( $result_type ) ?>" name="team2-score-<?php esc_html_e( $result_type ) ?>" type="number" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" />
+      <td><input id="team2-score-<?php esc_html_e( $result_type ) ?>" name="team2-score-<?php esc_html_e( $result_type ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" />
         <?php
           if ( count( $rank_numbers ) > 0 ) { ?>
             <span>(<?php esc_html_e( $rank_numbers[1] ) ?>)</span><?php
           } ?>
-      </div></td>
+      </td>
     </tr>
     
     <?php
