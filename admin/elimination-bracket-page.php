@@ -8,7 +8,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
 
   public function intercept_redirect() {
     $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-    if ( ! $page === 'ekc-bracket' ) {
+    if ( $page !== 'ekc-bracket' ) {
       return;
     }
 
@@ -16,18 +16,30 @@ class Ekc_Elimination_Bracket_Admin_Page {
     if ( ! $action ) {
       $action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
     }
-    if ( $action === 'elimination-bracket-store') {
+    if ( $action === 'elimination-bracket-store'
+      || $action === 'swiss-ranking'
+      || $action === 'delete' ) {
         $this->create_elimination_bracket_page();
     }
   }
 
 	public function create_elimination_bracket_page() {
 
+    $admin_helper = new Ekc_Admin_Helper();
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
 		if ( $action === 'elimination-bracket' ) {
 			$this->show_elimination_bracket( $tournament_id );
 		}
+    elseif ( $action === 'swiss-ranking' ) {
+      $helper = new Ekc_Elimination_Bracket_Helper();
+      $helper->elimination_bracket_from_swiss_system_ranking( $tournament_id );
+      $admin_helper->elimination_bracket_redirect( $tournament_id );
+    }
+    elseif ( $action === 'delete' ) {
+      $this->delete_results( $tournament_id );
+      $admin_helper->elimination_bracket_redirect( $tournament_id );
+    }
 		else {
 			// handle POST
       $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;	
@@ -44,7 +56,6 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $helper = new Ekc_Backup_Helper();
           $helper->store_backup( $tournament_id );
         }
-        $admin_helper = new Ekc_Admin_Helper();
         $admin_helper->elimination_bracket_redirect( $tournament_id );
       }
 		}
@@ -104,10 +115,15 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() . ' ' ); _e('Elimination Bracket') ?></h1>
     <hr class="wp-header-end">
 
+    <?php 
+    $this->show_swiss_system_ranking_link( $tournament, $results );
+    $this->show_delete_results_link( $tournament );
+    ?>
+
     <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
       <fieldset>
         <div class="columns">
-<?php
+<?php 
     $show_rank_numbers = true; 
     if (Ekc_Elimination_Bracket_Helper::has_1_16_finals( $tournament->get_elimination_rounds() ) ) {
       $this->show_column( "1/16 Finals", $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
@@ -137,6 +153,22 @@ class Ekc_Elimination_Bracket_Admin_Page {
     </form>
   </div><!-- .wrap -->
 <?php
+  }
+
+  private function show_swiss_system_ranking_link( $tournament, $results ) {
+    if ( count( $results ) === 0 && $tournament->get_tournament_system() === Ekc_Drop_Down_Helper::TOURNAMENT_SYSTEM_SWISS_KO ) {
+      ?>
+      <p><a href="?page=ekc-bracket&amp;action=swiss-ranking&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>"><?php _e( 'populate elimination bracket from swiss system ranking' ) ?></a></p>
+      <?php
+    }
+  }
+
+  private function show_delete_results_link( $tournament ) {
+    ?>
+    <span class="delete ekc-page-delete-link" >
+    <a href="?page=ekc-bracket&amp;action=delete&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>"><?php _e( 'delete results' ) ?></a>
+    </span>
+    <?php
   }
 
   private function show_column( $column_name, $results, $result_types, $teams, $max_points_per_round, $show_rank_numbers ) {
@@ -243,6 +275,11 @@ class Ekc_Elimination_Bracket_Admin_Page {
     </tr>
     
     <?php
+  }
+
+  private function delete_results( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $db->delete_results_for_stage( $tournament_id, Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO );
   }
 }
 

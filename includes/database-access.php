@@ -1164,6 +1164,28 @@ class Ekc_Database_Access {
 		) );
 	}
 
+	public function delete_results_for_stage( $tournament_id, $tournament_stage ) {
+		if ( ! $tournament_id || ! $tournament_stage ) {
+			return;
+		}
+
+		global $wpdb;
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->prefix}ekc_result_log
+			 WHERE result_id IN(
+				SELECT r.result_id
+				FROM   {$wpdb->prefix}ekc_result r
+				WHERE  r.tournament_id = %d
+				AND    r.stage = %s)",
+			array( $tournament_id, $tournament_stage )
+		) );
+
+		$wpdb->delete( $wpdb->prefix . 'ekc_result', array(
+			'tournament_id' => $tournament_id,
+			'stage' => $tournament_stage
+		) );
+	}
+
 	/***************************************************************************************************************************
 	 * Swiss System
 	 ***************************************************************************************************************************/

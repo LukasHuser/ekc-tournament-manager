@@ -7,7 +7,7 @@ class Ekc_Swiss_System_Admin_Page {
 
   public function intercept_redirect() {
     $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-    if ( ! $page === 'ekc-swiss' ) {
+    if ( $page !== 'ekc-swiss' ) {
       return;
     }
 
@@ -204,15 +204,15 @@ class Ekc_Swiss_System_Admin_Page {
 
   private function show_delete_round_link( $tournament, $current_round ) {
     ?>
-    <span class="delete" style="text-align:right; display:block" >
-    <a href="?page=ekc-swiss&amp;action=delete-round&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>">delete round <?php esc_html_e( $current_round ) ?></a> &nbsp;
+    <span class="delete ekc-page-delete-link" >
+    <a href="?page=ekc-swiss&amp;action=delete-round&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>"><?php _e( 'delete round' ) ?>&nbsp;<?php esc_html_e( $current_round ) ?></a>
     </span>
     <?php
   }
 
   private function show_ranking_link( $tournament_id ) {
     ?>
-    <a href="?page=ekc-swiss&amp;action=swiss-system-ranking&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>">ranking</a> &nbsp;
+    <a href="?page=ekc-swiss&amp;action=swiss-system-ranking&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>"><?php _e( 'ranking' ) ?></a> &nbsp;
     <?php    
   }
 

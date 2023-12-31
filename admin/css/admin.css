@@ -1,3 +1,9 @@
+/* pages */
+.ekc-page-delete-link {
+  display: block;
+  text-align: right;
+}
+
 /* forms */
 label.ekc-required::after {
   content: " *";
