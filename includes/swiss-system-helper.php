@@ -112,13 +112,17 @@ class Ekc_Swiss_System_Helper {
 		if ( $tournament->get_swiss_system_start_pitch() ) {
 			$pitch = intval( $tournament->get_swiss_system_start_pitch() );
 		}
+		$virtual_result_score = 1; // legacy fallback if no virtual result score is defined
+		if ( !is_null( $tournament->get_swiss_system_virtual_result_points() ) ) {
+			$virtual_result_score = $tournament->get_swiss_system_virtual_result_points();
+		}
 
 		foreach ( $virtual_matchups as $matchup ) {
 			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
 			$result->set_virtual_result( true );
 			$result->set_pitch( strval( $pitch ) );
-			$result->set_team1_score( 1 );
-			$result->set_team2_score( 1 );
+			$result->set_team1_score( $virtual_result_score );
+			$result->set_team2_score( $virtual_result_score );
 			
 			$db->insert_tournament_result( $result );
 			$pitch++;

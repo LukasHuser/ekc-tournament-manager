@@ -19,6 +19,7 @@ class Ekc_Tournament implements JsonSerializable {
 	private $elimination_max_points_per_round;
 	private $swiss_system_rounds;
 	private $swiss_system_max_points_per_round;
+	private $swiss_system_virtual_result_points;
 	private $swiss_system_additional_rounds;
 	private $swiss_system_slide_match_rounds;
 	private $swiss_system_round_time;
@@ -139,6 +140,14 @@ class Ekc_Tournament implements JsonSerializable {
 
 	public function set_swiss_system_max_points_per_round(?int $swiss_system_max_points_per_round) {
 		$this->swiss_system_max_points_per_round = $swiss_system_max_points_per_round;
+	}
+
+	public function get_swiss_system_virtual_result_points() {
+		return $this->swiss_system_virtual_result_points;
+	}
+
+	public function set_swiss_system_virtual_result_points(?int $swiss_system_virtual_result_points) {
+		$this->swiss_system_virtual_result_points = $swiss_system_virtual_result_points;
 	}
 
 	public function get_swiss_system_additional_rounds() {

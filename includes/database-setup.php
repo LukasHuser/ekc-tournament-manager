@@ -44,6 +44,7 @@ class Ekc_Database_Setup {
 			elimination_max_points_per_round integer(10),
 			swiss_system_rounds integer(10),
 			swiss_system_max_points_per_round integer(10),
+			swiss_system_virtual_result_points integer(10),
 			swiss_system_additional_rounds integer(10),
 			swiss_system_slide_match_rounds integer(10),
 			swiss_system_round_time integer(10),

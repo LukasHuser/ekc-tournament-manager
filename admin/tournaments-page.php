@@ -82,6 +82,9 @@ class Ekc_Tournaments_Admin_Page {
       if ( isset($_POST['swissmaxpoints'] ) ) {
 				$tournament->set_swiss_system_max_points_per_round( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissmaxpoints'] ) ) ) );
       }
+      if ( isset($_POST['swissvirtualresultpoints'] ) ) {
+				$tournament->set_swiss_system_virtual_result_points( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissvirtualresultpoints'] ) ) ) );
+      }
 			if ( isset($_POST['swissadditionalrounds'] ) ) {
 				$tournament->set_swiss_system_additional_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissadditionalrounds'] ) ) ) );
       }
@@ -232,12 +235,17 @@ class Ekc_Tournaments_Admin_Page {
           <div class="ekc-control-group">
             <label for="swissslidematchrounds"><?php _e('Pairing') ?></label>
             <div><input id="swissslidematchrounds" name="swissslidematchrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_slide_match_rounds() ) : _e('') ?>" />
-                 <p>Number of slide match rounds for Swiss System, i.e. the pairing for the first n rounds is slide match, all following rounds are top down match</p></div>
+            <p>Number of slide pairing rounds for Swiss System, i.e. the pairing method for the first n rounds is 'slide pairing', all following rounds use 'top-down pairing'</p></div>
           </div>
           <div class="ekc-control-group">
             <label for="swissadditionalrounds"><?php _e('Additional rounds') ?></label>
             <div><input id="swissadditionalrounds" name="swissadditionalrounds" type="number" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_additional_rounds() ) : _e('') ?>" />
-                 <p>Number of additional rounds of Swiss System, i.e. ranking games after elimination bracket has started</p></div>
+            <p>Number of additional rounds of Swiss System, i.e. ranking matches after elimination bracket has started</p></div>
+          </div>
+          <div class="ekc-control-group">
+            <label for="swissvirtualresultpoints"><?php _e('Points for virtual result') ?></label>
+            <div><input id="swissvirtualresultpoints" name="swissvirtualresultpoints" type="number" min="0" value="<?php $tournament ? esc_html_e( $tournament->get_swiss_system_virtual_result_points() ) : _e('') ?>" />
+                 <p>Points awarded for a virtual result during an additional round, i.e. points for dummy matches between teams actually playing in the elimination bracket. Relevant for opponent score of teams playing the ranking matches. </p></div>
           </div>
           <div class="ekc-control-group">
             <label for="swissroundtime"><?php _e('Time limit') ?></label>
