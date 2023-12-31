@@ -260,9 +260,9 @@ class Ekc_Teams_Admin_Page {
                  <p>Initial score for an accelerated system</p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="virtualrank"><?php _e('Virtual Rank') ?></label>
+            <label for="virtualrank"><?php _e('Virtual rank') ?></label>
             <div><input id="virtualrank" name="virtualrank" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_virtual_rank() ) : _e('') ?>" />
-                 <p>Virtual Rank for a top team which is excluded in additional ranking rounds</p></div>
+                 <p>Virtual rank for a top team which is excluded in additional ranking rounds</p></div>
           </div>
         </fieldset>
 <?php }
