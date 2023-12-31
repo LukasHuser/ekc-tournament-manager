@@ -91,13 +91,20 @@ class Ekc_Backup_Helper {
 		foreach ( $import->get_results() as $result ) {
 			$result->set_tournament_id( $tournament_id );
 			if ( $result->get_team1_id() ) {
-				$result->set_team1_id( $team_id_map[$result->get_team1_id()]);
+				$result->set_team1_id( $this->get_new_team_id( $team_id_map, $result->get_team1_id() ) );
 			}
 			if ( $result->get_team2_id() ) {
-				$result->set_team2_id( $team_id_map[$result->get_team2_id()]);
+				$result->set_team2_id( $this->get_new_team_id( $team_id_map, $result->get_team2_id() ) );
 			}
 			$new_id = $db->insert_tournament_result( $result );
 		}
+	}
+
+	private function get_new_team_id( $team_id_map, $old_team_id ) {
+		if ( $old_team_id >= Ekc_Team::TEAM_ID_BYE ) { // multiple byes for pitch limit mode possible
+			return $old_team_id;
+		} 
+		return $team_id_map[$old_team_id];
 	}
 
 	public function store_backup( $tournament_id ) {
