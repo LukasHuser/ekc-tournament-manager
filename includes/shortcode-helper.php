@@ -764,13 +764,27 @@ class Ekc_Shortcode_Helper {
 		$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
 		$all_results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_SWISS, null, null );
 		$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
-		$current_round_result = $this->get_results_for_round( $all_results, $current_round, $team->get_team_id() );
+		$current_round_result = $this->get_results_for_round( $all_results, $current_round, $team->get_team_id() );	
 		
 		$html = '<p><a href="' . esc_html( $_SERVER['REQUEST_URI'] ) . '">' . __('Reload page') . '</a></p>';
 		if (count( $current_round_result ) > 0) {
-			$html .= '<h3>' . __('Round') . ' ' . esc_html($current_round)  . '</h3>';
-			$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $link_id );
-		}	
+			$html .= '<h3>' . __('Round') . ' ' . esc_html($current_round)  . '</h3>';			
+			$earliest_reported_result_time = $db->get_earliest_result_log_time( $tournament->get_tournament_id(), $current_round );
+			$report_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $earliest_reported_result_time );
+			if ( $report_end_date ) {
+				$report_end_date->add(new DateInterval('PT4H')); // add 4 hours
+			}
+			// Allow modifications to the result for up to 4 hours after the first result has been reported.
+			// Relevant only for the very last round in the tournament. It reduces the risk of intentional or unintentional modifications after the tournament has ended.
+			$now = new DateTime();
+			if ( !$report_end_date || $report_end_date > $now ) {
+				$html .= $this->create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $link_id );
+			}
+			else {
+				// modification is not possible anymore
+				$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country );
+			}
+		}
 
 		for ( $round = $current_round - 1; $round > 0; $round-- ) {
 			$result_for_round = $this->get_results_for_round( $all_results, $round, $team->get_team_id() );

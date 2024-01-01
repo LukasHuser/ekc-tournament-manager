@@ -1128,6 +1128,22 @@ class Ekc_Database_Access {
 		return $wpdb->insert_id;
 	}
 
+	public function get_earliest_result_log_time( $tournament_id, $tournament_round ) {
+		global $wpdb;
+		$log_time = $wpdb->get_var( $wpdb->prepare(
+			"
+			SELECT date_format(min(l.log_time), '%%Y-%%m-%%d %%H:%%i:%%s') as log_time
+			FROM   {$wpdb->prefix}ekc_result_log l
+			JOIN   {$wpdb->prefix}ekc_result r ON l.result_id = r.result_id
+			WHERE  r.tournament_id = %d
+			AND    r.tournament_round = %d
+			",
+			array( $tournament_id, $tournament_round )
+		) );
+
+		return $log_time;
+	}
+
 	public function delete_results_for_team( $team_id ) {
 		if ( ! $team_id ) {
 			return;
