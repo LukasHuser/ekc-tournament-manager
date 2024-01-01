@@ -946,9 +946,9 @@ class Ekc_Database_Access {
 	 * Results
 	 ***************************************************************************************************************************/
 
-	 public function get_result_log_as_table( $tournament_id, $sort_column = 'log_time', $sort = 'asc' ) {
+	 public function get_result_log_as_table( $tournament_id, $sort_column = 'log_time', $sort = 'desc' ) {
 		global $wpdb;
-		$sql_sort = $this->create_result_log_sort_column_sql( $sort_column, '') . ' ' . ($sort === 'desc' ? 'DESC' : 'ASC');
+		$sql_sort = $this->create_result_log_sort_column_sql( $sort_column, '') . ' ' . ($sort === 'asc' ? 'ASC' : 'DESC');
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT date_format(l.log_time, '%%Y-%%m-%%d %%H:%%i:%%s') as log_time,

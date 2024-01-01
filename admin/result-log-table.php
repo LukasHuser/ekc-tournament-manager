@@ -23,7 +23,7 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 
 	function get_sortable_columns() {
 		$sortable_columns = array(
-			'log_time'	=> array('log_time', true),
+			'log_time'	=> array('log_time', false),
 			'team1'		=> array('team1', false),
 			'team2'		=> array('team2', false),
 			'result'	=> array('result', false),
