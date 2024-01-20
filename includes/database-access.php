@@ -394,13 +394,26 @@ class Ekc_Database_Access {
 		return $teams;
 	}
 
-	public function get_active_teams( $tournament_id, $limit = 0, $sort = 'asc') {
+	/**
+	 * Get all active teams for a tournament.
+	 * 
+	 * @param int $tournament_id		the tournament
+	 * @param int $limit				limit for the number of teams, e.g. when only interested in the last 5 registered teams, 0 = unlimited
+	 * @param string $sort				'asc' or 'desc', for ascending or descending sort order, ordered by registration order of the team
+	 * @param boolean $limit_max_teams	consider maximum number of teams of the given tournament, useful when using for a list of registered players,
+	 * 									but might be overridden if interested in _all_ active players   
+	 */
+	public function get_active_teams( $tournament_id, $limit = 0, $sort = 'asc', $limit_max_teams = true ) {
 		global $wpdb;
-		$max_teams = $this->get_max_teams_by_tournament_id( $tournament_id );
 		$limit = filter_var( $limit, FILTER_VALIDATE_INT );
 		$sql_limit = $limit > 0 ? ' LIMIT ' . $limit : '';
-		$sql_teams_limit = $max_teams > 0 ? ' LIMIT ' . $max_teams : '';
 		$sql_sort = $sort === 'desc' ? 'DESC' : 'ASC';
+		
+		$sql_teams_limit = '';
+		if ( $limit_max_teams ) {
+			$max_teams = $this->get_max_teams_by_tournament_id( $tournament_id );
+			$max_teams > 0 ? ' LIMIT ' . $max_teams : '';
+		} 
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
@@ -1280,6 +1293,7 @@ class Ekc_Database_Access {
 		));
 
 		// finally select result using our temp tables
+		// team ids from BYEs are present in result tables but are removed by joining on teams table
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT	t.team_id AS team_id, 

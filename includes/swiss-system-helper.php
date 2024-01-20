@@ -161,6 +161,8 @@ class Ekc_Swiss_System_Helper {
 		$db = new Ekc_Database_Access();
 		$ranking = array();
 		if ( intval( $next_round ) === 1 ) {
+			// consider all active teams, ignoring the waiting list or maximum number of teams for the tournament
+			// teams on the waiting list must have been set to inactive before starting the tournament
 			$ranking = $db->get_initial_swiss_system_ranking( $tournament_id );
 		}
 		else {
