@@ -208,6 +208,7 @@ class Ekc_Swiss_System_Helper {
 
 	private function match_slide( $groups, $current_ranking, $all_results ) {
 		$edges = array();
+		$ranking_size = count( $current_ranking );
 		// start index of current group into total ranking
 		$group_start_index = 0; 
 
@@ -217,46 +218,37 @@ class Ekc_Swiss_System_Helper {
 			// middle position within group
 			$group_size = count( $group );
 			$group_offset = intdiv( $group_size, 2);
-			// loop over first half of the group and calculate pairings
-			for ( $i = 0; $i < $group_offset; $i++ ) {
+			// loop over the group and calculate pairing weights
+			for ( $i = 0; $i < $group_size - 1; $i++ ) {
 				$team1_index = $group_start_index + $i;
 				$team1 = $current_ranking[$team1_index];
-				// start at mid-point of the group and simultaneously go up and down in the ranking
-				for ( $j = 0; $j < $group_offset; $j++ ) {
-					$team2_index = $team1_index + $group_offset + $j;
-					if ( $team2_index < $group_start_index + $group_size  ) {
-						$team2 = $current_ranking[$team2_index];
-						// $j is positive, we use a negative weight, because we want a minimum matching
-						$initial_weight = -$j;
-						$weight = $this->get_pairing_weight( $team1, $team2, $initial_weight, $all_results );
-						$edges[] = array( $team1_index, $team2_index, $weight );
-					}
-					if ( $j != 0 ) {
-						$team2_index = $team1_index + $group_offset - $j;
-						if ( $team2_index > $team1_index ) {
-							$team2 = $current_ranking[$team2_index];
-							// $j is positive, we use a negative weight, because we want a minimum matching
-							$initial_weight = -$j;
-							$weight = $this->get_pairing_weight( $team1, $team2, $initial_weight, $all_results );
-							$edges[] = array( $team1_index, $team2_index, $weight );
-						}
-					}
+				for ( $j = $i+1; $j < $group_size; $j++ ) {
+					$team2_index = $group_start_index + $j;
+					$team2 = $current_ranking[$team2_index];
+					
+					// $team2_index - $team1_index ist always positive (distance in the ranking)
+					// $team2_index - $team1_index - $group_offset is 0 in the middle of the group, and its absolute value gets higher, if further away from the middle (upwards and downwards in the ranking)
+					$initial_weight = abs( $team2_index - $team1_index - $group_offset ); 
+					$weight = $this->get_pairing_weight( $team1, $team2, $initial_weight, $all_results );
+					$edges[] = array( $team1_index, $team2_index, $weight );
 				}
 			}
-			// now we need a pairing for each team in the group with each other team down the whole ranking
-			// we use a similar rule as simple "match top", but with an added penalty for a matching outside the own group
+
+			// Now we need a pairing for each team in the group with each other team down the whole ranking.
+			// We use the same rule as "match top", i.e. the weight is calculated from the distance in the ranking.
 			for ( $i = 0; $i < $group_size; $i++ ) {
 				$team1_index = $group_start_index + $i;
 				$team1 = $current_ranking[$team1_index];
 
 				// loop over whole ranking, downwards, outside own group
-				$downward_ranking_size = count( $current_ranking ) - $group_start_index - $group_size;
+				$downward_ranking_size = $ranking_size - $group_start_index - $group_size;
 				for ( $j = 0; $j < $downward_ranking_size; $j++ ) {
 					$team2_index = $group_start_index + $group_size + $j;
 					$team2 = $current_ranking[$team2_index];
-					// penalty of 1000 for pairings outside own group
-					// $i and $j are positive, we use a negative weight, because we want a minimum matching
-					$initial_weight = -1000 - 1 - $i - $j;
+
+					// calculate weight from distance in the ranking, always positive (> 0)
+					// add penalty of $ranking_size for outside of group pairings (any large enough constant would do as well)
+					$initial_weight = $team2_index - $team1_index + $ranking_size;
 					$weight = $this->get_pairing_weight( $team1, $team2, $initial_weight, $all_results );
 					$edges[] = array( $team1_index, $team2_index, $weight );
 				}
@@ -277,11 +269,8 @@ class Ekc_Swiss_System_Helper {
 				$team1 = $current_ranking[$i];
 				$team2 = $current_ranking[$j];
 				
-				// Note: $j is strictly larger than $i, therefore $i - $j is always negative.
-				// We use negative weights here, because the blossom matching algorithm
-				// will calculate a maximum weight matching - but we want a minimum weight matching,
-				// so we simply switch sign and use only negative values as weights 
-				$initial_weight = $i - $j;
+  				// calculate weight from distance in the ranking, always positive (> 0)
+				$initial_weight = $j - $i;
 				$weight = $this->get_pairing_weight( $team1, $team2, $initial_weight, $all_results );
 				$edges[] = array( $i, $j, $weight );
 			}
@@ -301,18 +290,27 @@ class Ekc_Swiss_System_Helper {
 	}
 
 	private function get_pairing_weight( $team1, $team2, $initial_weight, $all_results ) {
+		// The provided weight corresponds to the distance in the ranking.
+		// With a linear weight function, multiple maximum weight matchings might exist with the same sum of weights, but largely differing weights.
+		// To avoid this, we use a simple non-linear weight function: the square of the distance.
+		$weight = $initial_weight * $initial_weight;
+		
 		if ( $this->played_already( $team1, $team2, $all_results ) ) {
-			// add a penalty of 100000
-			// because we use negative values, we actually subtract the penalty
-			return $initial_weight - 100000;
+			// Add a penalty of 100_000_000 (take care not to overflow on MAXINT).
+			// Assuming a maximum number of players of 1000, maximum distance in the ranking graph is 1_000_000.
+			$weight += 100_000_000;
 		} 
-		return $initial_weight;
+
+		// The blossom algorithm calculates a maximum weight matching, we return negative weights here,
+		// because we want a minimum weight matching.
+		return -$weight;
 	}
 
 	private function get_matchups( $edges, $current_ranking ) {
-		// maximum weight matching with blossom algorithm
-		// we only consider maximum cardinality matchings,
-		// so all vertices in the graph (i.e. all teams) are included in the matching
+		// Maximum weight matching with blossom algorithm.
+		// We actually want a minimum weight matching, so all weights are negative.
+		// We only consider maximum cardinality matchings,
+		// so all vertices in the graph (i.e. all teams) are included in the matching.
 		$mates = maxWeightMatching( $edges, true );
 		$matchups = array();
 		for ( $i = 0; $i < count( $mates ); $i++ ) {
