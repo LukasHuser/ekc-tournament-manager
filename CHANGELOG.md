@@ -7,7 +7,7 @@ CHANGELOG EKC Tournament Manager
 * Elimination bracket: new menu to populate initial elimination bracket from swiss system ranking. New menu to delete all results.
 * Swiss system: Calculate opponent score without considering direct matches
 * Swiss system: new parameter for number of points for virtual results (when playing additional rounds)
-* Swiss system: improve pairing in case of multiple maximum weight matchins. Use non-linear distance function for blossom algorithm.
+* Swiss system: improve pairing in case of multiple maximum weight matchings. Use non-linear distance function for blossom algorithm.
 * Result log: store team, date and time for results changed through shareable links
 * Shareable links: success message when storing a result (use ajax call instead of post-redirect-get)
 * Shareable links: allow modifications to the results through shareable links for up to 4 hours after the first result for a given round has been reported
