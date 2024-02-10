@@ -1,6 +1,9 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.1.1 / 2024-02-10
+* Country drop down: support more countries
+
 ## Version 2.1.0 / 2024-02-04
 * New shortcode for nation trophy
 * New menu to create a new tournament as a copy of an existing tournament
