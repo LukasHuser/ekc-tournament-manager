@@ -1,6 +1,9 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.1.2 / 2024-04-09
+* Bugfix: Reporting results through shareable links does not work (except for logged-in users) 
+
 ## Version 2.1.1 / 2024-02-10
 * Country drop down: support more countries
 

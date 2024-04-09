@@ -105,6 +105,7 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_tournament_menu' );
 
 		// Admin ajax calls
+		// use wp_ajax prefix (but not wp_ajax_nopriv prefix) to allow the REST call to work for logged-in users but not for non-logged-in users
 		$this->loader->add_action( 'wp_ajax_ekc_admin_swiss_system_store_result', $plugin_admin, 'create_swiss_system_page' );
 
 		// for the redirect pattern to work, we need to write http headers before any output is written
@@ -127,7 +128,9 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		
 		// Public ajax calls
+		// use both wp_ajax and wp_ajax_nopriv prefixes to allow the REST call to work for logged-in users as well as non-logged-in users
 		$this->loader->add_action( 'wp_ajax_ekc_public_swiss_system_store_result', $plugin_public, 'shareable_link_handle_post' );
+		$this->loader->add_action( 'wp_ajax_nopriv_ekc_public_swiss_system_store_result', $plugin_public, 'shareable_link_handle_post' );
 	}
 
 	private function add_shortcodes() {
