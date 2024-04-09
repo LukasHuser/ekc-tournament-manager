@@ -40,6 +40,7 @@ The output will only include active teams.
 | **`waitlist`** | Should the waiting list be displayed (instead of the regular table of registered teams)?<br>Allowed values are `false` and `true`. | `false` |
 | **`country`** | Should a column for the country (displaying flags) be shown?<br>Allowed values are `false` and `true`. | `true` |
 | **`club`** | Should a column for the sports club / city be shown?<br>Allowed values are `false` and `true` | `false` |
+| **`registration-fee`** | Should a green dot be shown before a team name, if that team has paid the registration fee?<br>Allowed values are `false` and `true`. | `false` | 
 
 #### Examples
 
@@ -49,8 +50,8 @@ The output will only include active teams.
 `[ekc-teams tournament="EKC-test" limit="5" sort="desc"]`
 3. Show all registered teams on the waiting list in order of registration (oldest registration first):\
 `[ekc-teams tournament="EKC-test" waitlist="true"]`
-4. Show all registered teams in order of registration (oldest registration first), no column with country flags, but a column for sports club / city is shown:\
-`[ekc-teams tournament="EKC-test" country="false" club="true"]`
+4. Show all registered teams in order of registration (oldest registration first), no column with country flags, but a column for sports club / city is shown, teams which have paid the registration fee are marked with a green dot:\
+`[ekc-teams tournament="EKC-test" country="false" club="true" registration-fee="true"]`
 
 ### ekc-team-count
 
