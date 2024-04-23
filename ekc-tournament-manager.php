@@ -35,9 +35,6 @@ if ( ! defined( 'WPINC' ) ) die;
 define( 'EKC_PLUGIN_VERSION', '2.1.2' );
 define( 'EKC_DATABASE_VERSION', '2.1.0' );
 
-// Load database setup class
-require_once plugin_dir_path( __FILE__ ) . 'includes/database-setup.php';
-
 function ekc_activate_plugin() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/activator.php';
 	Ekc_Activator::activate();
@@ -48,8 +45,8 @@ function ekc_deactivate_plugin() {
 	Ekc_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_plugin' );
-register_deactivation_hook( __FILE__, 'deactivate_plugin' );
+register_activation_hook( __FILE__, 'ekc_activate_plugin' );
+register_deactivation_hook( __FILE__, 'ekc_deactivate_plugin' );
 
 // Load plugin main class
 require plugin_dir_path( __FILE__ ) . 'includes/plugin.php';

@@ -151,4 +151,24 @@ class Ekc_Database_Setup {
 
 		update_option(self::DATABASE_VERSION_OPTION, EKC_DATABASE_VERSION);
 	}
+
+	public function delete_database() {
+		global $wpdb;
+
+		$tournament_table = $wpdb->prefix . "ekc_tournament";
+		$tournament_round_table = $wpdb->prefix . "ekc_tournament_round";
+		$team_table       = $wpdb->prefix . "ekc_team";
+		$player_table     = $wpdb->prefix . "ekc_player";
+		$result_table     = $wpdb->prefix . "ekc_result";
+		$result_log_table = $wpdb->prefix . "ekc_result_log";
+
+		$wpdb->query( "DROP TABLE IF EXISTS $tournament_table" );
+		$wpdb->query( "DROP TABLE IF EXISTS $tournament_round_table" );
+		$wpdb->query( "DROP TABLE IF EXISTS $team_table" );
+		$wpdb->query( "DROP TABLE IF EXISTS $player_table" );
+		$wpdb->query( "DROP TABLE IF EXISTS $result_table" );
+		$wpdb->query( "DROP TABLE IF EXISTS $result_log_table" );
+
+		delete_option(self::DATABASE_VERSION_OPTION);
+	}
 }

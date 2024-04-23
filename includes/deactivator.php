@@ -3,7 +3,7 @@
 /**
  * Fired during plugin deactivation
  */
-class Deactivator {
+class Ekc_Deactivator {
 
 	/**
 	 * Nothing to do here...

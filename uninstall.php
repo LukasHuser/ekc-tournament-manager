@@ -25,3 +25,24 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+function delete_database() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/database-setup.php';
+	$database = new Ekc_Database_Setup();
+	$database->delete_database();
+}
+
+function delete_uploaded_files() {
+	$upload_dir = wp_upload_dir();
+	$upload_basedir = $upload_dir['basedir']; // /path/to/wp-content/uploads
+	$ekc_upload_dir = $upload_basedir . '/ekc-tournament-manager';
+	if ( file_exists( $ekc_upload_dir ) ) {
+		require_once ( ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php' );
+		require_once ( ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php' );
+		$fileSystem = new WP_Filesystem_Direct( false );
+		$fileSystem->rmdir( $ekc_upload_dir, true );
+	}
+}
+
+delete_database();
+delete_uploaded_files();
