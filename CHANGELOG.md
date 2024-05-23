@@ -1,6 +1,12 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.2.0 / 2024-05-23
+* Uninstall: Delete database tables and uploaded files on uninstall
+* Roles and capabilities: Custom roles EKC Tournament Administrator and EKC Tournament Director
+* New custom field for public template pages
+* New menu to duplicate pages
+
 ## Version 2.1.2 / 2024-04-09
 * Bugfix: Reporting results through shareable links does not work (except for logged-in users) 
 
