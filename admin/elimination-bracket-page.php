@@ -28,6 +28,10 @@ class Ekc_Elimination_Bracket_Admin_Page {
     $admin_helper = new Ekc_Admin_Helper();
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
+    if ( $tournament_id && ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
+
 		if ( $action === 'elimination-bracket' ) {
 			$this->show_elimination_bracket( $tournament_id );
 		}
@@ -42,7 +46,11 @@ class Ekc_Elimination_Bracket_Admin_Page {
     }
 		else {
 			// handle POST
-      $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;	
+      $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;
+      if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+        return;
+      }
+
 			$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
       if ( $action === 'elimination-bracket-store' ) {
         $db = new Ekc_Database_Access();

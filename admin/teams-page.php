@@ -10,6 +10,10 @@ class Ekc_Teams_Admin_Page {
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
 		$team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
+    if ( $tournament_id && ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
+
     if ( $action === 'new' ) {
 			$this->show_new_team($tournament_id);
 		}
@@ -42,12 +46,16 @@ class Ekc_Teams_Admin_Page {
 		$has_data = false;
 		$players = array();
 		$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+    if ( isset($_POST['tournamentid'] ) ) {
+      $tournament_id = intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) );
+      if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+        return;
+      } 
+      $team->set_tournament_id( $tournament_id );
+      $has_data = true;
+    }
 		if ( isset($_POST['teamid'] ) ) {
 			$team->set_team_id( intval( sanitize_key( wp_unslash( $_POST['teamid'] ) ) ) );
-			$has_data = true;
-		}
-		if ( isset($_POST['tournamentid'] ) ) {
-			$team->set_tournament_id( intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) ) );
 			$has_data = true;
 		}
 		if ( isset($_POST['name'] ) ) {
@@ -155,15 +163,20 @@ class Ekc_Teams_Admin_Page {
   <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() ) ?></h1>
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=new" class="page-title-action"><?php _e( 'New team' ) ?></a>
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
-  <a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e($tournament_id) ?>" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
+  <?php
+  if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+  ?><a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e($tournament_id) ?>" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
+  <?php
+  }
+  ?>
 
   <hr class="wp-header-end">
   <form id="teams-filter" method="get" >
   <input id="page" name="page" type="hidden" value="<?php esc_html_e( $_REQUEST['page'] ) ?>" />
   <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament_id ) ?>" />
 <?php 
-	$teams_table->prepare_items();
-	$teams_table->display();
+  $teams_table->prepare_items();
+  $teams_table->display();
 ?>
 </form>
 </div><!-- .wrap -->
@@ -177,7 +190,7 @@ class Ekc_Teams_Admin_Page {
   }
 
 	public function show_edit_team( $team_id ) {
-		$db = new Ekc_Database_Access();
+    $db = new Ekc_Database_Access();
 		$team = $db->get_team_by_id( $team_id );
 		$tournament = $db->get_tournament_by_id($team->get_tournament_id());
 
@@ -390,9 +403,12 @@ class Ekc_Teams_Admin_Page {
   }
 
 	public function export_teams_as_csv() {
-		$page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : false;
+    $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : false;
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : false;
 		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : false;
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
 		if ( $page === 'ekc-teams' && $action === 'csvexport' && $tournament_id ) {
 
 			$db = new Ekc_Database_Access();

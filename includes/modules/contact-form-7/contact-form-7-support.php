@@ -31,6 +31,16 @@ class Ekc_Contact_Form_7_Support {
 	}
 
 	/**
+	 * WPCF7_ADMIN_READ_WRITE_CAPABILITY is defined as 'publish_pages' (which is assigned to the EKC roles)
+	 * WPCF7_ADMIN_READ_CAPABILITY is defined as 'edit_posts' (which is not assigned to the EKC roles)
+	 */
+	public function filter_wpcf7_map_meta_cap( $meta_caps ) {
+		$meta_caps['wpcf7_read_contact_form'] = WPCF7_ADMIN_READ_WRITE_CAPABILITY;
+		$meta_caps['wpcf7_read_contact_forms'] = WPCF7_ADMIN_READ_WRITE_CAPABILITY;
+		return $meta_caps;
+	}
+
+	/**
 	 * Callback to the wpcf7_submit action hook.
 	 * Stores a team for a given tournament based on the provided form data.
 	 */

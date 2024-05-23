@@ -84,6 +84,21 @@ class Ekc_Drop_Down_Helper {
 	public static function elimination_bracket_drop_down($id, $selected_key) {
 		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::ELIMINATION_BRACKET, null, "ekc-selectmenu");
 	}
+	
+	public static function user_drop_down( $id, $selected_key ) {
+		$users = get_users();
+		$keys = array();
+		$values = array();
+		foreach ( $users as $user ) {
+			$keys[] = $user->ID;
+			$name = $user->get('display_name');
+			if ( ! $name ) {
+				$user->get('user_login');
+			}
+			$values[] = $name;
+		}
+		Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, $keys, $values, "ekc-selectmenu", true );
+	}
 
 	public static function filter_yes_no_drop_down( $id, $selected_key, $all_text) {
 		$values = array($all_text, 'Yes', 'No');
@@ -146,7 +161,7 @@ public static function teams_drop_down_data( $tournament_id ) {
 	return $result;
 }
 
-public static function teams_drop_down($id, $selected_key, $selected_value ) {
+public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	$keys = array( $selected_key );
 	$values = array( $selected_value );
 	Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, $keys, $values, "ekc-teams-combobox" );

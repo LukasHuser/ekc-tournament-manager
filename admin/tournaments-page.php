@@ -39,7 +39,11 @@ class Ekc_Tournaments_Admin_Page {
 			$has_data = false;
 			$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
 			if ( isset($_POST['tournamentid'] ) ) {
-				$tournament->set_tournament_id( intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) ) );
+        $tournament_id = intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) );
+        if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+          return;
+        }
+				$tournament->set_tournament_id( $tournament_id );
 				$has_data = true;
 			}
 			if ( isset($_POST['codename'] ) ) {
@@ -48,6 +52,9 @@ class Ekc_Tournaments_Admin_Page {
 			}
 			if ( isset($_POST['name'] ) ) {
 				$tournament->set_name( sanitize_text_field( wp_unslash( $_POST['name'] ) ) );
+			}
+      if ( isset($_POST['owner'] ) ) {
+				$tournament->set_owner_user_Id( Ekc_Type_Helper::opt_intval( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['owner'] ) ) ) ) );
 			}
 			if ( isset($_POST['date'] ) ) {
 				$tournament->set_date( sanitize_text_field( wp_unslash( $_POST['date'] ) ) );
@@ -118,18 +125,29 @@ class Ekc_Tournaments_Admin_Page {
 
 	public function show_tournaments() {
 		$tournaments_table = new Ekc_Tournaments_Table();
+    $show_new_button = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS );
+    $show_backup_button = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS );
 ?>
 <div class="wrap">
 
   <h1 class="wp-heading-inline"><?php _e( 'EKC Tournament Manager' ); ?></h1>
-  <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=new" class="page-title-action"><?php _e( 'New tournament' ); ?></a>
-  <a href="?page=ekc-backup" class="page-title-action"><?php _e( 'Show backups' ); ?></a>
-
+  <?php 
+  if ( $show_new_button ) {
+  ?><a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=new" class="page-title-action"><?php _e( 'New tournament' ); ?></a>
+  <?php
+  }
+  if ( $show_backup_button ) {
+  ?><a href="?page=ekc-backup" class="page-title-action"><?php _e( 'Show backups' ); ?></a>
+  <?php
+  }
+  ?>
   <hr class="wp-header-end">
 
 <?php 
-	$tournaments_table->prepare_items();
-	$tournaments_table->display();
+  if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_READ_TOURNAMENTS ) ) {
+	  $tournaments_table->prepare_items();
+	  $tournaments_table->display();
+  }
 ?>
 
 </div><!-- .wrap -->
@@ -137,20 +155,30 @@ class Ekc_Tournaments_Admin_Page {
 	}	
 
 	public function show_new_tournament() {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS ) ) {
+      return;
+    }
     $this->show_tournament( 'new', 'Create a new tournament', 'Create tournament' );
   }
 
 	public function show_copy_tournament( $tournament_id ) {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS ) ) {
+      return;
+    }
 		$db = new Ekc_Database_Access();
 		$tournament = $db->get_tournament_by_id( $tournament_id );
     $tournament->set_tournament_id( -1 ); // should never be read
     $tournament->set_name( 'Copy of ' . $tournament->get_name() );
     $tournament->set_code_name( 'COPY-' . $tournament->get_code_name() );
+    $tournament->set_owner_user_id( wp_get_current_user()->ID );
 
     $this->show_tournament( 'new', 'Create a new tournament', 'Create tournament', $tournament );
   }
 
 	public function show_edit_tournament( $tournament_id ) {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
 		$db = new Ekc_Database_Access();
 		$tournament = $db->get_tournament_by_id( $tournament_id );
 
@@ -175,6 +203,11 @@ class Ekc_Tournaments_Admin_Page {
           <div><input id="codename" name="codename" type="text" maxlength="50" value="<?php $tournament ? esc_html_e( $tournament->get_code_name() ) : _e('') ?>" required />
                <p>Unique, short and descriptive identifier used to reference the tournament in WP shortcodes</p></div>
         </div>
+          <div class="ekc-control-group">
+            <label for="owner"><?php _e('Owner user') ?></label>
+            <div><?php Ekc_Drop_Down_Helper::user_drop_down("owner", $tournament ? Ekc_Drop_Down_Helper::none_if_empty( $tournament->get_owner_user_id() ) : wp_get_current_user()->ID ) ?>
+                 <p>Owner of the tournament, relevant for permission checks.</p></div>
+          </div>
           <div class="ekc-control-group">
             <label for="teamsize"><?php _e('Team size') ?></label>
             <?php Ekc_Drop_Down_Helper::team_size_drop_down("teamsize", $tournament ? $tournament->get_team_size() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
@@ -280,9 +313,12 @@ class Ekc_Tournaments_Admin_Page {
 <?php
 	}
 
-	public function delete_tournament($tournament_id) {
+	public function delete_tournament( $tournament_id ) {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_DELETE_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
 		$db = new Ekc_Database_Access();
-		$tournament = $db->delete_tournament($tournament_id);
+		$tournament = $db->delete_tournament( $tournament_id );
 	}
 }
 

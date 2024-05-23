@@ -33,6 +33,7 @@ class Ekc_Database_Setup {
 			tournament_id integer(10) NOT NULL AUTO_INCREMENT,
 			code_name varchar(50) NOT NULL,			
 			name varchar(500) NOT NULL,
+			owner_user_id integer(20),
 			tournament_date date,
 			max_teams integer(10),
 			team_size varchar(20),

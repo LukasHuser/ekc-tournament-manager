@@ -15,6 +15,9 @@ class Ekc_Shareable_links_Admin_Page {
     if ( isset($_POST['tournamentid'] ) ) {
       $tournament_id = intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) );
     }
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
     
     if ( $action === 'generate' ) {
       $this->generate_shareable_link( $team_id );

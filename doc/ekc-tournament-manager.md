@@ -165,6 +165,125 @@ From these tournaments an overall nation score is calculated.
 1. Show the nation trophy scores for an EKC event with three tournaments (1vs1, 3vs3, 6vs6):\
 `[ekc-nation-trophy tournament-1vs1="EKC23-1" tournament-3vs3="EKC23-3" tournament-6vs6="EKC23-6"]`
 
+## Roles and capabilities
+
+Users with the _Administrator_ standard role have all EKC tournaments related capabilities.
+
+The custom role _EKC Tournament Administrator_ has all EKC tournaments related capabilities as well as capabilities to create and edit pages.
+Users with this role can see and edit detaild data of all tournaments (including tournaments of other users).
+
+The custom role _EKC Tournament Director_ has EKC tournament related capabilities to create and run their own tournaments as well as to create and edit their own pages.
+Users with this role can create and run their own tournaments, but cannot see detailed data or edit tournaments of other users.
+
+### Roles
+
+* Administrator (technical name `administrator`)
+  - `ekc_read_tournaments`
+  - `ekc_edit_tournaments`
+  - `ekc_edit_others_tournaments`
+  - `ekc_manage_tournaments`
+  - `ekc_manage_others_tournaments`
+  - `ekc_delete_tournaments`
+  - `ekc_delete_others_tournaments`
+  - `ekc_manage_backups`
+
+* EKC Tournament Administrator (technical name `ekc_tournament_administrator`)
+  - `ekc_read_tournaments`
+  - `ekc_edit_tournaments`
+  - `ekc_edit_others_tournaments`
+  - `ekc_manage_tournaments`
+  - `ekc_manage_others_tournaments`
+  - `ekc_delete_tournaments`
+  - `ekc_delete_others_tournaments`
+  - `ekc_manage_backups`
+  - `delete_others_pages`
+  - `delete_pages`
+  - `delete_private_pages`
+  - `delete_published_pages`
+  - `edit_others_pages`
+  - `edit_pages`
+  - `edit_private_pages`
+  - `edit_published_pages`
+  - `publish_pages`
+  - `read`
+  - `read_private_pages`
+  - `upload_files`
+  - `edit_theme_options`
+
+* EKC Tournament Director (technical name `ekc_tournament_director`)
+  - `ekc_read_tournaments`
+  - `ekc_edit_tournaments`
+  - `ekc_manage_tournaments`
+  - `ekc_delete_tournaments`
+  - `delete_pages`
+  - `delete_private_pages`
+  - `delete_published_pages`
+  - `edit_pages`
+  - `edit_private_pages`
+  - `edit_published_pages`
+  - `publish_pages`
+  - `read`
+  - `read_private_pages`
+  - `upload_files`
+  - `edit_theme_options`
+
+### Capabilities
+
+* `ekc_read_tournaments`
+  - view all tournaments
+
+* `ekc_edit_tournaments`
+  - create new tournament
+  - copy existing own tournament
+  - edit own tournament
+  - view teams of own tournaments
+  - create teams for own tournaments
+  - edit teams of own tournaments
+  - teams csv export for own tournaments
+
+* `ekc_edit_others_tournaments`
+  - create new tournament
+  - copy existing tournament
+  - edit any tournaments
+  - view teams of any tournament
+  - create teams for any tournament
+  - edit teams of any tournament
+  - teams csv export for any tournament
+
+* `ekc_manage_tournaments`
+  - elimination bracket for own tournaments
+  - swiss system for own tournaments
+  - backup own tournaments
+  - manage shareable links of own tournaments
+  - view result logs of own tournaments
+
+* `ekc_manage_others_tournaments`
+  - elimination bracket for any tournament
+  - swiss system for any tournament
+  - backup any tournament
+  - manage shareable links of any tournament
+  - view result logs of any tournament
+
+* `ekc_delete_tournaments`
+  - delete own tournaments
+
+* `ekc_delete_others_tournaments`
+  - delete any tournament
+
+* `ekc_manage_backups`
+  - view backups
+  - import backups
+
+### Public Template Pages
+
+The _EKC Tournament Director_ role cannot edit pages of other users.
+But sometimes it is convenient to define template pages, which contain sample usages of shortcodes and can be duplicated to get started quickly with a new tournament page.
+_Public template pages_ can be edited by all users, even if they are not the author of the page, and they dont have the `edit_others_pages` capability.
+A regular page becomes a _public template page_ by adding the custom field `ekc-public-template` with a value of `true`.
+
+The EKC Tournament Manager plugin comes with a feature to duplicate existing pages, which helps to quickly setup a new tournament based on an existing tournament page or a template page.
+When creating a copy of a page, the `ekc-public-template` custom field will _not_ be copied to the new page.
+
 ## Contact Form 7 Integration
 
 Registration forms built with the popular WordPress plugin [Contact Form 7](https://contactform7.com) can be stored directly to the EKC Tournament Manager database.

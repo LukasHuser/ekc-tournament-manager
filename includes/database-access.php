@@ -16,9 +16,10 @@ class Ekc_Database_Access {
 			"
 			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, 
                     case when is_wait_list_enabled = 1 then 'yes' else 'no' end as is_wait_list_enabled, 
-					case when is_player_names_required = 1 then 'yes' else 'no' end as is_player_names_required,
-					tournament_system, elimination_rounds, swiss_system_rounds   
-			FROM   {$wpdb->prefix}ekc_tournament
+					tournament_system, elimination_rounds, swiss_system_rounds,
+					coalesce(display_name, user_login) as owner_user
+			FROM   {$wpdb->prefix}ekc_tournament t
+			LEFT OUTER JOIN {$wpdb->prefix}users u ON t.owner_user_id = u.ID
 			ORDER BY {$sql_sort}
 			",
 		ARRAY_A );
@@ -29,7 +30,7 @@ class Ekc_Database_Access {
 	private function validate_tournament_table_sort_column( $column ) {
 		$valid_columns = array(
 			'code_name', 'name', 'team_size', 'tournament_date', 'max_teams',
-			'tournament_system', 'elimination_rounds', 'swiss_system_rounds'
+			'tournament_system', 'elimination_rounds', 'swiss_system_rounds', 'owner_user'
 		);
 		if ( in_array( $column, $valid_columns, true) ) {
 			return $column;
@@ -44,7 +45,8 @@ class Ekc_Database_Access {
 			array( 
 				'code_name'			=> $this->truncate_string( $tournament->get_code_name(), 50 ), 
 				'name'				=> $this->truncate_string( $tournament->get_name(), 500 ),
-				'tournament_date'		=> $tournament->get_date(),
+				'owner_user_id'		=> $tournament->get_owner_user_id(), 
+				'tournament_date'	=> $tournament->get_date(),
 				'team_size'			=> $this->truncate_string( $tournament->get_team_size(), 20 ),
 				'max_teams'			=> $tournament->get_max_teams(),
 				'is_wait_list_enabled'		=> intval( $tournament->is_wait_list_enabled() ),
@@ -63,7 +65,7 @@ class Ekc_Database_Access {
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
@@ -76,7 +78,8 @@ class Ekc_Database_Access {
 			array( 
 				'code_name'			=> $this->truncate_string( $tournament->get_code_name(), 50 ),
 				'name'				=> $this->truncate_string( $tournament->get_name(), 500 ),
-				'tournament_date'		=> $tournament->get_date(),
+				'owner_user_id'		=> $tournament->get_owner_user_id(), 
+				'tournament_date'	=> $tournament->get_date(),
 				'team_size'			=> $this->truncate_string( $tournament->get_team_size(), 20 ),
 				'max_teams'			=> $tournament->get_max_teams(),
 				'is_wait_list_enabled'		=> intval( $tournament->is_wait_list_enabled() ),
@@ -96,7 +99,7 @@ class Ekc_Database_Access {
 				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
@@ -133,8 +136,8 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date,
-			       team_size, max_teams, is_wait_list_enabled,
+			SELECT tournament_id, code_name, name, owner_user_id, 
+			       tournament_date,team_size, max_teams, is_wait_list_enabled,
 				   is_player_names_required, is_auto_backup_enabled,
 				   tournament_system, elimination_rounds, elimination_max_points_per_round,
 				   swiss_system_rounds, swiss_system_max_points_per_round,
@@ -159,8 +162,8 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date,
-			       team_size, max_teams, is_wait_list_enabled,
+			SELECT tournament_id, code_name, name, owner_user_id,
+			       tournament_date,team_size, max_teams, is_wait_list_enabled,
 				   is_player_names_required, is_auto_backup_enabled,
 				   tournament_system, elimination_rounds, elimination_max_points_per_round,
 				   swiss_system_rounds, swiss_system_max_points_per_round,
@@ -186,6 +189,7 @@ class Ekc_Database_Access {
 		$tournament->set_tournament_id( $row->tournament_id );
 		$tournament->set_code_name( strval( $row->code_name ) );
 		$tournament->set_name( strval( $row->name ) );
+		$tournament->set_owner_user_id( $row->owner_user_id );
 		$tournament->set_date( strval( $row->tournament_date ) );
 		$tournament->set_team_size( strval( $row->team_size ) );
 		$tournament->set_max_teams( $row->max_teams );

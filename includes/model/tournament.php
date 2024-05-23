@@ -8,6 +8,7 @@ class Ekc_Tournament implements JsonSerializable {
 	private $tournament_id;
 	private $code_name;
 	private $name;
+	private $owner_user_id;
 	private $date;
 	private $max_teams;
 	private $team_size;
@@ -52,6 +53,14 @@ class Ekc_Tournament implements JsonSerializable {
 
 	public function set_name(string $name) {
 		$this->name = $name;
+	}
+
+	public function get_owner_user_id() {
+		return $this->owner_user_id;
+	}
+
+	public function set_owner_user_id(?int $owner_user_id) {
+		$this->owner_user_id = $owner_user_id;
 	}
 
 	public function get_date() {

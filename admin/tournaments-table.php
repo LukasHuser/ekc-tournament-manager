@@ -10,10 +10,10 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 			'tournament_date'	=> 'Date',
 			'max_teams'			=> 'Max teams',
 			'is_wait_list_enabled'		=> 'Wait list',
-			'is_player_names_required'	=> 'Player names required',
 			'tournament_system'	=> 'Tournament system',
 			'elimination_rounds'	=> 'Elimination rounds',
 			'swiss_system_rounds'	=> 'Swiss rounds',
+			'owner_user'		=> 'Owner user',
 		);
 		return $columns;
 	}
@@ -27,7 +27,8 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 			'max_teams'			=> array( 'max_teams', false ),
 			'tournament_system'	=> array( 'tournament_system', false ),
 			'elimination_rounds'	=> array( 'elimination_rounds', false ),
-			'swiss_system_rounds'	=> array( 'swiss_system_rounds', false )
+			'swiss_system_rounds'	=> array( 'swiss_system_rounds', false ),
+			'owner_user'		=> array( 'owner_user', false ),
 		);
 		return $columns;
 	}
@@ -49,32 +50,45 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 
 	function column_code_name( $item ) {
 		$actions = array();
-		$actions['teams'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">%s</a>', 'ekc-teams', esc_html( $item['tournament_id'] ), __('Teams') );
-		$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'edit', esc_html( $item['tournament_id'] ), __('Edit') );
-
+		$can_edit_tournaments = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $item['tournament_id'] );
+		$can_manage_tournaments = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $item['tournament_id'] ); 
+		if ( $can_edit_tournaments || $can_manage_tournaments ) {
+			$actions['teams'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">%s</a>', 'ekc-teams', esc_html( $item['tournament_id'] ), __('Teams') );
+		}
+		if ( $can_edit_tournaments ) {
+			$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'edit', esc_html( $item['tournament_id'] ), __('Edit') );
+		}
 		return sprintf('%s %s', $item['code_name'], $this->row_actions($actions) );
 	}
 
 	function column_name( $item ) {
 		$actions = array();
 
-		if ( $item['elimination_rounds'] ) {
-			$actions['elimination-bracket'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', 'ekc-bracket', 'elimination-bracket', esc_html( $item['tournament_id'] ), __('Elimination Bracket') );
-		}
-		if ( $item['swiss_system_rounds'] > 0 ) {
-			$actions['swiss-system'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', 'ekc-swiss', 'swiss-system', esc_html( $item['tournament_id'] ), __('Swiss System') );
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $item['tournament_id'] ) ) {
+			if ( $item['elimination_rounds'] ) {
+				$actions['elimination-bracket'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', 'ekc-bracket', 'elimination-bracket', esc_html( $item['tournament_id'] ), __('Elimination Bracket') );
+			}
+			if ( $item['swiss_system_rounds'] > 0 ) {
+				$actions['swiss-system'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', 'ekc-swiss', 'swiss-system', esc_html( $item['tournament_id'] ), __('Swiss System') );
+			}
 		}
 		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
 	}
 
-	function column_swiss_system_rounds( $item ) {
+	function column_owner_user( $item ) {
 		$actions = array();
-		$actions['copy'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'copy', esc_html( $item['tournament_id'] ), __('Copy') );
-		$actions['result-log'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">%s</a>', 'ekc-result-log', esc_html( $item['tournament_id'] ), __('Result Log') );
-		$actions['backup'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'backup', esc_html( $item['tournament_id'] ), __('Backup') );
-		$actions['delete'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'delete', esc_html( $item['tournament_id'] ), __('Delete') );
 
-		return sprintf('%s %s', $item['swiss_system_rounds'], $this->row_actions($actions) );
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $item['tournament_id'] ) ) {
+			$actions['copy'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'copy', esc_html( $item['tournament_id'] ), __('Copy') );
+		}
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $item['tournament_id'] ) ) {
+			$actions['result-log'] = sprintf('<a href="?page=%s&amp;tournamentid=%s">%s</a>', 'ekc-result-log', esc_html( $item['tournament_id'] ), __('Result Log') );
+			$actions['backup'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'backup', esc_html( $item['tournament_id'] ), __('Backup') );
+		}
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_DELETE_TOURNAMENTS, $item['tournament_id'] ) ) {
+			$actions['delete'] = sprintf('<a href="?page=%s&amp;action=%s&amp;tournamentid=%s">%s</a>', esc_html( $_REQUEST['page'] ), 'delete', esc_html( $item['tournament_id'] ), __('Delete') );
+		}
+		return sprintf('%s %s', $item['owner_user'], $this->row_actions($actions) );
 	}
 
 	function column_default( $item, $column_name ) {
@@ -83,9 +97,9 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 			case 'tournament_date':
 			case 'max_teams':
 			case 'is_wait_list_enabled':
-			case 'is_player_names_required':
 			case 'tournament_system':
 			case 'elimination_rounds':
+			case 'swiss_system_rounds';
 			return $item[ $column_name ];
 			default:
 			return print_r( $item, true ) ; // Show the whole array for troubleshooting purposes

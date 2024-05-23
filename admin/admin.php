@@ -63,11 +63,26 @@ class Ekc_Tournament_Manager_Admin {
 		return $plugins;
 	}
 
+	public function filter_map_meta_cap( $caps, $cap, $user_id, $args ) {
+		$helper = new Ekc_Role_Helper();
+		return $helper->filter_map_meta_cap( $caps, $cap, $user_id, $args );
+	}
+
+	public function ekc_duplicate_page_link( $actions, $post ) {
+		$helper = new Ekc_Page_Helper();
+		return $helper->ekc_duplicate_page_link( $actions, $post );
+	}
+
+	public function ekc_duplicate_page( $post ) {
+		$helper = new Ekc_Page_Helper();
+		return $helper->ekc_duplicate_page( $post );
+	}
+
 	public function add_tournament_menu() {
 	    add_menu_page(
 	        'Tournaments',
 	        'EKC Tournaments',
-	        'manage_options',
+	        Ekc_Role_Helper::CAPABILITY_EKC_READ_TOURNAMENTS,
 	        'ekc-tournaments',
 	        array( $this, 'create_tournaments_page' ),
 			// EKA logo as base64 encoded svg image
@@ -77,7 +92,7 @@ class Ekc_Tournament_Manager_Admin {
 	        NULL,
 			'Teams',
 	        'EKC Teams',
-	        'manage_options',
+	        Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS,
 	        'ekc-teams',
 			array( $this, 'create_teams_page' ) );
 
@@ -85,7 +100,7 @@ class Ekc_Tournament_Manager_Admin {
 	        NULL,
 			'Elimination Bracket',
 	        'EKC Elimination Bracket',
-	        'manage_options',
+	        Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
 	        'ekc-bracket',
 			array( $this, 'create_bracket_page' ) );
 			
@@ -93,7 +108,7 @@ class Ekc_Tournament_Manager_Admin {
 	        NULL,
 			'Swiss System',
 	        'EKC Swiss System',
-	        'manage_options',
+	        Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
 	        'ekc-swiss',
 			array( $this, 'create_swiss_system_page' ) );
 
@@ -101,7 +116,7 @@ class Ekc_Tournament_Manager_Admin {
 	        NULL,
 			'Shareable Links',
 	        'EKC Shareable Links',
-	        'manage_options',
+	        Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
 	        'ekc-links',
 	        array( $this, 'create_shareable_links_page' ) );
 
@@ -109,7 +124,7 @@ class Ekc_Tournament_Manager_Admin {
 	        NULL,
 			'Backup',
 	        'EKC Tournament Backup',
-	        'manage_options',
+	        Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS,
 	        'ekc-backup',
 	        array( $this, 'create_tournaments_backup_page' ) );
 
@@ -117,7 +132,7 @@ class Ekc_Tournament_Manager_Admin {
 				NULL,
 				'Result Log',
 				'EKC Result Log',
-				'manage_options',
+				Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
 				'ekc-result-log',
 				array( $this, 'create_result_log_page' ) );
 	}

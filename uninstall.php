@@ -32,6 +32,12 @@ function delete_database() {
 	$database->delete_database();
 }
 
+function delete_roles_and_capabilities() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/role-helper.php';
+	$helper = new Ekc_Role_Helper();
+	$helper->delete_roles_and_capabilities();
+}
+
 function delete_uploaded_files() {
 	$upload_dir = wp_upload_dir();
 	$upload_basedir = $upload_dir['basedir']; // /path/to/wp-content/uploads
@@ -44,5 +50,12 @@ function delete_uploaded_files() {
 	}
 }
 
+function delete_options() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/migration.php';
+	delete_option(Ekc_Migration::PLUGIN_VERSION_OPTION);
+}
+
 delete_database();
+delete_roles_and_capabilities();
 delete_uploaded_files();
+delete_options();

@@ -44,7 +44,7 @@ class Ekc_Tournament_Manager {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/loader.php';
 		$this->loader = new Ekc_Loader();
 
-		$this->check_database_version();
+		$this->register_migration();
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
@@ -56,10 +56,14 @@ class Ekc_Tournament_Manager {
 		$this->contact_form_7_integration();
 	}
 
-	private function check_database_version() {
+	private function register_migration() {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database-setup.php';
 		$database = new Ekc_Database_Setup();
 		$this->loader->add_action( 'plugins_loaded', $database, 'check_database_version' );
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/migration.php';
+		$migration = new Ekc_Migration();
+		$this->loader->add_action( 'plugins_loaded', $migration, 'migrate');
 	}
 
 	private function set_locale() {
@@ -100,10 +104,15 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 		$this->loader->add_filter( 'mce_external_plugins', $plugin_admin, 'tinymce_external_plugins' );
+		$this->loader->add_filter( 'map_meta_cap', $plugin_admin, 'filter_map_meta_cap', 10, 4 );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'export_teams_as_csv' );
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'download_backup_file' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_tournament_menu' );
+
+		// duplicate page
+		$this->loader->add_action('admin_action_ekc_duplicate_page', $plugin_admin, 'ekc_duplicate_page' );
+        $this->loader->add_filter('page_row_actions', $plugin_admin, 'ekc_duplicate_page_link', 10, 2 );
 
 		// Admin ajax calls
 		// use wp_ajax prefix (but not wp_ajax_nopriv prefix) to allow the REST call to work for logged-in users but not for non-logged-in users
@@ -154,11 +163,14 @@ class Ekc_Tournament_Manager {
 
 		$contact_form_7_support = new Ekc_Contact_Form_7_Support();
 		$this->loader->add_filter( 'shortcode_atts_wpcf7', $contact_form_7_support, 'custom_shortcode_atts_wpcf7_filter', 10, 3 );
+		$this->loader->add_filter( 'wpcf7_map_meta_cap', $contact_form_7_support, 'filter_wpcf7_map_meta_cap' );
 		$this->loader->add_action( 'wpcf7_submit', $contact_form_7_support, 'wpcf7_submit', 10, 2 );
 	}
 
 	private function load_model() {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/type-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/role-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/page-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database-access.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/drop-down-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcode-helper.php';

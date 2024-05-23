@@ -30,7 +30,11 @@ class Ekc_Swiss_System_Admin_Page {
     $tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
     $team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
     $tournament_round = ( isset($_GET['round'] ) ) ? sanitize_key( wp_unslash( $_GET['round'] ) ) : null;
-		if ( $action === 'swiss-system' ) {
+    if ( $tournament_id && ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
+    
+    if ( $action === 'swiss-system' ) {
 			$this->show_swiss_system( $tournament_id, $tournament_round );
     }
     elseif ( $action === 'swiss-system-start-timer' ) {
@@ -55,7 +59,10 @@ class Ekc_Swiss_System_Admin_Page {
 		else {
 			// handle POST
       $db = new Ekc_Database_Access();
-      $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;	
+      $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;
+      if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+        return;
+      }
       $tournament = $db->get_tournament_by_id( $tournament_id );
       $tournament_round = ( isset($_POST['tournamentround'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentround'] ) ) : null;
       $result_id = ( isset($_POST['resultid'] ) ) ? sanitize_key( wp_unslash( $_POST['resultid'] ) ) : null;

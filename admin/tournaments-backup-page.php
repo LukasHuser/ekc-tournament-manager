@@ -27,10 +27,12 @@ class Ekc_Tournaments_Backup_Page {
       }
     }
     $this->show_wp_header();
-    if ( $action === 'showupload' ) {
-      $this->show_upload();
+    if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
+      if ( $action === 'showupload' ) {
+        $this->show_upload();
+      }
+      $this->show_backup_table();
     }
-    $this->show_backup_table();
     $this->close_wp_content();
   }
 
@@ -88,16 +90,25 @@ class Ekc_Tournaments_Backup_Page {
 	}	
 
 	public function delete_backup( $file_name ) {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
+      return;
+    }
 		$backup_helper = new Ekc_Backup_Helper();
 		$backup_helper->delete_backup_file( $file_name );
   }
 
   public function import_from_file( $file_name ) {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
+      return;
+    }
     $backup_helper = new Ekc_Backup_Helper();
 		$backup_helper->import_from_json( $file_name );
   }
 
 	public function download_backup_file() {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
+      return;
+    }
 		$page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
     $file_name = ( isset($_GET['backup'] ) ) ? rawurldecode( $_GET['backup'] )  : '';
