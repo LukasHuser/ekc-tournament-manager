@@ -170,10 +170,10 @@ From these tournaments an overall nation score is calculated.
 Users with the _Administrator_ standard role have all EKC tournaments related capabilities.
 
 The custom role _EKC Tournament Administrator_ has all EKC tournaments related capabilities as well as capabilities to create and edit pages.
-Users with this role can see and edit detaild data of all tournaments (including tournaments of other users).
+Users with this role can view and edit detailed data of all tournaments (including tournaments of other users) and can view and import backup files.
 
 The custom role _EKC Tournament Director_ has EKC tournament related capabilities to create and run their own tournaments as well as to create and edit their own pages.
-Users with this role can create and run their own tournaments, but cannot see detailed data or edit tournaments of other users.
+Users with this role can create and run their own tournaments, but cannot view detailed data or edit tournaments of other users.
 
 ### Roles
 
