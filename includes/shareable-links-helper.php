@@ -18,9 +18,9 @@ class Ekc_Shareable_Links_Helper {
 
 	public function generate_all_shareable_links( $tournament_id ) {
 		$db = new Ekc_Database_Access();
-		$teams = $db->get_active_team_ids( $tournament_id );
-		foreach ( $teams as $team_id ) {
-			$this->generate_shareable_link( $team_id ); 
+		$teams = $db->get_active_teams( $tournament_id );
+		foreach ( $teams as $team ) {
+			$this->generate_shareable_link( $team->get_team_id() ); 
 		}
 	}
 

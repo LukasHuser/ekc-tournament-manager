@@ -278,26 +278,6 @@ class Ekc_Database_Access {
 	 * Teams
 	 ***************************************************************************************************************************/
 
-	public function get_active_team_ids( $tournament_id ) {
-		global $wpdb;
-		$results = $wpdb->get_results( $wpdb->prepare(
-			"
-			SELECT t.team_id 
-			FROM   {$wpdb->prefix}ekc_team t
-			WHERE  COALESCE(t.is_active, 0) = 1
-			AND    COALESCE(t.is_on_wait_list, 0) <> 1
-			AND    t.tournament_id = %d
-			",
-			$tournament_id
-		));
-
-		$team_ids = array();
-		foreach( $results as $row ) {
-			$team_ids[] = $row->team_id;
-		}
-		return $team_ids;
-	}
-
 	public function get_active_teams_count_by_code_name( $tournament_code_name ) {
 		global $wpdb;
 		$max_teams = $this->get_max_teams_by_code_name( $tournament_code_name );
@@ -414,9 +394,11 @@ class Ekc_Database_Access {
 		$sql_sort = $sort === 'desc' ? 'DESC' : 'ASC';
 		
 		$sql_teams_limit = '';
+		$sql_wait_list = '';
 		if ( $limit_max_teams ) {
 			$max_teams = $this->get_max_teams_by_tournament_id( $tournament_id );
-			$max_teams > 0 ? ' LIMIT ' . $max_teams : '';
+			$sql_teams_limit = $max_teams > 0 ? ' LIMIT ' . $max_teams : '';
+			$sql_wait_list = 'AND COALESCE(x.is_on_wait_list, 0) <> 1';
 		} 
 
 		$results = $wpdb->get_results( $wpdb->prepare(
@@ -434,7 +416,7 @@ class Ekc_Database_Access {
 				FROM   {$wpdb->prefix}ekc_team x
 				WHERE  x.tournament_id = %d
 				AND    COALESCE(x.is_active, 0) = 1
-				AND    COALESCE(x.is_on_wait_list, 0) <> 1
+				{$sql_wait_list}
 				ORDER BY COALESCE(x.registration_order, x.team_id) ASC
 				{$sql_teams_limit}
 			) as t2

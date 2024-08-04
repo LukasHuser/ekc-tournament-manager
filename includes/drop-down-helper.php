@@ -132,7 +132,7 @@ public static function teams_drop_down_data( $tournament_id ) {
 	$db = new Ekc_Database_Access();
 	// get all active teams, ignoring the waiting list or maximum number of teams for the tournament
 	// teams on the waiting list must have been set to inactive before starting the tournament
-	$teams = $db->get_active_teams( $tournament_id, 0, 'asc', true ); 
+	$teams = $db->get_active_teams( $tournament_id, 0, 'asc', false ); 
 	$result = array();
 
 	$helper = new Ekc_Swiss_System_Helper();

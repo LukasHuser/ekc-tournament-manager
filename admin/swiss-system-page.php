@@ -452,7 +452,7 @@ class Ekc_Swiss_System_Admin_Page {
 
   private function store_ranking( $tournament_id ) {
     $db = new Ekc_Database_Access();
-    $teams = $db->get_active_teams( $tournament_id );
+    $teams = $db->get_active_teams( $tournament_id, 0, 'asc', false ); 
     foreach( $teams as $team ) {
       $extracted_team = $this->extract_team( $team->get_team_id() );
       if ( $extracted_team 
@@ -505,7 +505,7 @@ class Ekc_Swiss_System_Admin_Page {
 
   private function random_seed( $tournament_id ) {
     $db = new Ekc_Database_Access();
-    $teams = $db->get_active_teams( $tournament_id );
+    $teams = $db->get_active_teams( $tournament_id, 0, 'asc', false ); 
     $random_seed = range(1, count( $teams ) );
     shuffle( $random_seed );
     $i = 0;
