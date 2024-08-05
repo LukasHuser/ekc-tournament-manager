@@ -202,8 +202,9 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	const COUNTRY_RO = 'ro';
 	const COUNTRY_SI = 'si';
 	const COUNTRY_TR = 'tr';
-	const COUNTRY_US = 'us';
 	const COUNTRY_JP = 'jp';
+	const COUNTRY_TH = 'th';
+	const COUNTRY_US = 'us';
 
 	const COUNTRY_UNDEFINED = 'eu'; // use 'eu' as iso code, this corresponds to the european flag in the drop down
 
@@ -241,8 +242,9 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 		Ekc_Drop_Down_Helper::COUNTRY_RO => 'Romania',
 		Ekc_Drop_Down_Helper::COUNTRY_SI => 'Slovenia',
 		Ekc_Drop_Down_Helper::COUNTRY_TR => 'Turkey',
-		Ekc_Drop_Down_Helper::COUNTRY_US => 'USA',
 		Ekc_Drop_Down_Helper::COUNTRY_JP => 'Japan',
+		Ekc_Drop_Down_Helper::COUNTRY_TH => 'Thailand',
+		Ekc_Drop_Down_Helper::COUNTRY_US => 'USA',
 	);
 
 	const COUNTRY_SPECIAL = array(
