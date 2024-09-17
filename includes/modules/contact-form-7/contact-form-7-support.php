@@ -53,7 +53,7 @@ class Ekc_Contact_Form_7_Support {
 	  }
 	
 	  $submission = WPCF7_Submission::get_instance();
-	  $tournament_code_name = $this->get_string_value( $submission->get_posted_data( 'ekc-tournament' ) );
+	  $tournament_code_name = $submission->get_posted_string( 'ekc-tournament' ) ;
 	  if ( !$tournament_code_name ) {
 		  return;
 	  }
@@ -63,33 +63,33 @@ class Ekc_Contact_Form_7_Support {
 		  return;
 	  }
 	  
-	  $team_active = filter_var( $this->get_string_value( $submission->get_posted_data( 'ekc-active' ) ), FILTER_VALIDATE_BOOLEAN );
-	  $waiting_list = filter_var( $this->get_string_value( $submission->get_posted_data( 'ekc-waitlist' ) ), FILTER_VALIDATE_BOOLEAN );
+	  $team_active = filter_var( $submission->get_posted_string( 'ekc-active' ), FILTER_VALIDATE_BOOLEAN );
+	  $waiting_list = filter_var( $submission->get_posted_string( 'ekc-waitlist' ), FILTER_VALIDATE_BOOLEAN );
 
 	  // 1vs1 tournament
-	  $first_name = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname' ) );
-	  $last_name = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname' ) );
+	  $first_name = $submission->get_posted_string( 'ekc-firstname' );
+	  $last_name = $submission->get_posted_string( 'ekc-lastname' );
 	  
 	  // 3vs3 tournament
-	  $team_name = $this->get_string_value( $submission->get_posted_data( 'ekc-teamname' ) );
-	  $first_name1 = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname1' ) );
-	  $last_name1 = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname1' ) );
-	  $first_name2 = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname2' ) );
-	  $last_name2 = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname2' ) );
-	  $first_name3 = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname3' ) );
-	  $last_name3 = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname3' ) );
-	  $first_name4 = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname4' ) );
-	  $last_name4 = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname4' ) );
-	  $first_name5 = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname5' ) );
-	  $last_name5 = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname5' ) );
-	  $first_name6 = $this->get_string_value( $submission->get_posted_data( 'ekc-firstname6' ) );
-	  $last_name6 = $this->get_string_value( $submission->get_posted_data( 'ekc-lastname6' ) );
+	  $team_name = $submission->get_posted_string( 'ekc-teamname' );
+	  $first_name1 = $submission->get_posted_string( 'ekc-firstname1' );
+	  $last_name1 = $submission->get_posted_string( 'ekc-lastname1' );
+	  $first_name2 = $submission->get_posted_string( 'ekc-firstname2' );
+	  $last_name2 = $submission->get_posted_string( 'ekc-lastname2' );
+	  $first_name3 = $submission->get_posted_string( 'ekc-firstname3' );
+	  $last_name3 = $submission->get_posted_string( 'ekc-lastname3' );
+	  $first_name4 = $submission->get_posted_string( 'ekc-firstname4' );
+	  $last_name4 = $submission->get_posted_string( 'ekc-lastname4' );
+	  $first_name5 = $submission->get_posted_string( 'ekc-firstname5' );
+	  $last_name5 = $submission->get_posted_string( 'ekc-lastname5' );
+	  $first_name6 = $submission->get_posted_string( 'ekc-firstname6' );
+	  $last_name6 = $submission->get_posted_string( 'ekc-lastname6' );
 
 	  // common fields
-	  $email = $this->get_string_value( $submission->get_posted_data( 'ekc-email' ) );
-	  $phone = $this->get_string_value( $submission->get_posted_data( 'ekc-phone' ) );
-	  $country = $this->get_string_value( $submission->get_posted_data( 'ekc-country' ) );
-	  $club = $this->get_string_value( $submission->get_posted_data( 'ekc-club' ) );
+	  $email = $submission->get_posted_string( 'ekc-email' );
+	  $phone = $submission->get_posted_string( 'ekc-phone' );
+	  $country = $submission->get_posted_string( 'ekc-country' );
+	  $club = $submission->get_posted_string( 'ekc-club' );
 
 	  $team = new Ekc_Team();
 	  $team->set_tournament_id( $tournament->get_tournament_id() );
@@ -135,11 +135,4 @@ class Ekc_Contact_Form_7_Support {
 		$player->set_captain( $is_captain );
 		return $player;
 	}
-
-	private function get_string_value( $raw_value ) {
-		if ( $raw_value ) {
-			return sanitize_text_field( wp_unslash( $raw_value ) );
-		}
-		return '';
-	} 
 }
