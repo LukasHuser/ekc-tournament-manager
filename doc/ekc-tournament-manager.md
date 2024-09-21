@@ -300,7 +300,7 @@ The following attributes are recognized and can be used within a contact form de
 | `[ekc-firstname]`<br>`[ekc-lastname]` | First name and last name of a player. Usually defined as mandatory form inputs for a 1vs1 tournament. |
 | `[ekc-email]` | E-mail address of a team or player. Usually defined as mandatory form input. |
 | `[ekc-phone]` | Phone number of a team or player. |
-| `[ekc-country]` | 2 letter ISO code of the country of a team or player. Examples: `ch`, `be`, `de`, `se`, `cz`. |
+| `[ekc-country]` | 2 letter ISO code of the country of a team or player. Examples: `be`, `hr`, `cz`, `de`, `se`, `ch`. Contact Form 7 drop down menus support the `\|` character to separate value and key in the drop down menu. Examples: `Belgium\|be`, `Croatia\|hr`, `Czech Republic\|cz`, `Germany\|de`, `Sweden\|se`, `Switzerland\|ch`. |
 | `[ekc-club]` | City or club of a team or player. |
 
 ### Example Configuration of a Contact Form
@@ -314,6 +314,9 @@ Tournament code name, active and waitlist attributes will be passed as shortcode
 
 <label> E-mail
 	[email* ekc-email] </label>
+
+<label> Country
+    [select ekc-country include_blank "Belgium|be" "Croatia|hr" "Czech Republic|cz" "Germany|de" "Sweden|se" "Switzerland|ch"] </label>
 
 [hidden ekc-tournament default:shortcode_attr]
 
