@@ -1,6 +1,12 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.2.1 / 2024-09-24
+* Fix waiting list: maximum number of teams not considered
+* Add Japan and Thailand to available countries
+* Fix Contact Form 7 form tag ekc-country
+* Post-redirect-get for shareable links page
+
 ## Version 2.2.0 / 2024-05-23
 * Uninstall: Delete database tables and uploaded files on uninstall
 * Roles and capabilities: Custom roles EKC Tournament Administrator and EKC Tournament Director
