@@ -122,6 +122,7 @@ class Ekc_Tournament_Manager {
 		// we use the admin_init hook 
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_swiss_system_redirect' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_elimination_bracket_redirect' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_shareable_links_redirect' );
 	}
 
 	/**

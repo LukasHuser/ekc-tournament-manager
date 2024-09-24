@@ -7,8 +7,28 @@
  */
 class Ekc_Shareable_links_Admin_Page {
 
+  public function intercept_redirect() {
+    $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+    if ( $page !== 'ekc-links' ) {
+      return;
+    }
+
+    $action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+    if ( ! $action ) {
+      $action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+    }
+    if ( $action === 'generate'
+      || $action === 'send'
+      || $action === 'generateall'
+      || $action === 'sendall'
+      || $action === 'shareable-links-store') {
+        $this->create_shareable_links_page();
+      }
+  }
+
 	public function create_shareable_links_page() {
 	
+    $admin_helper = new Ekc_Admin_Helper();
 		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
     $tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
@@ -18,32 +38,33 @@ class Ekc_Shareable_links_Admin_Page {
     if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
       return;
     }
-    
+
+    if ( $action === 'shareable-links' ) {
+      $this->show_shareable_links( $tournament_id );
+    }
     if ( $action === 'generate' ) {
       $this->generate_shareable_link( $team_id );
+      $admin_helper->shareable_links_redirect( $tournament_id );
     }
     elseif ( $action === 'send' ) {
       $this->send_shareable_link_by_mail( $tournament_id, $team_id );
+      $admin_helper->shareable_links_redirect( $tournament_id );
     }
     elseif ( $action === 'generateall' ) {
       $this->generate_all_shareable_links( $tournament_id );
+      $admin_helper->shareable_links_redirect( $tournament_id );
     }
     elseif ( $action === 'sendall' ) {
       $this->send_all_shareable_links_by_mail( $tournament_id );
+      $admin_helper->shareable_links_redirect( $tournament_id );
     }
     else {
       // handle POST
       if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         $this->handle_post( $tournament_id );
+        $admin_helper->shareable_links_redirect( $tournament_id );
       }
     }
-
-    $db = new Ekc_Database_Access();
-    $tournament = $db->get_tournament_by_id( $tournament_id );
-    $this->show_wp_header( $tournament );
-    $this->show_shareable_links_content( $tournament );
-    $this->show_shareable_links_table( $tournament_id );
-    $this->close_wp_content();
   }
 
   private function handle_post( $tournament_id ) {
@@ -72,6 +93,15 @@ class Ekc_Shareable_links_Admin_Page {
       $helper = new Ekc_Shareable_Links_Helper();
       $helper->store_shareable_links_content( $tournament_id, $url_prefix, $email_content, $sender_email );
     }
+  }
+
+  public function show_shareable_links( $tournament_id ) {
+    $db = new Ekc_Database_Access();
+    $tournament = $db->get_tournament_by_id( $tournament_id );
+    $this->show_wp_header( $tournament );
+    $this->show_shareable_links_content( $tournament );
+    $this->show_shareable_links_table( $tournament_id );
+    $this->close_wp_content();
   }
 
   private function show_wp_header( $tournament ) {
@@ -139,6 +169,7 @@ class Ekc_Shareable_links_Admin_Page {
           </div>
           <div class="ekc-controls">
             <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save</button>
+            <input id="action" name="action" type="hidden" value="shareable-links-store" />
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
           </div>
         </fieldset>

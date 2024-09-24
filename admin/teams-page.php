@@ -152,9 +152,12 @@ class Ekc_Teams_Admin_Page {
 		return $player;
 	}
 
-	public function show_teams($tournament_id) {
+	public function show_teams( $tournament_id ) {
+    if ( ! $tournament_id ) {
+      return;
+    }
 		$db = new Ekc_Database_Access();
-		$tournament = $db->get_tournament_by_id($tournament_id);
+		$tournament = $db->get_tournament_by_id( $tournament_id );
 
 		$teams_table = new Ekc_Teams_Table( $tournament_id );
 ?>
@@ -165,7 +168,7 @@ class Ekc_Teams_Admin_Page {
   <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
   <?php
   if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
-  ?><a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e($tournament_id) ?>" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
+  ?><a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=shareable-links" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
   <?php
   }
   ?>

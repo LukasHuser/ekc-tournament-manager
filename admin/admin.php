@@ -191,4 +191,9 @@ class Ekc_Tournament_Manager_Admin {
 		$elimination_bracket_page = new Ekc_Elimination_Bracket_Admin_Page();
 		return $elimination_bracket_page->intercept_redirect();
 	}
+
+	public function intercept_shareable_links_redirect() {
+		$shareable_links_page = new Ekc_Shareable_Links_Admin_Page();
+		return $shareable_links_page->intercept_redirect();
+	}
 }
