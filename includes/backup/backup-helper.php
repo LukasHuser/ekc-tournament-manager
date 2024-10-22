@@ -5,19 +5,49 @@
  */
 class Ekc_Backup_Helper {
 
-	public function backup_path() {
+	const BACKUP_SUB_DIRECTORY = '/ekc-tournament-manager/backup_data/';
+
+	/**
+	 * @param $file_name potentially provided by a user and could represent a full path
+	 */
+	private function backup_file_path( $file_name ) {
+		$name = str_replace('\\', '/', $file_name );
+		return $this->backup_path() . basename( $name );
+	}
+
+	private function backup_path() {
 		$upload_dir = wp_upload_dir();
 		$upload_basedir = $upload_dir['basedir']; // /path/to/wp-content/uploads
-		$backup_dir = $upload_basedir . '/ekc-tournament-manager/backup_data/';
-		if ( ! file_exists( $backup_dir ) ) {
-			wp_mkdir_p( $backup_dir );
-		}
+		$backup_dir = $upload_basedir . self::BACKUP_SUB_DIRECTORY;
+		$this->ensure_backup_dir_exists( $backup_dir );
 		return $backup_dir;
 	}
 
-	public function safe_move_uploaded_file( $original_name, $temp_file ) {
-		$name = str_replace('\\', '/', $original_name );
-		move_uploaded_file( $temp_file, $this->backup_path() . basename( $name ));
+	private function ensure_backup_dir_exists( $backup_dir ) {
+		if ( ! file_exists( $backup_dir ) ) {
+			wp_mkdir_p( $backup_dir );
+		}
+	}
+	
+	public function upload_backup_file() {
+		$backup_file = isset( $_FILES['backup-file'] ) ? $_FILES['backup-file'] : null;
+		if ( $backup_file ) { 
+			// Temporarily override upload_dir
+			add_filter( 'upload_dir', array( $this, 'upload_dir_backup_path' ) );
+			wp_handle_upload( $backup_file, array('test_form' => false, 'mimes' => array( 'csv' => 'text/csv', 'json' => 'application/json' ) ) );
+			// Reset upload_dir
+			remove_filter( 'upload_dir', array( $this, 'upload_dir_backup_path' ) );
+		}
+	}
+
+	public function upload_dir_backup_path( $upload_dir ) {
+		$backup_dir = $upload_dir['basedir'] . self::BACKUP_SUB_DIRECTORY;
+		$this->ensure_backup_dir_exists( $backup_dir );
+		return array(
+			'path'   => $backup_dir,
+			'url'    => $upload_dir['baseurl'] . self::BACKUP_SUB_DIRECTORY,
+			'subdir' => self::BACKUP_SUB_DIRECTORY,
+		) + $upload_dir;
 	}
 
 	public function get_all_backup_file_names() {
@@ -25,11 +55,15 @@ class Ekc_Backup_Helper {
 	}
 
 	public function get_file_size( $file_name ) {
-		return $this->pretty_filesize( filesize( $this->backup_path() . $file_name ) );
+		return $this->pretty_filesize( filesize( $this->backup_file_path( $file_name ) ) );
 	}
 
 	public function get_file_content( $file_name ) {
-		return file_get_contents( $this->backup_path() . $file_name );
+		$backup_file = $this->backup_file_path( $file_name );
+		if ( file_exists( $backup_file ) ) {
+			return file_get_contents( $backup_file );
+		}
+		return null;
 	}
 
 	private function pretty_filesize( $bytes, $decimals = 2 ) {
@@ -45,12 +79,12 @@ class Ekc_Backup_Helper {
 		$results = $db->get_tournament_results( $tournament_id );
 
 		$export = new Ekc_Tournament_Backup();
-		$export->set_export_date( date( "Y-m-d H:i:s" ) );
+		$export->set_export_date( wp_date( 'Y-m-d H:i:s' ) );
 		$export->set_tournament( $tournament );
 		$export->set_teams( $teams );
 		$export->set_results( $results );
 
-		return json_encode( $export );
+		return wp_json_encode( $export );
 	}
 	
 	public function import_from_json( $file_name ) {
@@ -110,12 +144,15 @@ class Ekc_Backup_Helper {
 	public function store_backup( $tournament_id ) {
 		$db = new Ekc_Database_Access();
 		$tournament = $db->get_tournament_by_id( $tournament_id );
-		$file_name = "tournament-" . $tournament->get_code_name() . '-' . date(  "Y-m-d-H:i:s" ) . ".json";
-		file_put_contents( $this->backup_path() . $file_name, $this->export_as_json( $tournament_id ));
+		$file_name = sanitize_file_name( 'tournament-' . $tournament->get_code_name() . '-' . wp_date(  'Y-m-d_H-i-s' ) . '.json' );
+		file_put_contents( $this->backup_file_path( $file_name ), $this->export_as_json( $tournament_id ) );
 	}
 
 	public function delete_backup_file( $file_name ) {
-		unlink( $this->backup_path() . $file_name );
+		$backup_file = $this->backup_file_path( $file_name );
+		if ( file_exists( $backup_file ) ) {
+			wp_delete_file( $backup_file );
+		}
 	}
 }
 

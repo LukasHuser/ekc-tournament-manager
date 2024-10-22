@@ -15,15 +15,8 @@ class Ekc_Tournaments_Backup_Page {
     else {
       // handle POST
       if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
-        $file_size = $_FILES['backup-file']['size'];
-        if ( $file_size <= 0 ){
-          ?><div class="notice notice-error is-dismissible"><p>Failed to upload file. File was empty.</p></div><?php
-        }
-        elseif ( $file_size > 5000000 ) {
-          ?><div class="notice notice-error is-dismissible"><p>Failed to upload file. File too large. Maximum size is 5MB.</p></div><?php
-        }
         $helper = new Ekc_Backup_Helper();
-        $helper->safe_move_uploaded_file( $_FILES['backup-file']['name'], $_FILES['backup-file']['tmp_name']);
+        $helper->upload_backup_file();
       }
     }
     $this->show_wp_header();
@@ -61,7 +54,7 @@ class Ekc_Tournaments_Backup_Page {
 ?>
 <form enctype="multipart/form-data" action="?page=<?php esc_html_e($_REQUEST['page']) ?>" method="POST">
     <input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
-    Backup file (JSON): <input name="backup-file" type="file" />
+    Backup file (JSON): <input name="backup-file" type="file" accept="text/csv, application/json" />
     <input type="submit" value="Upload" />
 </form>
 <?php
