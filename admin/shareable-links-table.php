@@ -38,9 +38,10 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 		$sortable = $this->get_sortable_columns();
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
+		$validation_helper = new Ekc_Validation_Helper();
 		$db = new Ekc_Database_Access();
-		$order_by_column = isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null;  
-		$order = isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null;
+		$order_by_column = $validation_helper->validate_get_text( 'orderby' );
+		$order = $validation_helper->validate_get_text( 'order' );
 		// $order_by_column and $order are validated in get_all_shareable_links_as_table
 		$teams = $db->get_all_shareable_links_as_table( $this->tournament_id, $order_by_column, $order, $this->get_filter() );
 		
@@ -68,31 +69,42 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 
 
 	private function get_filter() {
+		$validation_helper = new Ekc_Validation_Helper();
 		$filter = array();
-		if ( isset( $_REQUEST['filter-active'] ) ) {
-			$filter_active = sanitize_text_field( wp_unslash( $_REQUEST['filter-active'] ) );
-			if ( $filter_active === 'yes' ) {
-				$filter['is_active'] = '1';
-			}
-			elseif ( $filter_active === 'no' ) {
-				$filter['is_active'] = '0';
-			}
+
+		$filter_active = $validation_helper->validate_get_text( 'filter-active' );
+		if ( $filter_active === 'yes' ) {
+			$filter['is_active'] = '1';
 		}
-		if ( isset( $_REQUEST['filter-country'] ) ) {
-			$filter_country = sanitize_text_field( wp_unslash( $_REQUEST['filter-country'] ) );
-			if ( in_array( $filter_country, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
-				$filter['country'] = $filter_country;
-			}
+		elseif ( $filter_active === 'no' ) {
+			$filter['is_active'] = '0';
 		}
+
+		$filter_country = $validation_helper->validate_get_text( 'filter-country' );
+		if ( in_array( $filter_country, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
+			$filter['country'] = $filter_country;
+		}
+
 		return $filter;
 	}
 
 	function column_name( $item ) {
 		$actions = array();
-		$actions['generate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Generate link</a>', esc_html( $_REQUEST['page'] ), 'generate', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
-		$actions['send'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Send link</a>', esc_html( $_REQUEST['page'] ), 'send', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+		$nonce_helper = new Ekc_Nonce_Helper();
+		$validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+		$team_id = $item['team_id'];
 
-		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
+		$generate_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'generate', esc_html( $team_id ), esc_html( $tournament_id ) );
+		$generate_url = $nonce_helper->nonce_url( $generate_url, $nonce_helper->nonce_text( 'generate', 'team', $team_id ) );
+		$actions['generate'] = sprintf( '<a href="%s">Generate link</a>',  $generate_url );
+
+		$send_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'send', esc_html( $team_id ), esc_html( $tournament_id ) );
+		$send_url = $nonce_helper->nonce_url( $send_url, $nonce_helper->nonce_text( 'send', 'team', $team_id ) );
+		$actions['send'] = sprintf( '<a href="%s">Send link</a>',  $send_url );
+
+		return sprintf( '%s %s', $item['name'], $this->row_actions( $actions ) );
 	}
 
 	function column_default( $item, $column_name ) {
@@ -103,7 +115,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 			case 'shareable_link':
 			return $item[ $column_name ];
 			default:
-			return print_r( $item, true ) ; // Show the whole array for troubleshooting purposes
+			return '';
 		}
 	}
 
@@ -147,17 +159,19 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 	}
 
 	protected function filter_yes_no_dropdown( $name, $filter_id ) {
-		$value = isset( $_GET[$filter_id] ) ? $_GET[$filter_id] : Ekc_Drop_Down_Helper::FILTER_ALL;
-		if ( ! in_array( $value, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO )) {
+		$validation_helper = new Ekc_Validation_Helper();
+		$value = $validation_helper->validate_get_text( $filter_id );
+		if ( ! $value || ! in_array( $value, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO ) ) {
 			$value = Ekc_Drop_Down_Helper::FILTER_ALL;
 		}
 		Ekc_Drop_Down_Helper::filter_yes_no_drop_down( $filter_id, $value, $name );
 	}
 
 	protected function filter_country_dropdown() {
+		$validation_helper = new Ekc_Validation_Helper();
 		$filter_id = 'filter-country';
-		$value = isset( $_GET[$filter_id] ) ? $_GET[$filter_id] : Ekc_Drop_Down_Helper::FILTER_ALL;
-		if ( ! in_array( $value, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
+		$value = $validation_helper->validate_get_text( $filter_id );
+		if ( ! $value || ! in_array( $value, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
 			$value = Ekc_Drop_Down_Helper::FILTER_ALL;
 		}
 		Ekc_Drop_Down_Helper::filter_country_small_drop_down( $filter_id, $value );

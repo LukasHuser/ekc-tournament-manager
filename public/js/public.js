@@ -68,7 +68,7 @@
 			var post_data = {
 				"action": "ekc_public_swiss_system_store_result",
 				"linkid": link_id,
-				"nonce": nonce
+				"ekc-nonce": nonce
 			};
 			post_data[team1_score_id] = team1_score;
 			post_data[team2_score_id] = team2_score; 

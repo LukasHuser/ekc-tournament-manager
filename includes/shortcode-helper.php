@@ -735,7 +735,8 @@ class Ekc_Shortcode_Helper {
 			'ekc-link'
 		);
 
-		$link_id = ( isset($_GET['linkid'] ) ) ? sanitize_text_field( wp_unslash( $_GET['linkid'] ) ) : '';
+		$validation_helper = new Ekc_Validation_Helper();
+		$link_id = $validation_helper->validate_get_text( 'linkid' );
 
 		$db = new Ekc_Database_Access();
 		$team = $db->get_team_by_shareable_link_id( $link_id );
@@ -766,7 +767,7 @@ class Ekc_Shortcode_Helper {
 		$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
 		$current_round_result = $this->get_results_for_round( $all_results, $current_round, $team->get_team_id() );	
 		
-		$html = '<p><a href="' . esc_html( $_SERVER['REQUEST_URI'] ) . '">' . __('Reload page') . '</a></p>';
+		$html = '<p><a href="' . esc_html( $validation_helper->validate_server_request_uri() ) . '">' . __('Reload page') . '</a></p>';
 		if (count( $current_round_result ) > 0) {
 			$html .= '<h3>' . __('Round') . ' ' . esc_html($current_round)  . '</h3>';			
 			$earliest_reported_result_time = $db->get_earliest_result_log_time( $tournament->get_tournament_id(), $current_round );
@@ -797,15 +798,16 @@ class Ekc_Shortcode_Helper {
 	}
 
 	private function create_current_round_result( $tournament, $current_round_result, $current_round, $show_country, $link_id ) {
+		$nonce_helper = new Ekc_Nonce_Helper();
 		// onsubmit handler for form defined in public.js
-		$data_result_id = "";
+		$data_result_id = '';
 		if ( count( $current_round_result ) > 0 ) {
-			$data_result_id = ' data-resultid="' . esc_html($current_round_result[0]->get_result_id()) . '" ';
+			$data_result_id = ' data-resultid="' . esc_html( $current_round_result[0]->get_result_id() ) . '" ';
 		}
-		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . ' data-linkid="' . esc_html($link_id) . '" data-nonce="' . wp_create_nonce( 'ekc_public_swiss_system_store_result' ) . '">';
+		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . ' data-linkid="' . esc_html( $link_id ) . '" data-nonce="' . wp_create_nonce( $nonce_helper->nonce_text( 'ekc_public_swiss_system_store_result', 'link', $link_id ) ) . '">';
 		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country, true );
 		$html .= '<div class="ekc-controls">';
-		$html .= '<button class="ekc-button ekc-button-primary">' . __('Save result for round') . ' ' . esc_html($current_round) . '</button>';
+		$html .= '<button class="ekc-button ekc-button-primary">' . __('Save result for round') . ' ' . esc_html( $current_round ) . '</button>';
 		$html .= '<p id="ekc-result-validation"></p>';
 		$html .= '</div>';
 		$html .= '</form>';
@@ -813,11 +815,13 @@ class Ekc_Shortcode_Helper {
 	}
 	
 	public function shortcode_shareable_link_handle_post() {
-		$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-		$link_id = ( isset( $_POST['linkid'] ) ) ? sanitize_text_field( wp_unslash( $_POST['linkid'] ) ) : '';
+		$nonce_helper = new Ekc_Nonce_Helper();
+		$validation_helper = new Ekc_Validation_Helper();
+		$action = $validation_helper->validate_post_text( 'action' );
+		$link_id = $validation_helper->validate_post_text( 'linkid' );
 		
 		if ( $action === 'ekc_public_swiss_system_store_result' ) {
-			if ( !check_ajax_referer( 'ekc_public_swiss_system_store_result', 'nonce' ) ) {
+			if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( 'ekc_public_swiss_system_store_result', 'link', $link_id ) ) ) {
 				_e('<span class="dashicons dashicons-no"></span>Failed to store result');
 			  	wp_die();
 			}
@@ -843,14 +847,11 @@ class Ekc_Shortcode_Helper {
 	}
 		
 	private function store_result( $existing_result, $log_team_id ) {
+		$validation_helper = new Ekc_Validation_Helper();
 		$team1_score_id = 'team1-score-' . $existing_result->get_result_id();
 		$team2_score_id = 'team2-score-' . $existing_result->get_result_id();
-		if ( isset( $_POST[ $team1_score_id ] ) ) {
-			$existing_result->set_team1_score( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST[ $team1_score_id ] ) ) ) );
-		}
-		if ( isset( $_POST[ $team2_score_id ] ) ) {
-			$existing_result->set_team2_score( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST[ $team2_score_id ] ) ) ) );
-		}
+		$existing_result->set_team1_score( $validation_helper->validate_post_integer( $team1_score_id ) );
+		$existing_result->set_team2_score( $validation_helper->validate_post_integer( $team2_score_id ) );
 		$db = new Ekc_Database_Access();
 		$db->update_tournament_result( $existing_result );
 		$db->insert_tournament_result_log( $existing_result, $log_team_id );

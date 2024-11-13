@@ -172,6 +172,8 @@ class Ekc_Tournament_Manager {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/type-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/role-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/page-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/nonce-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/validation-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database-access.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/drop-down-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcode-helper.php';

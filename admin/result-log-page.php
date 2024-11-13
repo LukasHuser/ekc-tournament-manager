@@ -6,7 +6,9 @@
 class Ekc_Result_Log_Page {
 
 	public function create_result_log_page() {
-		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
+    $validation_helper = new Ekc_Validation_Helper();
+    $tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+
     if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
       return;
     }

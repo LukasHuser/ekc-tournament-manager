@@ -12,11 +12,12 @@
 class Ekc_Page_Helper {
 
     public function ekc_duplicate_page( $post_id ) {
-        $nonce = sanitize_text_field($_REQUEST['nonce']);
-        $post_id = isset($_GET['post']) ? intval($_GET['post']) : intval($_POST['post']);
-        $action = sanitize_text_field( $_REQUEST['action'] );
+        $nonce_helper = new Ekc_Nonce_Helper();
+        $validation_helper = new Ekc_Validation_Helper();
+        $post_id = $validation_helper->validate_get_key( 'post' );
+        $action =  $validation_helper->validate_get_text( 'action' );
         
-        if ( ! $post_id || $action !== 'ekc_duplicate_page' || ! wp_verify_nonce( $nonce, 'ekc-duplicate-page-' . $post_id ) ) {
+        if ( ! $post_id || $action !== 'ekc_duplicate_page' || ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'page', $post_id ) ) ) {
             return;
         }
         if ( ! current_user_can( 'edit_page', $post_id ) ) {
@@ -95,8 +96,11 @@ class Ekc_Page_Helper {
         }
 
         if ( isset( $post ) && current_user_can( 'edit_page', $post->ID ) ) {
-            $nonce = wp_create_nonce( 'ekc-duplicate-page-' . intval( $post->ID ) );
-            $actions['duplicate'] = '<a href="admin.php?action=ekc_duplicate_page&amp;post=' . intval( $post->ID ) . '&amp;nonce=' . $nonce . '" title="' . __('Duplicate as draft') . '" rel="permalink">' . __('Duplicate') . '</a>';
+            $nonce_helper = new Ekc_Nonce_Helper();
+            $post_id = intval( $post->ID );
+            $duplicate_url = sprintf( 'admin.php?action=ekc_duplicate_page&amp;post=%d', $post_id ); 
+            $duplicate_url = $nonce_helper->nonce_url( $duplicate_url, $nonce_helper->nonce_text( 'ekc_duplicate_page', 'page', $post_id ) );
+            $actions['duplicate'] = sprintf( '<a href="%s" title="%s" rel="permalink">%s</a>', $duplicate_url,  __('Duplicate as draft'), __('Duplicate') );
         }
         
         return $actions;

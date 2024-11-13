@@ -49,78 +49,99 @@ class Ekc_Teams_Table extends WP_List_Table {
 		$sortable = $this->get_sortable_columns();
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
-		$db = new Ekc_Database_Access();
-		$order_by_column = isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null;  
-		$order = isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null;
+		$validation_helper = new Ekc_Validation_Helper();
+		$order_by_column = $validation_helper->validate_get_text( 'orderby' );  
+		$order = $validation_helper->validate_get_text( 'order' );
 		// $order_by_column and $order are validated in get_all_teams_as_table
+		$db = new Ekc_Database_Access();
 		$teams = $db->get_all_teams_as_table( $this->tournament_id, $order_by_column, $order, $this->get_filter() );
 		$this->items = $teams;
 	}
 
 	private function get_filter() {
+		$validation_helper = new Ekc_Validation_Helper();
 		$filter = array();
-		if ( isset( $_REQUEST['filter-active'] ) ) {
-			$filter_active = sanitize_text_field( wp_unslash( $_REQUEST['filter-active'] ) );
-			if ( $filter_active === 'yes' ) {
-				$filter['is_active'] = '1';
-			}
-			elseif ( $filter_active === 'no' ) {
-				$filter['is_active'] = '0';
-			}
+
+		$filter_active = $validation_helper->validate_get_text( 'filter-active' );
+		if ( $filter_active === 'yes' ) {
+			$filter['is_active'] = '1';
 		}
-		if ( isset( $_REQUEST['filter-wait-list'] ) ) {
-			$filter_wait_list = sanitize_text_field( wp_unslash( $_REQUEST['filter-wait-list'] ) );
-			if ( $filter_wait_list === 'yes' ) {
-				$filter['is_on_wait_list'] = '1';
-			}
-			elseif ( $filter_wait_list === 'no' ) {
-				$filter['is_on_wait_list'] = '0';
-			}
+		elseif ( $filter_active === 'no' ) {
+			$filter['is_active'] = '0';
 		}
-		if ( isset( $_REQUEST['filter-country'] ) ) {
-			$filter_country = sanitize_text_field( wp_unslash( $_REQUEST['filter-country'] ) );
-			if ( in_array( $filter_country, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
-				$filter['country'] = $filter_country;
-			}
+		
+		$filter_wait_list =  $validation_helper->validate_get_text( 'filter-wait-list' );
+		if ( $filter_wait_list === 'yes' ) {
+			$filter['is_on_wait_list'] = '1';
 		}
+		elseif ( $filter_wait_list === 'no' ) {
+			$filter['is_on_wait_list'] = '0';
+		}
+		
+		$filter_country =  $validation_helper->validate_get_text( 'filter-country' );
+		if ( in_array( $filter_country, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
+			$filter['country'] = $filter_country;
+		}
+	
 		return $filter;
 	}
 
 	function column_name( $item ) {
 		$actions = array();
+		$validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
 
-		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $_REQUEST['tournamentid'] ) ) {
-			$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', esc_html( $_REQUEST['page'] ), 'edit', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+			$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', esc_html( $page ), 'edit', esc_html( $item['team_id'] ), esc_html( $tournament_id ) );
 		}
-		return sprintf('%s %s', $item['name'], $this->row_actions($actions) );
+		return sprintf( '%s %s', $item['name'], $this->row_actions( $actions ) );
 	}
 
 	function column_is_active( $item ) {
 		$actions = array();
+		$nonce_helper = new Ekc_Nonce_Helper();
+		$validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+		$team_id = $item['team_id'];
 
-		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $_REQUEST['tournamentid'] ) ) {
-			if ( filter_var($item['is_active'], FILTER_VALIDATE_BOOLEAN) ) {
-				$actions['inactivate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Inactivate</a>', esc_html( $_REQUEST['page'] ), 'inactivate', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+			if ( filter_var( $item['is_active'], FILTER_VALIDATE_BOOLEAN ) ) {
+				$inactivate_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'inactivate', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$inactivate_url = $nonce_helper->nonce_url( $inactivate_url, $nonce_helper->nonce_text( 'inactivate', 'team', $team_id ) );
+				$actions['inactivate'] = sprintf( '<a href="%s">Inactivate</a>', $inactivate_url );
 			}
 			else {
-				$actions['activate'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Activate</a>', esc_html( $_REQUEST['page'] ), 'activate', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+				$activate_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'activate', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$activate_url = $nonce_helper->nonce_url( $activate_url, $nonce_helper->nonce_text( 'activate', 'team', $team_id ) );
+				$actions['activate'] = sprintf( '<a href="%s">Activate</a>', $activate_url );
 			}
 		}
-		return sprintf('%s %s', $item['is_active'], $this->row_actions($actions) );
+		return sprintf( '%s %s', $item['is_active'], $this->row_actions( $actions ) );
 	}
 
 	function column_is_on_wait_list( $item ) {
 		$actions = array();
+		$nonce_helper = new Ekc_Nonce_Helper();
+		$validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+		$team_id = $item['team_id'];
 
-		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $_REQUEST['tournamentid'] ) ) {
-			if ( filter_var($item['is_on_wait_list'], FILTER_VALIDATE_BOOLEAN) ) {
-				$actions['offwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Remove</a>', esc_html( $_REQUEST['page'] ), 'offwaitlist', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+			if ( filter_var( $item['is_on_wait_list'], FILTER_VALIDATE_BOOLEAN ) ) {
+				$offwaitlist_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'offwaitlist', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$offwaitlist_url = $nonce_helper->nonce_url( $offwaitlist_url, $nonce_helper->nonce_text( 'offwaitlist', 'team', $team_id ) );
+				$actions['offwaitlist'] = sprintf( '<a href="%s">Remove</a>',  $offwaitlist_url );
 			}
 			else {
-				$actions['onwaitlist'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Add</a>', esc_html( $_REQUEST['page'] ), 'onwaitlist', esc_html( $item['team_id'] ), esc_html( $_REQUEST['tournamentid'] ) );
+				$onwaitlist_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'onwaitlist', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$onwaitlist_url = $nonce_helper->nonce_url( $onwaitlist_url, $nonce_helper->nonce_text( 'onwaitlist', 'team', $team_id ) );
+				$actions['onwaitlist'] = sprintf( '<a href="%s">Add</a>',  $onwaitlist_url );
 			}
 		}
-		return sprintf('%s %s', $item['is_on_wait_list'], $this->row_actions($actions) );
+		return sprintf( '%s %s', $item['is_on_wait_list'], $this->row_actions( $actions ) );
 	}
 
 	function column_default( $item, $column_name ) {
@@ -135,12 +156,12 @@ class Ekc_Teams_Table extends WP_List_Table {
 			case 'players':
 			return $item[ $column_name ];
 			default:
-			return print_r( $item, true ) ; // Show the whole array for troubleshooting purposes
+			return '';
 		}
 	}
 
 	function no_items() {
-		esc_html_e("No teams available yet.");
+		esc_html_e( 'No teams available yet.' );
 	}
 
 	/**
@@ -183,17 +204,19 @@ class Ekc_Teams_Table extends WP_List_Table {
 	}
 
 	protected function filter_yes_no_dropdown( $name, $filter_id ) {
-		$value = isset( $_GET[$filter_id] ) ? $_GET[$filter_id] : Ekc_Drop_Down_Helper::FILTER_ALL;
-		if ( ! in_array( $value, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO )) {
+		$validation_helper = new Ekc_Validation_Helper();
+		$value = $validation_helper->validate_get_text( $filter_id );
+		if ( ! $value || ! in_array( $value, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO ) ) {
 			$value = Ekc_Drop_Down_Helper::FILTER_ALL;
 		}
 		Ekc_Drop_Down_Helper::filter_yes_no_drop_down( $filter_id, $value, $name );
 	}
 
 	protected function filter_country_dropdown() {
+		$validation_helper = new Ekc_Validation_Helper();
 		$filter_id = 'filter-country';
-		$value = isset( $_GET[$filter_id] ) ? $_GET[$filter_id] : Ekc_Drop_Down_Helper::FILTER_ALL;
-		if ( ! in_array( $value, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
+		$value = $validation_helper->validate_get_text( $filter_id );
+		if ( ! $value || ! in_array( $value, array_keys( Ekc_Drop_Down_Helper::COUNTRY_COMMON ) ) ) {
 			$value = Ekc_Drop_Down_Helper::FILTER_ALL;
 		}
 		Ekc_Drop_Down_Helper::filter_country_small_drop_down( $filter_id, $value );

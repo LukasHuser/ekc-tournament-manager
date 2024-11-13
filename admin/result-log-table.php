@@ -39,9 +39,10 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 		$sortable = $this->get_sortable_columns();
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
+		$validation_helper = new Ekc_Validation_Helper();
 		$db = new Ekc_Database_Access();
-		$order_by_column = isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null;  
-		$order = isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null;
+		$order_by_column = $validation_helper->validate_get_text( 'orderby' );
+		$order = $validation_helper->validate_get_text( 'order' );
 		// $order_by_column and $order are validated in get_result_log_as_table
 		$result_log = $db->get_result_log_as_table( $this->tournament_id, $order_by_column, $order );
 		$this->items = $result_log;
@@ -57,7 +58,7 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 			case 'log_team':
 			return $item[ $column_name ];
 			default:
-			return print_r( $item, true ) ; // Show the whole array for troubleshooting purposes
+			return '';
 		}
 	}
 

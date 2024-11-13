@@ -274,7 +274,7 @@
       /* save a single tournament result (instead of submitting the whole form) */
       var postTournamentResult = function( a ) {
         var result_id = $(a).data("resultid");
-        var nonce = $(a).parents(".ekc-form").data("nonce"); // nonce data is stored on parent form (need to travel up a few levels in the DOM)
+        var nonce = $(a).data("nonce");
 
         var team1_score = $("#team1-score-" + result_id);
         var team2_score = $("#team2-score-" + result_id);
@@ -291,7 +291,7 @@
         var post_data = {
           "action": "ekc_admin_swiss_system_store_result",
           "resultid": result_id,
-          "nonce": nonce
+          "ekc-nonce": nonce
         };
         post_data["pitch-" + result_id] = $("#pitch-" + result_id).val();
         post_data["team1-" + result_id] = $("#team1-" + result_id).val();

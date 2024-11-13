@@ -7,148 +7,157 @@ class Ekc_Teams_Admin_Page {
 
 	public function create_teams_page() {
 
-		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
-		$team_id = ( isset($_GET['teamid'] ) ) ? sanitize_key( wp_unslash( $_GET['teamid'] ) ) : null;
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
+		$action = $validation_helper->validate_get_text( 'action' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+		$team_id = $validation_helper->validate_get_key( 'teamid' );
     if ( $tournament_id && ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
       return;
     }
 
     if ( $action === 'new' ) {
-			$this->show_new_team($tournament_id);
+			$this->show_new_team( $tournament_id );
 		}
 		elseif ( $action === 'edit' ) {
-			$this->show_edit_team($team_id);
+			$this->show_edit_team( $team_id );
 		}
 		elseif ( $action === 'activate' ) {
-			$this->set_team_active($team_id, true);
-			$this->show_teams($tournament_id);
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
+        $this->set_team_active( $team_id, true );
+      }
+			$this->show_teams( $tournament_id );
 		}
 		elseif ( $action === 'inactivate' ) {
-			$this->set_team_active( $team_id, false );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
+        $this->set_team_active( $team_id, false );
+      }
 			$this->show_teams( $tournament_id );
     }
 		elseif ( $action === 'onwaitlist' ) {
-			$this->set_team_on_wait_list($team_id, true);
-			$this->show_teams($tournament_id);
-		}
-		elseif ( $action === 'offwaitlist' ) {
-			$this->set_team_on_wait_list( $team_id, false );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
+        $this->set_team_on_wait_list( $team_id, true );
+      }
 			$this->show_teams( $tournament_id );
 		}
-		else {
-			$this->handle_post( $tournament_id );
+		elseif ( $action === 'offwaitlist' ) {
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
+        $this->set_team_on_wait_list( $team_id, false );
+      }
+			$this->show_teams( $tournament_id );
 		}
+		elseif ( ! $this->handle_post() ) {
+      $this->show_teams( $tournament_id );
+    }
 	}
 
-	private function handle_post( $tournament_id ) {
+	private function handle_post() {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
 		$team = new Ekc_Team();
 		$has_data = false;
 		$players = array();
-		$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-    if ( isset($_POST['tournamentid'] ) ) {
-      $tournament_id = intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) );
+		$action = $validation_helper->validate_post_text( 'action' );
+    $tournament_id = $validation_helper->validate_post_key( 'tournamentid' );
+    if ( $tournament_id ) {
       if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
-        return;
+        return true;
       } 
       $team->set_tournament_id( $tournament_id );
       $has_data = true;
     }
-		if ( isset($_POST['teamid'] ) ) {
-			$team->set_team_id( intval( sanitize_key( wp_unslash( $_POST['teamid'] ) ) ) );
+    $team_id = $validation_helper->validate_post_key( 'teamid' );
+		if ( $team_id ) {
+			$team->set_team_id( $team_id );
 			$has_data = true;
 		}
-		if ( isset($_POST['name'] ) ) {
-			$team->set_name( sanitize_text_field( wp_unslash( $_POST['name'] ) ) );
+    $name = $validation_helper->validate_post_text( 'name' );
+		if ( ! $name ) {
+      $name = $validation_helper->validate_post_text( 'player1first' ) . ' ' . $validation_helper->validate_post_text( 'player1last' );
+		}
+    if ( $name ) {
+      $team->set_name( $name );
 			$has_data = true;
 		}
-		elseif ( isset($_POST['player1first']) ) {
-			$team->set_name( sanitize_text_field( wp_unslash( $_POST['player1first'] ) ) . ' '. sanitize_text_field( wp_unslash( $_POST['player1last'] ) ) );
-			$has_data = true;
-		}
-		if ( isset($_POST['country'] ) ) {
-			$team->set_country( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['country'] ) ) ) );
-		}
-		elseif ( isset($_POST['player1country'] ) ) {
-			$team->set_country( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['player1country'] ) ) ) );
-		}
-		if ( isset($_POST['club'] ) ) {
-			$team->set_club( sanitize_text_field( wp_unslash( $_POST['club'] ) ) );
-		}
-    if ( isset($_POST['active'] ) ) {
-			$team->set_active( filter_var( $_POST['active'], FILTER_VALIDATE_BOOLEAN ) );
-    }
-    if ( isset($_POST['waitlist'] ) ) {
-			$team->set_on_wait_list( filter_var( $_POST['waitlist'], FILTER_VALIDATE_BOOLEAN ) );
-    }
-    if ( isset($_POST['registrationorder'] ) ) {
-			$team->set_registration_order( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['registrationorder'] ) ) ) );
-		}
-		if ( isset($_POST['email'] ) ) {
-			$team->set_email( sanitize_text_field( wp_unslash( $_POST['email'] ) ) );
-		}
-		if ( isset($_POST['phone'] ) ) {
-			$team->set_phone( sanitize_text_field( wp_unslash( $_POST['phone'] ) ) );
-    }
-		if ( isset($_POST['camping'] ) ) {
-			$team->set_camping_count( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['camping'] ) ) ) );
-    }
-		if ( isset($_POST['breakfast'] ) ) {
-			$team->set_breakfast_count( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['breakfast'] ) ) ) );
-		}
-    if ( isset($_POST['registrationfee'] ) ) {
-			$team->set_registration_fee_paid( filter_var( $_POST['registrationfee'], FILTER_VALIDATE_BOOLEAN ) );
-		}
-		if ( isset($_POST['seedingscore'] ) ) {
-			$team->set_seeding_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['seedingscore'] ) ) ) );
-    }
-    if ( isset($_POST['initialscore'] ) ) {
-			$team->set_initial_score( Ekc_Type_Helper::opt_floatval( sanitize_text_field( wp_unslash( $_POST['initialscore'] ) ) ) );
-    }
-    if ( isset($_POST['virtualrank'] ) ) {
-			$team->set_virtual_rank( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['virtualrank'] ) ) ) );
-		}
-		if ( isset( $_POST['player1first'] ) && trim( $_POST['player1first'] ) !== '' ) {
-			$player = $this->extract_player( 'player1first', 'player1last', 'player1country' );
-			$player->set_captain( true );
-			$players[] = $player;
-		}
-		if ( isset($_POST['player2first'] )  && trim( $_POST['player2first'] ) !== '' ) {
-			$players[] = $this->extract_player( 'player2first', 'player2last', 'player2country' );
-		}
-		if ( isset($_POST['player3first'] )  && trim( $_POST['player3first'] ) !== '' ) {
-			$players[] = $this->extract_player( 'player3first', 'player3last', 'player3country' );
-		}
-		if ( isset($_POST['player4first'] )  && trim( $_POST['player4first'] ) !== '' ) {
-			$players[] = $this->extract_player( 'player4first', 'player4last', 'player4country' );
-		}
-		if ( isset($_POST['player5first'] ) && trim( $_POST['player5first'] ) !== '' ) {
-			$players[] = $this->extract_player( 'player5first', 'player5last', 'player5country' );
-		}
-		if ( isset($_POST['player6first'] ) && trim( $_POST['player6first'] ) !== '' ) {
-			$players[] = $this->extract_player( 'player6first', 'player6last', 'player6country' );
-		}
-		if ($has_data) {
-			$team->set_players($players);
+    if ( $has_data ) {
+      if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ? $team_id : -1 ) ) ) {
+        return;
+      }
+
+      $country = $validation_helper->validate_post_dropdown_text( 'country' );
+      if ( ! $country ) {
+        $country = $validation_helper->validate_post_dropdown_text( 'player1country' );
+      }
+      $team->set_country( $country );
+      $team->set_club( $validation_helper->validate_post_text( 'club' ) );
+      $team->set_active( $validation_helper->validate_post_boolean( 'active' ) );
+      $team->set_on_wait_list( $validation_helper->validate_post_boolean( 'waitlist' ) );
+      $team->set_registration_order( $validation_helper->validate_post_float( 'registrationorder' ) );
+      $team->set_email( $validation_helper->validate_post_text( 'email' ) );
+      $team->set_phone( $validation_helper->validate_post_text( 'phone' ) );
+      $team->set_camping_count( $validation_helper->validate_post_integer( 'camping' ) );
+      $team->set_breakfast_count( $validation_helper->validate_post_integer( 'breakfast' ) );
+      $team->set_registration_fee_paid( $validation_helper->validate_post_boolean( 'registrationfee' ) );
+      $team->set_seeding_score( $validation_helper->validate_post_float( 'seedingscore' ) );
+      $team->set_initial_score( $validation_helper->validate_post_float( 'initialscore' ) );
+      $team->set_virtual_rank( $validation_helper->validate_post_integer( 'virtualrank' ) );
+      
+      $player = $this->extract_player( 'player1first', 'player1last', 'player1country' );
+      if ( $player ) {
+        $player->set_captain( true );
+        $players[] = $player;
+      }
+      $player = $this->extract_player( 'player2first', 'player2last', 'player2country' );
+      if ( $player ) {
+        $players[] = $player;
+      }
+      $player = $this->extract_player( 'player3first', 'player3last', 'player3country' );
+      if ( $player ) {
+        $players[] = $player;
+      }
+      $player = $this->extract_player( 'player4first', 'player4last', 'player4country' );
+      if ( $player ) {
+        $players[] = $player;
+      }
+      $player = $this->extract_player( 'player5first', 'player5last', 'player5country' );
+      if ( $player ) {
+        $players[] = $player;
+      }
+      $player = $this->extract_player( 'player6first', 'player6last', 'player6country' );
+      if ( $player ) {
+        $players[] = $player;
+      }
+
+			$team->set_players( $players );
 			$db = new Ekc_Database_Access();
 			if ( $action === 'new' ) {
-        $team->set_registration_date(date("Y-m-d H:i:s")); // current date
-				$db->insert_team($team);
+        $team->set_registration_date( wp_date( 'Y-m-d H:i:s' ) ); // current date
+				$db->insert_team( $team );
 			}
 			elseif ( $action === 'edit' ) {
-				$db->update_team($team);
+				$db->update_team( $team );
       }
+
+      $this->show_teams( $tournament_id );
 		}
-		$this->show_teams( $tournament_id ? $tournament_id : $team->get_tournament_id() );
+
+    return $has_data;
 	}
 
 	private function extract_player( $first_name_id, $last_name_id, $country_id ) {
-		$player = new Ekc_Player();
-		$player->set_captain(false);
-		$player->set_active(true);
-		$player->set_first_name( sanitize_text_field( wp_unslash( $_POST[$first_name_id] ) ) );
-		$player->set_last_name( isset( $_POST[$last_name_id] ) ? sanitize_text_field( wp_unslash( $_POST[$last_name_id] ) ) : '' );
-		$player->set_country( isset( $_POST[$country_id] ) ? Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST[$country_id] ) ) ) : '' );
+		$validation_helper = new Ekc_Validation_Helper();
+    $first_name = trim( $validation_helper->validate_post_text( $first_name_id ) );
+    $last_name = trim( $validation_helper->validate_post_text( $last_name_id ) );
+    if ( ! $first_name && ! $last_name ) {
+      return null;
+    }
+
+    $player = new Ekc_Player();
+		$player->set_captain( false );
+		$player->set_active( true );
+		$player->set_first_name( $first_name );
+		$player->set_last_name( $last_name );
+		$player->set_country( $validation_helper->validate_post_dropdown_text( $country_id ) );
 		return $player;
 	}
 
@@ -160,22 +169,24 @@ class Ekc_Teams_Admin_Page {
 		$tournament = $db->get_tournament_by_id( $tournament_id );
 
 		$teams_table = new Ekc_Teams_Table( $tournament_id );
+    $validation_helper = new Ekc_Validation_Helper();
+    $page = $validation_helper->validate_get_text( 'page' ); 
 ?>
 <div class="wrap">
 
   <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() ) ?></h1>
-  <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=new" class="page-title-action"><?php _e( 'New team' ) ?></a>
-  <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
+  <a href="?page=<?php esc_html_e( $page ) ?>&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;action=new" class="page-title-action"><?php _e( 'New team' ) ?></a>
+  <a href="?page=<?php esc_html_e( $page ) ?>&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
   <?php
   if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
-  ?><a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e($tournament_id) ?>&amp;action=shareable-links" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
+  ?><a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;action=shareable-links" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
   <?php
   }
   ?>
 
   <hr class="wp-header-end">
   <form id="teams-filter" method="get" >
-  <input id="page" name="page" type="hidden" value="<?php esc_html_e( $_REQUEST['page'] ) ?>" />
+  <input id="page" name="page" type="hidden" value="<?php esc_html_e( $page ) ?>" />
   <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament_id ) ?>" />
 <?php 
   $teams_table->prepare_items();
@@ -195,18 +206,21 @@ class Ekc_Teams_Admin_Page {
 	public function show_edit_team( $team_id ) {
     $db = new Ekc_Database_Access();
 		$team = $db->get_team_by_id( $team_id );
-		$tournament = $db->get_tournament_by_id($team->get_tournament_id());
+		$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
 
     $this->show_team( 'edit', 'Edit team', 'Save team', $tournament, $team );
   }
 
 	public function show_team( $action, $title, $button_text, $tournament, $team = null ) {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
+    $page = $validation_helper->validate_get_text( 'page' ); 
 ?>
   <div class="wrap">
     <h1 class="wp-heading-inline"><?php esc_html_e( $title ) ?></h1>
     <hr class="wp-header-end">
 
-      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>&amp;tournamentid=<?php esc_html_e($tournament->get_tournament_id() ) ?>" accept-charset="utf-8">
+      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>" accept-charset="utf-8">
         <fieldset>
         <legend><h3><?php _e('Team') ?></h3></legend>
 <?php if ( $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 || ! $tournament->is_player_names_required() ) { ?>
@@ -216,7 +230,7 @@ class Ekc_Teams_Admin_Page {
           </div>         
           <div class="ekc-control-group">
             <label for="country"><?php _e('Country') ?></label>
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("country", $team ? $team->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'country', $team ? $team->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
           </div>
 <?php } ?>
           <div class="ekc-control-group">
@@ -356,6 +370,7 @@ class Ekc_Teams_Admin_Page {
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
             <input id="teamid" name="teamid" type="hidden" value="<?php $team ? esc_html_e( $team->get_team_id() ) : _e('') ?>" />
             <input id="action" name="action" type="hidden" value="<?php esc_html_e( $action ) ?>" />
+            <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( $action, 'team', $team ? $team->get_team_id() : -1 ) ) ?>
           </div>
         </fieldset>
       </form>
@@ -406,9 +421,10 @@ class Ekc_Teams_Admin_Page {
   }
 
 	public function export_teams_as_csv() {
-    $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : false;
-		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : false;
-		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : false;
+    $validation_helper = new Ekc_Validation_Helper();
+    $page = $validation_helper->validate_get_text( 'page' );
+		$action = $validation_helper->validate_get_text( 'action' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
     if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
       return;
     }
@@ -417,7 +433,7 @@ class Ekc_Teams_Admin_Page {
 			$db = new Ekc_Database_Access();
 			$csv = $db->get_all_teams_as_csv( $tournament_id );
 			$tournament = $db->get_tournament_by_id( $tournament_id );
-			$file_name = 'teams-' . $tournament->get_code_name() . '.csv';
+			$file_name = sanitize_file_name( 'teams-' . $tournament->get_code_name() . '.csv' );
 
 			$fp = fopen('php://output', 'w');
 			if ($fp && $csv) {

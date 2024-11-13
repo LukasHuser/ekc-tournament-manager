@@ -11,7 +11,8 @@ class Ekc_Admin_Helper {
 	 * see https://en.wikipedia.org/wiki/HTTP_303
 	 */
 	public function post_redirect_get() {
-		wp_safe_redirect($_SERVER['REQUEST_URI'], 303);
+        $validation_helper = new Ekc_Validation_Helper();
+		wp_safe_redirect( $validation_helper->validate_server_request_uri(), 303 );
 		// exit script - do not write any output
 		exit;
 	}
@@ -26,7 +27,8 @@ class Ekc_Admin_Helper {
 	 * see https://en.wikipedia.org/wiki/HTTP_303
 	 */
 	public function get_redirect_get( $param ) {
-        $redirect_url = $_SERVER['REQUEST_URI'];
+        $validation_helper = new Ekc_Validation_Helper();
+        $redirect_url = $validation_helper->validate_server_request_uri();
 
         if ( isset( $_GET[$param] ) ) {
             $redirect_url = $this->strip_param_from_url( $redirect_url, $param );
@@ -40,7 +42,7 @@ class Ekc_Admin_Helper {
 
     private function strip_param_from_url( $url, $param ) {
         $base_url = strtok( $url, '?' );
-        $parsed_url = parse_url( $url );
+        $parsed_url = wp_parse_url( $url );
         if ( array_key_exists( 'query', $parsed_url ) ) {
             $query = $parsed_url['query'];
             parse_str( $query, $parameters ); // Convert Parameters into array
@@ -91,7 +93,8 @@ class Ekc_Admin_Helper {
 	}
 
     private function redirect_internal( $action, $tournament_id, $tournament_round ) {
-        $redirect_url = $_SERVER['REQUEST_URI'];
+        $validation_helper = new Ekc_Validation_Helper();
+        $redirect_url = $validation_helper->validate_server_request_uri();
         $redirect_url = $this->add_or_replace_url_parameter( $redirect_url, 'action', $action );
         if ( $tournament_id ) {
             $redirect_url = $this->add_or_replace_url_parameter( $redirect_url, 'tournamentid', $tournament_id );
@@ -107,7 +110,7 @@ class Ekc_Admin_Helper {
 
     private function add_or_replace_url_parameter( $url, $param, $param_value ) {
         $base_url = strtok( $url, '?' );
-        $parsed_url = parse_url( $url );
+        $parsed_url = wp_parse_url( $url );
         if ( array_key_exists( 'query', $parsed_url ) ) {
             $query = $parsed_url['query'];
             parse_str( $query, $parameters ); // Convert Parameters into array

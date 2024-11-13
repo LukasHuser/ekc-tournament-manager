@@ -7,14 +7,16 @@
 class Ekc_Elimination_Bracket_Admin_Page {
 
   public function intercept_redirect() {
-    $page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+    $validation_helper = new Ekc_Validation_Helper();
+    $page = $validation_helper->validate_get_text( 'page' );
+    
     if ( $page !== 'ekc-bracket' ) {
       return;
     }
 
-    $action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+    $action = $validation_helper->validate_get_text( 'action' );
     if ( ! $action ) {
-      $action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+      $action = $validation_helper->validate_post_text( 'action' );
     }
     if ( $action === 'elimination-bracket-store'
       || $action === 'swiss-ranking'
@@ -26,8 +28,11 @@ class Ekc_Elimination_Bracket_Admin_Page {
 	public function create_elimination_bracket_page() {
 
     $admin_helper = new Ekc_Admin_Helper();
-		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-		$tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
+
+    $action = $validation_helper->validate_get_text( 'action' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
     if ( $tournament_id && ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
       return;
     }
@@ -36,23 +41,28 @@ class Ekc_Elimination_Bracket_Admin_Page {
 			$this->show_elimination_bracket( $tournament_id );
 		}
     elseif ( $action === 'swiss-ranking' ) {
-      $helper = new Ekc_Elimination_Bracket_Helper();
-      $helper->elimination_bracket_from_swiss_system_ranking( $tournament_id );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
+        $helper = new Ekc_Elimination_Bracket_Helper();
+        $helper->elimination_bracket_from_swiss_system_ranking( $tournament_id );
+      }
       $admin_helper->elimination_bracket_redirect( $tournament_id );
     }
     elseif ( $action === 'delete' ) {
-      $this->delete_results( $tournament_id );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
+        $this->delete_results( $tournament_id );
+      }
       $admin_helper->elimination_bracket_redirect( $tournament_id );
     }
 		else {
 			// handle POST
-      $tournament_id = ( isset($_POST['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) : null;
+      $tournament_id = $validation_helper->validate_post_key( 'tournamentid' );
       if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
         return;
       }
 
-			$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-      if ( $action === 'elimination-bracket-store' ) {
+      $action = $validation_helper->validate_post_text( 'action' );
+      if ( $action === 'elimination-bracket-store'
+        && $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
         $db = new Ekc_Database_Access();
         $results = $db->get_tournament_results( $tournament_id, Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO, '', null );
         $tournament = $db->get_tournament_by_id( $tournament_id );
@@ -64,8 +74,8 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $helper = new Ekc_Backup_Helper();
           $helper->store_backup( $tournament_id );
         }
-        $admin_helper->elimination_bracket_redirect( $tournament_id );
       }
+      $admin_helper->elimination_bracket_redirect( $tournament_id );
 		}
   }
   
@@ -80,37 +90,25 @@ class Ekc_Elimination_Bracket_Admin_Page {
   }
 
   private function extract_result( $result_type ) {
+    $validation_helper = new Ekc_Validation_Helper();
+    
     $result = new Ekc_Result();
     $result->set_stage( Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO );
     $result->set_result_type( $result_type );
-    $result->set_tournament_id( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) );
-    
-    if ( isset($_POST['pitch-' . $result_type] ) ) {
-      $result->set_pitch( sanitize_text_field( wp_unslash( $_POST['pitch-' . $result_type] ) ) );
-    }
-    if ( isset($_POST['team1-' . $result_type] ) ) {
-      $result->set_team1_id( Ekc_Type_Helper::opt_intval( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['team1-' . $result_type] ) ) ) ) );
-    }
-    if ( isset($_POST['team1-placeholder-' . $result_type] ) ) {
-      $result->set_team1_placeholder( sanitize_text_field( wp_unslash( $_POST['team1-placeholder-' . $result_type] ) ) );
-    }
-    if ( isset($_POST['team1-score-' . $result_type] ) ) {
-      $result->set_team1_score( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['team1-score-' . $result_type] ) ) ) );
-    }
-    if ( isset($_POST['team2-' . $result_type] ) ) {
-      $result->set_team2_id( Ekc_Type_Helper::opt_intval( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['team2-' . $result_type] ) ) ) ) );
-    }
-    if ( isset($_POST['team2-score-' . $result_type] ) ) {
-      $result->set_team2_score( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['team2-score-' . $result_type] ) ) ) );
-    }
-    if ( isset($_POST['team2-placeholder-' . $result_type] ) ) {
-      $result->set_team2_placeholder( sanitize_text_field( wp_unslash( $_POST['team2-placeholder-' . $result_type] ) ) );
-    }
+    $result->set_tournament_id( $validation_helper->validate_post_key( 'tournamentid' ) );
+    $result->set_pitch( $validation_helper->validate_post_text( 'pitch-' . $result_type ) );
+    $result->set_team1_id( $validation_helper->validate_post_dropdown_key( 'team1-' . $result_type ) );
+    $result->set_team1_score( $validation_helper->validate_post_integer( 'team1-score-' . $result_type ) );
+    $result->set_team1_placeholder( $validation_helper->validate_post_text( 'team1-placeholder-' . $result_type ) );
+    $result->set_team2_id( $validation_helper->validate_post_dropdown_key( 'team2-' . $result_type ) );
+    $result->set_team2_score( $validation_helper->validate_post_integer( 'team2-score-' . $result_type ) );
+    $result->set_team2_placeholder( $validation_helper->validate_post_text( 'team2-placeholder-' . $result_type ) );
     return $result;
   }
 
-
   public function show_elimination_bracket( $tournament_id ) {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
 		$db = new Ekc_Database_Access();
     $results = $db->get_tournament_results( $tournament_id, Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO, '', null );
     $tournament = $db->get_tournament_by_id( $tournament_id );
@@ -126,9 +124,11 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <?php 
     $this->show_swiss_system_ranking_link( $tournament, $results );
     $this->show_delete_results_link( $tournament );
+
+    $page = $validation_helper->validate_get_text( 'page' );
     ?>
 
-    <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+    <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>" accept-charset="utf-8">
       <fieldset>
         <div class="columns">
 <?php 
@@ -156,6 +156,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
             <button type="submit" class="ekc-button ekc-button-primary"><?php _e('Save results') ?></button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
             <input id="action" name="action" type="hidden" value="elimination-bracket-store" />
+            <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'elimination-bracket-store', 'tournament', $tournament->get_tournament_id() ) ) ?>
         </div>
       </fieldset>
     </form>
@@ -165,16 +166,22 @@ class Ekc_Elimination_Bracket_Admin_Page {
 
   private function show_swiss_system_ranking_link( $tournament, $results ) {
     if ( count( $results ) === 0 && $tournament->get_tournament_system() === Ekc_Drop_Down_Helper::TOURNAMENT_SYSTEM_SWISS_KO ) {
+      $nonce_helper = new Ekc_Nonce_Helper();
+      $swiss_url = sprintf( '?page=ekc-bracket&amp;action=swiss-ranking&amp;tournamentid=%s', esc_html( $tournament->get_tournament_id() ) );
+      $swiss_url = $nonce_helper->nonce_url( $swiss_url, $nonce_helper->nonce_text( 'swiss-ranking', 'tournament', $tournament->get_tournament_id() ) );
       ?>
-      <p><a href="?page=ekc-bracket&amp;action=swiss-ranking&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>"><?php _e( 'populate elimination bracket from swiss system ranking' ) ?></a></p>
+      <p><a href="<?php esc_html_e( $swiss_url ) ?>"><?php _e( 'populate elimination bracket from swiss system ranking' ) ?></a></p>
       <?php
     }
   }
 
   private function show_delete_results_link( $tournament ) {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $delete_url = sprintf( '?page=ekc-bracket&amp;action=delete&amp;tournamentid=%s', esc_html( $tournament->get_tournament_id() ) );
+    $delete_url = $nonce_helper->nonce_url( $delete_url, $nonce_helper->nonce_text( 'delete', 'tournament', $tournament->get_tournament_id() ) );
     ?>
     <span class="delete ekc-page-delete-link" >
-    <a href="?page=ekc-bracket&amp;action=delete&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>"><?php _e( 'delete results' ) ?></a>
+    <a href="<?php esc_html_e( $delete_url ) ?>"><?php _e( 'delete results' ) ?></a>
     </span>
     <?php
   }

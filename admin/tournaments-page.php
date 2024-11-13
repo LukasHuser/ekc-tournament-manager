@@ -7,10 +7,13 @@ class Ekc_Tournaments_Admin_Page {
 
 	public function create_tournaments_page() {
 	
-		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-    $tournament_id = ( isset($_GET['tournamentid'] ) ) ? sanitize_key( wp_unslash( $_GET['tournamentid'] ) ) : null;
-    $file_name = ( isset($_GET['backup'] ) ) ? rawurldecode( $_GET['backup'] ) : '';
-		if ( $action === 'new' ) {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
+		$action = $validation_helper->validate_get_text( 'action' );
+    $tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+    $file_name = rawurldecode( $validation_helper->validate_get_text( 'backup' ) );
+    
+    if ( $action === 'new' ) {
 			$this->show_new_tournament();
 		}
     elseif ( $action === 'copy' ) {
@@ -20,97 +23,68 @@ class Ekc_Tournaments_Admin_Page {
 			$this->show_edit_tournament( $tournament_id );
 		}
 		elseif ( $action === 'delete' ) {
-			$this->delete_tournament( $tournament_id );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
+        $this->delete_tournament( $tournament_id );
+      }
 			$this->show_tournaments();
     }
 		elseif ( $action === 'backup' ) {
-      $backup_helper = new Ekc_Backup_Helper();
-			$backup_helper->store_backup( $tournament_id );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
+        $backup_helper = new Ekc_Backup_Helper();
+        $backup_helper->store_backup( $tournament_id );
+      }
 			$this->show_tournaments();
     }
     elseif ( $action === 'jsonimport' ) {
-      $backup_helper = new Ekc_Backup_Helper();
-      $backup_helper->import_from_json( $file_name );
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'filename', $file_name ) ) ) {
+        $backup_helper = new Ekc_Backup_Helper();
+        $backup_helper->import_from_json( $file_name );
+      }
       $this->show_tournaments();
     }
 		else {
 			// handle POST
 			$tournament = new Ekc_Tournament();
 			$has_data = false;
-			$action = ( isset($_POST['action'] ) ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-			if ( isset($_POST['tournamentid'] ) ) {
-        $tournament_id = intval( sanitize_key( wp_unslash( $_POST['tournamentid'] ) ) );
+      $action = $validation_helper->validate_post_text( 'action' );
+      $tournament_id = $validation_helper->validate_post_key( 'tournamentid' );
+			if ( $tournament_id ) {
         if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
           return;
         }
 				$tournament->set_tournament_id( $tournament_id );
 				$has_data = true;
 			}
-			if ( isset($_POST['codename'] ) ) {
-				$tournament->set_code_name( sanitize_text_field( wp_unslash( $_POST['codename'] ) ) );
-				$has_data = true;
-			}
-			if ( isset($_POST['name'] ) ) {
-				$tournament->set_name( sanitize_text_field( wp_unslash( $_POST['name'] ) ) );
-			}
-      if ( isset($_POST['owner'] ) ) {
-				$tournament->set_owner_user_Id( Ekc_Type_Helper::opt_intval( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['owner'] ) ) ) ) );
-			}
-			if ( isset($_POST['date'] ) ) {
-				$tournament->set_date( sanitize_text_field( wp_unslash( $_POST['date'] ) ) );
-			}
-			if ( isset($_POST['teamsize'] ) ) {
-        $tournament->set_team_size( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['teamsize'] ) ) ) ); 
-			}
-			if ( isset($_POST['maxteams'] ) ) {
-				$tournament->set_max_teams( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['maxteams'] ) ) ) );
-			}
-			if ( isset($_POST['waitlist'] ) ) {
-				$tournament->set_wait_list_enabled( filter_var( $_POST['waitlist'], FILTER_VALIDATE_BOOLEAN ) );
-			}
-			if ( isset($_POST['playernames'] ) ) {
-				$tournament->set_player_names_required( filter_var( $_POST['playernames'], FILTER_VALIDATE_BOOLEAN ) );
+      $code_name = $validation_helper->validate_post_text( 'codename' );
+      if ( $code_name ) {
+        $tournament->set_code_name( $code_name );
+        $has_data = true;
       }
-			if ( isset($_POST['backup'] ) ) {
-				$tournament->set_auto_backup_enabled( filter_var( $_POST['backup'], FILTER_VALIDATE_BOOLEAN ) );
-      }
-			if ( isset($_POST['system'] ) ) {
-				$tournament->set_tournament_system( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['system'] ) ) ) );
-      }
-			if ( isset($_POST['eliminationrounds'] ) ) {
-				$tournament->set_elimination_rounds( Ekc_Drop_Down_Helper::empty_if_none( sanitize_text_field( wp_unslash( $_POST['eliminationrounds'] ) ) ) );
-      }
-      if ( isset($_POST['eliminationmaxpoints'] ) ) {
-				$tournament->set_elimination_max_points_per_round( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['eliminationmaxpoints'] ) ) ) );
-      }
-			if ( isset($_POST['swissrounds'] ) ) {
-				$tournament->set_swiss_system_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissrounds'] ) ) ) );
-      }
-      if ( isset($_POST['swissmaxpoints'] ) ) {
-				$tournament->set_swiss_system_max_points_per_round( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissmaxpoints'] ) ) ) );
-      }
-      if ( isset($_POST['swissvirtualresultpoints'] ) ) {
-				$tournament->set_swiss_system_virtual_result_points( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissvirtualresultpoints'] ) ) ) );
-      }
-			if ( isset($_POST['swissadditionalrounds'] ) ) {
-				$tournament->set_swiss_system_additional_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissadditionalrounds'] ) ) ) );
-      }
-			if ( isset($_POST['swissslidematchrounds'] ) ) {
-				$tournament->set_swiss_system_slide_match_rounds( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissslidematchrounds'] ) ) ) );
-      }
-      if ( isset($_POST['swissroundtime'] ) ) {
-				$tournament->set_swiss_system_round_time( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissroundtime'] ) ) ) );
-      }
-      if ( isset($_POST['swisstiebreaktime'] ) ) {
-				$tournament->set_swiss_system_tiebreak_time( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swisstiebreaktime'] ) ) ) );
-      }
-      if ( isset($_POST['swissstartpitch'] ) ) {
-				$tournament->set_swiss_system_start_pitch( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swissstartpitch'] ) ) ) );
-			}
-      if ( isset($_POST['swisspitchlimit'] ) ) {
-				$tournament->set_swiss_system_pitch_limit( Ekc_Type_Helper::opt_intval( sanitize_text_field( wp_unslash( $_POST['swisspitchlimit'] ) ) ) );
-			}
-			if ($has_data) {
+			if ( $has_data ) {
+        if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ? $tournament_id : -1 ) ) ) {
+          return;
+        }
+        $tournament->set_name( $validation_helper->validate_post_text( 'name' ) );
+        $tournament->set_owner_user_id( $validation_helper->validate_post_dropdown_key( 'owner' ) );
+        $tournament->set_date( $validation_helper->validate_post_text( 'date' ) );
+        $tournament->set_team_size( $validation_helper->validate_post_dropdown_text( 'teamsize' ) ); 
+        $tournament->set_max_teams( $validation_helper->validate_post_integer( 'maxteams' ) );
+        $tournament->set_wait_list_enabled( $validation_helper->validate_post_boolean( 'waitlist') );
+        $tournament->set_player_names_required( $validation_helper->validate_post_boolean( 'playernames' ) );
+        $tournament->set_auto_backup_enabled( $validation_helper->validate_post_boolean( 'backup' ) );
+        $tournament->set_tournament_system( $validation_helper->validate_post_dropdown_text( 'system' ) );
+        $tournament->set_elimination_rounds( $validation_helper->validate_post_dropdown_text( 'eliminationrounds' ) );
+        $tournament->set_elimination_max_points_per_round( $validation_helper->validate_post_integer( 'eliminationmaxpoints' ) );
+        $tournament->set_swiss_system_rounds( $validation_helper->validate_post_integer( 'swissrounds' ) );
+        $tournament->set_swiss_system_max_points_per_round( $validation_helper->validate_post_integer( 'swissmaxpoints' ) );
+        $tournament->set_swiss_system_virtual_result_points( $validation_helper->validate_post_integer( 'swissvirtualresultpoints' ) );
+        $tournament->set_swiss_system_additional_rounds( $validation_helper->validate_post_integer( 'swissadditionalrounds' ) );
+        $tournament->set_swiss_system_slide_match_rounds( $validation_helper->validate_post_integer( 'swissslidematchrounds' ) );
+        $tournament->set_swiss_system_round_time( $validation_helper->validate_post_integer( 'swissroundtime' ) );
+        $tournament->set_swiss_system_tiebreak_time( $validation_helper->validate_post_integer( 'swisstiebreaktime' ) );
+        $tournament->set_swiss_system_start_pitch( $validation_helper->validate_post_integer( 'swissstartpitch' ) );
+        $tournament->set_swiss_system_pitch_limit( $validation_helper->validate_post_integer( 'swisspitchlimit' ) );
+
 				$db = new Ekc_Database_Access();
 				if ( $action === 'new' ) {
 					$db->insert_tournament( $tournament );
@@ -119,6 +93,7 @@ class Ekc_Tournaments_Admin_Page {
 					$db->update_tournament( $tournament );
 				}
 			}
+
 			$this->show_tournaments();
 		}
 	}
@@ -127,13 +102,15 @@ class Ekc_Tournaments_Admin_Page {
 		$tournaments_table = new Ekc_Tournaments_Table();
     $show_new_button = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS );
     $show_backup_button = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS );
+    $validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
 ?>
 <div class="wrap">
 
   <h1 class="wp-heading-inline"><?php _e( 'EKC Tournament Manager' ); ?></h1>
   <?php 
   if ( $show_new_button ) {
-  ?><a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=new" class="page-title-action"><?php _e( 'New tournament' ); ?></a>
+  ?><a href="?page=<?php esc_html_e( $page ) ?>&amp;action=new" class="page-title-action"><?php _e( 'New tournament' ); ?></a>
   <?php
   }
   if ( $show_backup_button ) {
@@ -186,12 +163,15 @@ class Ekc_Tournaments_Admin_Page {
   }
 
 	public function show_tournament( $action, $title, $button_text, $tournament = null ) {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
 ?>
   <div class="wrap">
     <h1 class="wp-heading-inline"><?php esc_html_e( $title ) ?></h1>
     <hr class="wp-header-end">
 
-    <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $_REQUEST['page'] ) ?>" accept-charset="utf-8">
+    <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>" accept-charset="utf-8">
         <fieldset>
         <legend><h3><?php _e( 'Tournament') ?></h3></legend>
         <div class="ekc-control-group">
@@ -306,6 +286,7 @@ class Ekc_Tournaments_Admin_Page {
             <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( $button_text ) ?></button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php $tournament && $action === 'edit' ? esc_html_e( $tournament->get_tournament_id() ) : _e('') ?>" />
             <input id="action" name="action" type="hidden" value="<?php esc_html_e( $action ) ?>" />
+            <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( $action, 'tournament', $tournament ? $tournament->get_tournament_id() : -1 ) ) ?>
           </div>
         </fieldset>
       </form>
@@ -318,7 +299,7 @@ class Ekc_Tournaments_Admin_Page {
       return;
     }
 		$db = new Ekc_Database_Access();
-		$tournament = $db->delete_tournament( $tournament_id );
+		$db->delete_tournament( $tournament_id );
 	}
 }
 

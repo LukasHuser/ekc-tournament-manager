@@ -6,15 +6,20 @@
 class Ekc_Tournaments_Backup_Page {
 
 	public function create_tournaments_backup_page() {
-	
-		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-		$file_name = ( isset($_GET['backup'] ) ) ? rawurldecode( $_GET['backup'] ) : '';
-		if ( $action === 'delete' ) {
-      $this->delete_backup( $file_name );
+
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $validation_helper = new Ekc_Validation_Helper();
+		$action = $validation_helper->validate_get_text( 'action' );
+		$file_name = rawurldecode( $validation_helper->validate_get_text( 'backup' ) );
+		
+    if ( $action === 'delete' ) {
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'filename', $file_name ) ) ) {
+        $this->delete_backup( $file_name );
+      }
     }
     else {
       // handle POST
-      if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+      if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         $helper = new Ekc_Backup_Helper();
         $helper->upload_backup_file();
       }
@@ -30,11 +35,13 @@ class Ekc_Tournaments_Backup_Page {
   }
 
   private function show_wp_header() {
+    $validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
     ?>
     <div class="wrap">
     
       <h1 class="wp-heading-inline"><?php _e( 'Backup Files' ); ?></h1>
-      <a href="?page=<?php esc_html_e($_REQUEST['page']) ?>&amp;action=showupload" class="page-title-action"><?php _e( 'Upload backup file' ); ?></a>
+      <a href="?page=<?php esc_html_e( $page ) ?>&amp;action=showupload" class="page-title-action"><?php _e( 'Upload backup file' ); ?></a>
     
       <hr class="wp-header-end">
     
@@ -51,8 +58,10 @@ class Ekc_Tournaments_Backup_Page {
   }
   
   private function show_upload() {
+    $validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
 ?>
-<form enctype="multipart/form-data" action="?page=<?php esc_html_e($_REQUEST['page']) ?>" method="POST">
+<form enctype="multipart/form-data" action="?page=<?php esc_html_e( $page ) ?>" method="POST">
     <input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
     Backup file (JSON): <input name="backup-file" type="file" accept="text/csv, application/json" />
     <input type="submit" value="Upload" />
@@ -102,9 +111,10 @@ class Ekc_Tournaments_Backup_Page {
     if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
       return;
     }
-		$page = ( isset($_GET['page'] ) ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-		$action = ( isset($_GET['action'] ) ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-    $file_name = ( isset($_GET['backup'] ) ) ? rawurldecode( $_GET['backup'] )  : '';
+    $validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
+		$action = $validation_helper->validate_get_text( 'action' );
+    $file_name = rawurldecode( $validation_helper->validate_get_text( 'backup' ) );
     
 		if ( $page === 'ekc-backup' && $action === 'download' && $file_name ) {
       $backup_helper = new Ekc_Backup_Helper();
