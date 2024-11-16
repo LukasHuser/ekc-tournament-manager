@@ -268,7 +268,7 @@ class Ekc_Database_Access {
 			$wpdb->prefix . 'ekc_tournament_round', 
 			array( 'tournament_id'		=> $tournament_id,
 				   'tournament_round'	=> $round ,
-				   'round_start_time'	=> date('Y-m-d H:i:s')
+				   'round_start_time'	=> wp_date('Y-m-d H:i:s')
 			),
 			array( '%d', '%d', '%s' )
 		);

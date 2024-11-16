@@ -93,7 +93,7 @@ class Ekc_Contact_Form_7_Support {
 
 	  $team = new Ekc_Team();
 	  $team->set_tournament_id( $tournament->get_tournament_id() );
-	  $team->set_registration_date(date("Y-m-d H:i:s")); // current date
+	  $team->set_registration_date( wp_date("Y-m-d H:i:s") ); // current date
 	  $team->set_active( $team_active );
 	  $team->set_on_wait_list( $waiting_list );
 	  $team->set_email( $email );
