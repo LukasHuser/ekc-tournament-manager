@@ -170,24 +170,27 @@ class Ekc_Teams_Admin_Page {
 
 		$teams_table = new Ekc_Teams_Table( $tournament_id );
     $validation_helper = new Ekc_Validation_Helper();
-    $page = $validation_helper->validate_get_text( 'page' ); 
+    $page = $validation_helper->validate_get_text( 'page' );
+    $new_team_url = sprintf( '?page=%s&tournamentid=%s&action=new', $page, $tournament_id );
+    $csvexport_url = sprintf( '?page=%s&tournamentid=%s&action=csvexport', $page, $tournament_id );
 ?>
 <div class="wrap">
 
-  <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() ) ?></h1>
-  <a href="?page=<?php esc_html_e( $page ) ?>&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;action=new" class="page-title-action"><?php _e( 'New team' ) ?></a>
-  <a href="?page=<?php esc_html_e( $page ) ?>&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;action=csvexport" class="page-title-action"><?php _e( 'CSV export' ) ?></a>
+  <h1 class="wp-heading-inline"><?php echo esc_html( $tournament->get_name() ) ?></h1>
+  <a href="<?php echo esc_url( $new_team_url ) ?>" class="page-title-action"><?php esc_html_e( 'New team' ) ?></a>
+  <a href="<?php echo esc_url( $csvexport_url ) ?>" class="page-title-action"><?php esc_html_e( 'CSV export' ) ?></a>
   <?php
   if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
-  ?><a href="?page=ekc-links&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>&amp;action=shareable-links" class="page-title-action"><?php _e( 'Shareable links' ) ?></a>
+    $shareable_links_url = sprintf( '?page=ekc-links&tournamentid=%s&action=shareable-links', $tournament_id );
+  ?><a href="<?php echo esc_url( $shareable_links_url ) ?>" class="page-title-action"><?php esc_html_e( 'Shareable links' ) ?></a>
   <?php
   }
   ?>
 
   <hr class="wp-header-end">
   <form id="teams-filter" method="get" >
-  <input id="page" name="page" type="hidden" value="<?php esc_html_e( $page ) ?>" />
-  <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament_id ) ?>" />
+  <input id="page" name="page" type="hidden" value="<?php echo esc_attr( $page ) ?>" />
+  <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament_id ) ?>" />
 <?php 
   $teams_table->prepare_items();
   $teams_table->display();
@@ -200,7 +203,7 @@ class Ekc_Teams_Admin_Page {
 	public function show_new_team( $tournament_id ) {
     $db = new Ekc_Database_Access();
 		$tournament = $db->get_tournament_by_id( $tournament_id );
-    $this->show_team( 'new', 'Create a new team', 'Create team', $tournament );
+    $this->show_team( 'new', __( 'Create a new team' ), __( 'Create team' ), $tournament );
   }
 
 	public function show_edit_team( $team_id ) {
@@ -208,168 +211,169 @@ class Ekc_Teams_Admin_Page {
 		$team = $db->get_team_by_id( $team_id );
 		$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
 
-    $this->show_team( 'edit', 'Edit team', 'Save team', $tournament, $team );
+    $this->show_team( 'edit', __( 'Edit team' ), __( 'Save team' ), $tournament, $team );
   }
 
 	public function show_team( $action, $title, $button_text, $tournament, $team = null ) {
     $nonce_helper = new Ekc_Nonce_Helper();
     $validation_helper = new Ekc_Validation_Helper();
-    $page = $validation_helper->validate_get_text( 'page' ); 
+    $page = $validation_helper->validate_get_text( 'page' );
+    $action_url = sprintf( '?page=%s&tournamentid=%s', $page, $tournament->get_tournament_id() );
 ?>
   <div class="wrap">
-    <h1 class="wp-heading-inline"><?php esc_html_e( $title ) ?></h1>
+    <h1 class="wp-heading-inline"><?php echo esc_html( $title ) ?></h1>
     <hr class="wp-header-end">
 
-      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>" accept-charset="utf-8">
+      <form class="ekc-form" method="post" action="<?php echo esc_url( $action_url ) ?>" accept-charset="utf-8">
         <fieldset>
-        <legend><h3><?php _e('Team') ?></h3></legend>
+        <legend><h3><?php esc_html_e( 'Team' ) ?></h3></legend>
 <?php if ( $tournament->get_team_size() !== Ekc_Drop_Down_Helper::TEAM_SIZE_1 || ! $tournament->is_player_names_required() ) { ?>
           <div class="ekc-control-group">
-            <label for="name" class="ekc-required"><?php _e('Name') ?></label>
-            <input id="name" name="name" type="text" maxlength="500" required value="<?php $team ? esc_html_e( $team->get_name() ) : _e('') ?>" />
+            <label for="name" class="ekc-required"><?php esc_html_e( 'Name' ) ?></label>
+            <input id="name" name="name" type="text" maxlength="500" required value="<?php if ( $team ) echo esc_attr( $team->get_name() ) ?>" />
           </div>         
           <div class="ekc-control-group">
-            <label for="country"><?php _e('Country') ?></label>
+            <label for="country"><?php esc_html_e( 'Country' ) ?></label>
             <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'country', $team ? $team->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
           </div>
 <?php } ?>
           <div class="ekc-control-group">
             <div></div>
-            <div><input id="active" name="active" type="checkbox" value="true" <?php $team && $team->is_active() ? _e( "checked" ) : _e('') ?>/>
-                 <label for="active"><?php _e('Is active') ?></label></div>
+            <div><input id="active" name="active" type="checkbox" value="true" <?php if ( $team && $team->is_active() ) echo 'checked' ?>/>
+                 <label for="active"><?php esc_html_e( 'Is active' ) ?></label></div>
           </div>
           <div class="ekc-control-group">
             <div></div>
-            <div><input id="waitlist" name="waitlist" type="checkbox" value="true" <?php $team && $team->is_on_wait_list() ? _e( "checked" ) : _e('') ?>/>
-                 <label for="waitlist"><?php _e('Is on waiting list') ?></label></div>
+            <div><input id="waitlist" name="waitlist" type="checkbox" value="true" <?php if ( $team && $team->is_on_wait_list() ) echo 'checked' ?>/>
+                 <label for="waitlist"><?php esc_html_e( 'Is on waiting list' ) ?></label></div>
           </div>
           <div class="ekc-control-group">
             <div></div>
-            <div><input id="registrationfee" name="registrationfee" type="checkbox" value="true" <?php $team && $team->is_registration_fee_paid() ? _e( "checked" ) : _e('') ?> />
-                 <label for="registrationfee"><?php _e('Registration fee paid') ?></label></div>
+            <div><input id="registrationfee" name="registrationfee" type="checkbox" value="true" <?php if ( $team && $team->is_registration_fee_paid() ) echo 'checked' ?> />
+                 <label for="registrationfee"><?php esc_html_e( 'Registration fee paid' ) ?></label></div>
           </div>
           <div class="ekc-control-group">
-            <label for="club"><?php _e('Sports club / city') ?></label>
-            <input id="club" name="club" type="text" maxlength="500" value="<?php $team ? esc_html_e( $team->get_club() ) : _e('') ?>" />
+            <label for="club"><?php esc_html_e( 'Sports club / city' ) ?></label>
+            <input id="club" name="club" type="text" maxlength="500" value="<?php if ( $team ) echo esc_attr( $team->get_club() ) ?>" />
           </div>
           <div class="ekc-control-group">
-            <label for="email"><?php _e('E-mail') ?></label>
-            <input id="email" name="email" type="email" placeholder="my.name@mail.com" maxlength="500" value="<?php $team ? esc_html_e( $team->get_email() ) : _e('') ?>" />
+            <label for="email"><?php esc_html_e( 'E-mail' ) ?></label>
+            <input id="email" name="email" type="email" placeholder="my.name@mail.com" maxlength="500" value="<?php if ( $team ) echo esc_attr( $team->get_email() ) ?>" />
           </div>
           <div class="ekc-control-group">
-            <label for="phone"><?php _e('Phone') ?></label>
-            <div><input id="phone" name="phone" type="tel" placeholder="+41 79 888 77 66" maxlength="50" value="<?php $team ? esc_html_e( $team->get_phone() ) : _e('') ?>" />
-            <p>Phone number format including a national prefix such as +41 for Switzerland, +49 for Germany etc.</p></div>
+            <label for="phone"><?php esc_html_e( 'Phone' ) ?></label>
+            <div><input id="phone" name="phone" type="tel" placeholder="+41 79 888 77 66" maxlength="50" value="<?php if ( $team ) echo esc_attr( $team->get_phone() ) ?>" />
+            <p><?php esc_html_e( 'Phone number format including a national prefix such as +41 for Switzerland, +49 for Germany etc.' ) ?></p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="registrationorder"><?php _e('Order') ?></label>
-            <div><input id="registrationorder" name="registrationorder" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_registration_order() ) : _e('') ?>" />
-                  <p>Sort order used in registration list and waiting list</p></div>
+            <label for="registrationorder"><?php esc_html_e( 'Order' ) ?></label>
+            <div><input id="registrationorder" name="registrationorder" type="number" step="any" value="<?php if ( $team ) echo esc_attr( $team->get_registration_order() ) ?>" />
+                  <p><?php esc_html_e( 'Sort order used in registration list and waiting list' ) ?></p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="camping"><?php _e('Camping') ?></label>
-            <div><input id="camping" name="camping" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_camping_count() ) : _e('') ?>" />
-                 <p>Number of persons</p></div>
+            <label for="camping"><?php esc_html_e( 'Camping' ) ?></label>
+            <div><input id="camping" name="camping" type="number" step="any" value="<?php if ( $team ) echo esc_attr( $team->get_camping_count() ) ?>" />
+                 <p><?php esc_html_e( 'Number of persons' ) ?></p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="breakfast"><?php _e('Breakfast') ?></label>
-            <div><input id="breakfast" name="breakfast" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_breakfast_count() ) : _e('') ?>"/>
-                 <p>Number of persons</p></div>
+            <label for="breakfast"><?php esc_html_e( 'Breakfast' ) ?></label>
+            <div><input id="breakfast" name="breakfast" type="number" step="any" value="<?php if ( $team ) echo esc_attr( $team->get_breakfast_count() ) ?>"/>
+                 <p><?php esc_html_e( 'Number of persons' ) ?></p></div>
           </div>
 <?php if ( $tournament->get_swiss_system_rounds() > 0 ) { ?>
         <fieldset>
-        <legend><h3><?php _e('Swiss System') ?></h3></legend>
+        <legend><h3><?php esc_html_e( 'Swiss System' ) ?></h3></legend>
           <div class="ekc-control-group">
-            <label for="seedingscore"><?php _e('Seeding score') ?></label>
-            <div><input id="seedingscore" name="seedingscore" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_seeding_score() ) : _e('') ?>" />
-                 <p>Seeding score defining an initial ranking</p></div>
+            <label for="seedingscore"><?php esc_html_e( 'Seeding score' ) ?></label>
+            <div><input id="seedingscore" name="seedingscore" type="number" step="any" value="<?php if ( $team ) echo esc_attr( $team->get_seeding_score() ) ?>" />
+                 <p><?php esc_html_e( 'Seeding score defining an initial ranking' ) ?></p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="initialscore"><?php _e('Initial score') ?></label>
-            <div><input id="initialscore" name="initialscore" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_initial_score() ) : _e('') ?>" />
-                 <p>Initial score for an accelerated system</p></div>
+            <label for="initialscore"><?php esc_html_e( 'Initial score' ) ?></label>
+            <div><input id="initialscore" name="initialscore" type="number" step="any" value="<?php if ( $team ) echo esc_attr( $team->get_initial_score() ) ?>" />
+                 <p><?php esc_html_e( 'Initial score for an accelerated system' ) ?></p></div>
           </div>
           <div class="ekc-control-group">
-            <label for="virtualrank"><?php _e('Virtual rank') ?></label>
-            <div><input id="virtualrank" name="virtualrank" type="number" step="any" value="<?php $team ? esc_html_e( $team->get_virtual_rank() ) : _e('') ?>" />
-                 <p>Virtual rank for a top team which is excluded in additional ranking rounds</p></div>
+            <label for="virtualrank"><?php esc_html_e( 'Virtual rank' ) ?></label>
+            <div><input id="virtualrank" name="virtualrank" type="number" step="any" value="<?php if ( $team ) echo esc_attr( $team->get_virtual_rank() ) ?>" />
+                 <p><?php esc_html_e( 'Virtual rank for a top team which is excluded in additional ranking rounds' ) ?></p></div>
           </div>
         </fieldset>
 <?php }
       if ( $this->is_visible_player_1( $tournament ) ) { ?>
         <fieldset>
-        <legend><h3><?php _e('Players') ?></h3></legend>
+        <legend><h3><?php esc_html_e( 'Players' ) ?></h3></legend>
           <div class="ekc-control-group">
-            <label for="player1first" class="ekc-required"><?php _e('Captain') ?></label>
-            <div><input id="player1first" name="player1first" type="text" placeholder="First name" maxlength="500" required 
-                   value="<?php $team && $team->get_player(0) ? esc_html_e( $team->get_player(0)->get_first_name() ) : _e('') ?>"/>
-            <input id="player1last" name="player1last" type="text" placeholder="Last name" maxlength="500" required 
-                   value="<?php $team && $team->get_player(0) ? esc_html_e( $team->get_player(0)->get_last_name() ) : _e('') ?>" />
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("player1country", $team && $team->get_player(0) ? $team->get_player(0)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
+            <label for="player1first" class="ekc-required"><?php esc_html_e( 'Captain' ) ?></label>
+            <div><input id="player1first" name="player1first" type="text" placeholder="<?php esc_attr_e( 'First name' ) ?>" maxlength="500" required 
+                   value="<?php if ( $team && $team->get_player(0) ) echo esc_attr( $team->get_player(0)->get_first_name() ) ?>"/>
+            <input id="player1last" name="player1last" type="text" placeholder="<?php esc_attr_e( 'Last name' ) ?>" maxlength="500" required 
+                   value="<?php if ( $team && $team->get_player(0) ) echo esc_attr( $team->get_player(0)->get_last_name() ) ?>" />
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'player1country', $team && $team->get_player(0) ? $team->get_player(0)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
           </div>
 <?php }
 
       if ( $this->is_visible_player_2( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player2first" class="ekc-required"><?php _e('Player 2') ?></label>
-            <div><input id="player2first" name="player2first" type="text" placeholder="First name" maxlength="500" required 
-                   value="<?php $team && $team->get_player(1) ? esc_html_e( $team->get_player(1)->get_first_name() ) : _e('') ?>" />
-            <input id="player2last" name="player2last" type="text" placeholder="Last name" maxlength="500" required 
-                   value="<?php $team && $team->get_player(1) ? esc_html_e( $team->get_player(1)->get_last_name() ) : _e('') ?>" />
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("player2country", $team && $team->get_player(1) ? $team->get_player(1)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
+            <label for="player2first" class="ekc-required"><?php esc_html_e( 'Player 2' ) ?></label>
+            <div><input id="player2first" name="player2first" type="text" placeholder="<?php esc_attr_e( 'First name' ) ?>" maxlength="500" required 
+                   value="<?php if ( $team && $team->get_player(1) ) echo esc_attr( $team->get_player(1)->get_first_name() ) ?>" />
+            <input id="player2last" name="player2last" type="text" placeholder="<?php esc_attr_e( 'Last name' ) ?>" maxlength="500" required 
+                   value="<?php if ( $team && $team->get_player(1) ) echo esc_attr( $team->get_player(1)->get_last_name() ) ?>" />
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'player2country', $team && $team->get_player(1) ? $team->get_player(1)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
           </div>
 <?php }
 
      if ( $this->is_visible_player_3( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player3first" <?php $this->is_required_player_3( $tournament ) ? _e('class="ekc-required"') : _e('') ?>><?php _e('Player 3') ?></label>
-            <div><input id="player3first" name="player3first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_3( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(2) ? esc_html_e( $team->get_player(2)->get_first_name() ) : _e('') ?>" />
-            <input id="player3last" name="player3last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_3( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(2) ? esc_html_e( $team->get_player(2)->get_last_name() ) : _e('') ?>" />
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("player3country", $team && $team->get_player(2) ? $team->get_player(2)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
+            <label for="player3first" <?php if ( $this->is_required_player_3( $tournament ) ) echo 'class="ekc-required"' ?>><?php esc_html_e( 'Player 3' ) ?></label>
+            <div><input id="player3first" name="player3first" type="text" placeholder="<?php esc_attr_e( 'First name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_3( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(2) ) echo esc_attr( $team->get_player(2)->get_first_name() ) ?>" />
+            <input id="player3last" name="player3last" type="text" placeholder="<?php esc_attr_e( 'Last name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_3( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(2) ) echo esc_attr( $team->get_player(2)->get_last_name() ) ?>" />
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'player3country', $team && $team->get_player(2) ? $team->get_player(2)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
           </div>
 <?php }
 
      if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player4first" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('class="ekc-required"') : _e('') ?>><?php _e('Player 4') ?></label>
-            <div><input id="player4first" name="player4first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(3) ? esc_html_e( $team->get_player(3)->get_first_name() ) : _e('') ?>" />
-            <input id="player4last" name="player4last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(3) ? esc_html_e( $team->get_player(3)->get_last_name() ) : _e('') ?>" />
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("player4country", $team && $team->get_player(3) ? $team->get_player(3)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
+            <label for="player4first" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'class="ekc-required"' ?>><?php esc_html_e( 'Player 4' ) ?></label>
+            <div><input id="player4first" name="player4first" type="text" placeholder="<?php esc_attr_e( 'First name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(3) ) echo esc_attr( $team->get_player(3)->get_first_name() ) ?>" />
+            <input id="player4last" name="player4last" type="text" placeholder="<?php esc_attr_e( 'Last name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(3) ) echo esc_attr( $team->get_player(3)->get_last_name() ) ?>" />
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'player4country', $team && $team->get_player(3) ? $team->get_player(3)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
           </div>
 <?php }
 
      if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player5first" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('class="ekc-required"') : _e('') ?>><?php _e('Player 5') ?></label>
-            <div><input id="player5first" name="player5first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(4) ? esc_html_e( $team->get_player(4)->get_first_name() ) : _e('') ?>" />
-            <input id="player5last" name="player5last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(4) ? esc_html_e( $team->get_player(4)->get_last_name() ) : _e('') ?>" />
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("player5country", $team && $team->get_player(4) ? $team->get_player(4)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
+            <label for="player5first" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'class="ekc-required"' ?>><?php esc_html_e( 'Player 5' ) ?></label>
+            <div><input id="player5first" name="player5first" type="text" placeholder="<?php esc_attr_e( 'First name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(4) ) echo esc_attr( $team->get_player(4)->get_first_name() ) ?>" />
+            <input id="player5last" name="player5last" type="text" placeholder="<?php esc_attr_e( 'Last name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(4) ) echo esc_attr( $team->get_player(4)->get_last_name() ) ?>" />
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'player5country', $team && $team->get_player(4) ? $team->get_player(4)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
           </div>
 <?php }
 
      if ( $this->is_visible_player_4_5_6( $tournament ) ) { ?>
           <div class="ekc-control-group">
-            <label for="player6first" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('class="ekc-required"') : _e('') ?>><?php _e('Player 6') ?></label>
-            <div><input id="player6first" name="player6first" type="text" placeholder="First name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(5) ? esc_html_e( $team->get_player(5)->get_first_name() ) : _e('') ?>" />
-            <input id="player6last" name="player6last" type="text" placeholder="Last name" maxlength="500" <?php $this->is_required_player_4_5_6( $tournament ) ? _e('required') : _e('') ?>
-                   value="<?php $team && $team->get_player(5) ? esc_html_e( $team->get_player(5)->get_last_name() ) : _e('') ?>" />
-            <?php Ekc_Drop_Down_Helper::country_small_drop_down("player6country", $team && $team->get_player(5) ? $team->get_player(5)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
+            <label for="player6first" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'class="ekc-required"' ?>><?php esc_html_e( 'Player 6' ) ?></label>
+            <div><input id="player6first" name="player6first" type="text" placeholder="<?php esc_attr_e( 'First name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(5) ) echo esc_attr( $team->get_player(5)->get_first_name() ) ?>" />
+            <input id="player6last" name="player6last" type="text" placeholder="<?php esc_attr_e( 'Last name' ) ?>" maxlength="500" <?php if ( $this->is_required_player_4_5_6( $tournament ) ) echo 'required' ?>
+                   value="<?php if ( $team && $team->get_player(5) ) echo esc_attr( $team->get_player(5)->get_last_name() ) ?>" />
+            <?php Ekc_Drop_Down_Helper::country_small_drop_down( 'player6country', $team && $team->get_player(5) ? $team->get_player(5)->get_country() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?></div>
           </div>
         </fieldset>          
 <?php } ?>
         <fieldset>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( $button_text ) ?></button>
-            <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
-            <input id="teamid" name="teamid" type="hidden" value="<?php $team ? esc_html_e( $team->get_team_id() ) : _e('') ?>" />
-            <input id="action" name="action" type="hidden" value="<?php esc_html_e( $action ) ?>" />
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php echo esc_html( $button_text ) ?></button>
+            <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
+            <input id="teamid" name="teamid" type="hidden" value="<?php if ( $team ) echo esc_attr( $team->get_team_id() ) ?>" />
+            <input id="action" name="action" type="hidden" value="<?php echo esc_attr( $action ) ?>" />
             <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( $action, 'team', $team ? $team->get_team_id() : -1 ) ) ?>
           </div>
         </fieldset>
@@ -439,8 +443,8 @@ class Ekc_Teams_Admin_Page {
 			if ($fp && $csv) {
 				header('Content-Type: text/csv');
 				header('Content-Disposition: attachment; filename="' . $file_name . '"');
-				header("Pragma: no-cache");
-				header("Expires: 0");
+				header('Pragma: no-cache');
+				header('Expires: 0');
 				foreach ($csv as $row) {
 					fputcsv($fp, $row, ';', '"');
 				}

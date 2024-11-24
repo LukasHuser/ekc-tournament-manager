@@ -5,14 +5,14 @@
  */
 class Ekc_Drop_Down_Helper {
 
-	const SELECTION_NONE	= "selection_none";
+	const SELECTION_NONE	= 'selection_none';
 
-	const TEAM_SIZE_1 	= "1vs1";
-	const TEAM_SIZE_2	= "2vs2";
-	const TEAM_SIZE_2plus	= "2+vs2+";
-	const TEAM_SIZE_3 	= "3vs3";
-	const TEAM_SIZE_3plus	= "3+vs3+";
-	const TEAM_SIZE_6	= "6vs6";
+	const TEAM_SIZE_1 		= '1vs1';
+	const TEAM_SIZE_2		= '2vs2';
+	const TEAM_SIZE_2plus	= '2+vs2+';
+	const TEAM_SIZE_3 		= '3vs3';
+	const TEAM_SIZE_3plus	= '3+vs3+';
+	const TEAM_SIZE_6		= '6vs6';
 
 	const TEAM_SIZE		= array( 
 		Ekc_Drop_Down_Helper::TEAM_SIZE_1, 
@@ -23,9 +23,9 @@ class Ekc_Drop_Down_Helper {
 		Ekc_Drop_Down_Helper::TEAM_SIZE_6,
 	);
 
-	const TOURNAMENT_SYSTEM_KO			= "elimination"; // elimination bracket only
-	const TOURNAMENT_SYSTEM_GROUP_KO	= "group+elimination"; // group stage + elimination bracket
-	const TOURNAMENT_SYSTEM_SWISS_KO	= "swiss+elimination"; // swiss system + elimination bracket
+	const TOURNAMENT_SYSTEM_KO			= 'elimination'; // elimination bracket only
+	const TOURNAMENT_SYSTEM_GROUP_KO	= 'group+elimination'; // group stage + elimination bracket
+	const TOURNAMENT_SYSTEM_SWISS_KO	= 'swiss+elimination'; // swiss system + elimination bracket
 
 	const TOURNAMENT_SYSTEM	= array(
 		Ekc_Drop_Down_Helper::TOURNAMENT_SYSTEM_KO,
@@ -33,10 +33,10 @@ class Ekc_Drop_Down_Helper {
 		Ekc_Drop_Down_Helper::TOURNAMENT_SYSTEM_SWISS_KO,
 	);
 
-	const ELIMINATION_BRACKET_1_2 = "semifinals";
-	const ELIMINATION_BRACKET_1_4 = "1/4-finals";
-	const ELIMINATION_BRACKET_1_8 = "1/8-finals";
-	const ELIMINATION_BRACKET_1_16 = "1/16-finals";
+	const ELIMINATION_BRACKET_1_2 	= 'semifinals';
+	const ELIMINATION_BRACKET_1_4 	= '1/4-finals';
+	const ELIMINATION_BRACKET_1_8 	= '1/8-finals';
+	const ELIMINATION_BRACKET_1_16	= '1/16-finals';
 
 	const ELIMINATION_BRACKET = array(
 		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2,
@@ -45,9 +45,9 @@ class Ekc_Drop_Down_Helper {
 		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16
 	);
 
-	const TOURNAMENT_STAGE_KO		= "elimination";
-	const TOURNAMENT_STAGE_SWISS	= "swiss";
-	const TOURNAMENT_STAGE_GROUP	= "group";
+	const TOURNAMENT_STAGE_KO		= 'elimination';
+	const TOURNAMENT_STAGE_SWISS	= 'swiss';
+	const TOURNAMENT_STAGE_GROUP	= 'group';
 
 	const FILTER_ALL	= 'all';
 	const FILTER_YES	= 'yes';
@@ -74,15 +74,15 @@ class Ekc_Drop_Down_Helper {
 	}
 
 	public static function team_size_drop_down($id, $selected_key) {
-		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::TEAM_SIZE, null, "ekc-selectmenu");
+		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::TEAM_SIZE, null, 'ekc-selectmenu');
 	}
 
 	public static function tournament_system_drop_down($id, $selected_key) {
-		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::TOURNAMENT_SYSTEM, null, "ekc-selectmenu");
+		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::TOURNAMENT_SYSTEM, null, 'ekc-selectmenu');
 	}
 
 	public static function elimination_bracket_drop_down($id, $selected_key) {
-		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::ELIMINATION_BRACKET, null, "ekc-selectmenu");
+		Ekc_Drop_Down_Helper::drop_down($id, $selected_key, Ekc_Drop_Down_Helper::ELIMINATION_BRACKET, null, 'ekc-selectmenu');
 	}
 	
 	public static function user_drop_down( $id, $selected_key ) {
@@ -97,11 +97,11 @@ class Ekc_Drop_Down_Helper {
 			}
 			$values[] = $name;
 		}
-		Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, $keys, $values, "ekc-selectmenu", true );
+		Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, $keys, $values, 'ekc-selectmenu', true );
 	}
 
-	public static function filter_yes_no_drop_down( $id, $selected_key, $all_text) {
-		$values = array($all_text, 'Yes', 'No');
+	public static function filter_yes_no_drop_down( $id, $selected_key, $all_text ) {
+		$values = array( $all_text, __( 'Yes' ), __( 'No' ) );
 		Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO, $values, '', false );
 	}
 
@@ -111,13 +111,13 @@ class Ekc_Drop_Down_Helper {
 		}
 		$is_empty_selected = ! $selected_key || strval( $selected_key ) === Ekc_Drop_Down_Helper::SELECTION_NONE;
 ?>
-<select name="<?php _e($id) ?>" id="<?php _e($id) ?>" class="<?php _e($css_class) ?>" >
+<select name="<?php echo esc_attr( $id ) ?>" id="<?php echo esc_attr( $id ) ?>" class="<?php echo esc_attr( $css_class ) ?>" >
 <?php if ( $include_empty ) { ?>
-	<option <?php $is_empty_selected ? _e("selected") : _e("") ?> value="<?php esc_html_e( Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>"></option>
+	<option <?php if ( $is_empty_selected ) echo 'selected' ?> value="<?php echo esc_attr( Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>"></option>
 <?php }	
 	for( $i = 0; $i < count($all_keys); $i++) { 
 		if ( $all_keys[$i] !== Ekc_Drop_Down_Helper::SELECTION_NONE ) { ?>
-	<option <?php strval( $selected_key ) === strval( $all_keys[$i] ) ? _e("selected") : _e("") ?> value="<?php esc_html_e($all_keys[$i]) ?>"><?php esc_html_e($all_values[$i]) ?></option>
+	<option <?php if ( strval( $selected_key ) === strval( $all_keys[$i] ) ) echo 'selected' ?> value="<?php echo esc_attr( $all_keys[$i] ) ?>"><?php echo esc_html( $all_values[$i] ) ?></option>
 <?php	}	
 	} ?>
 </select>
@@ -133,7 +133,6 @@ public static function teams_drop_down_data( $tournament_id ) {
 	// get all active teams, ignoring the waiting list or maximum number of teams for the tournament
 	// teams on the waiting list must have been set to inactive before starting the tournament
 	$teams = $db->get_active_teams( $tournament_id, 0, 'asc', false ); 
-	$result = array();
 
 	$helper = new Ekc_Swiss_System_Helper();
 	$tournament = $db->get_tournament_by_id( $tournament_id );
@@ -147,24 +146,23 @@ public static function teams_drop_down_data( $tournament_id ) {
 		$teams[] = $bye;
 	}
 
+	$team_drop_down_data = array();
+	foreach ( $teams as $team ) {
+		$team_drop_down_data[ $team->get_team_id() ] = $team->get_name();
+	}
 	?>
 	<script>
 		var ekc = ekc || {};
-		ekc.teamsDropDownData = { <?php
-			foreach ( $teams as $team ) {
-				_e('"' . esc_html( $team->get_team_id() ) . '" : "' . esc_html( $team->get_name() ) . '", ');
-				$result[$team->get_team_id()] = $team->get_name();
-			}?>
-		};
+		ekc.teamsDropDownData = <?php echo wp_json_encode( $team_drop_down_data ) ?>;
 	</script>
 	<?php
-	return $result;
+	return $team_drop_down_data;
 }
 
 public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	$keys = array( $selected_key );
 	$values = array( $selected_value );
-	Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, $keys, $values, "ekc-teams-combobox" );
+	Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, $keys, $values, 'ekc-teams-combobox' );
 }
 
 
@@ -252,32 +250,31 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	);
 
 
-	public static function country_small_drop_down($id, $selected_value = "") {
+	public static function country_small_drop_down( $id, $selected_value = '' ) {
 		$is_empty_selected = ! $selected_value || strval( $selected_value ) === Ekc_Drop_Down_Helper::SELECTION_NONE;
-?>
-<select name="<?php _e($id) ?>" id="<?php _e($id) ?>" class="ekc-country-selectmenu f16" >
-	<option <?php $is_empty_selected ? _e("selected") : _e("") ?> ></option>
-<?php foreach(Ekc_Drop_Down_Helper::COUNTRY_COMMON as $key => $value) { ?>
-	<option class="flag-icon <?php _e('flag-icon-' . $key) ?>" <?php $selected_value === $key ? _e("selected") : _e("") ?> value="<?php _e($key) ?>"><?php _e($value) ?></option>
-<?php } ?>
-	<option disabled></option>
-<?php foreach(Ekc_Drop_Down_Helper::COUNTRY_OTHER as $key => $value) { ?>
-	<option class="flag-icon <?php _e('flag-icon-' . $key) ?>" <?php $selected_value === $key ? _e("selected") : _e("") ?> value="<?php _e($key) ?>"><?php _e($value) ?></option>
-<?php } ?>
-	<option disabled></option>
-	<option class="flag-icon <?php _e('flag-icon-' . Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED) ?>" value="<?php _e(Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED) ?>"><?php _e(Ekc_Drop_Down_Helper::COUNTRY_SPECIAL[Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED]) ?></option>
-</select>
-
-<?php
+		?>
+		<select name="<?php echo esc_attr( $id ) ?>" id="<?php echo esc_attr( $id ) ?>" class="ekc-country-selectmenu f16" >
+			<option <?php if ( $is_empty_selected ) echo 'selected' ?> ></option>
+		<?php foreach(Ekc_Drop_Down_Helper::COUNTRY_COMMON as $key => $value) { ?>
+			<option class="flag-icon <?php echo esc_attr( 'flag-icon-' . $key ) ?>" <?php if ( $selected_value === $key ) echo 'selected' ?> value="<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $value ) ?></option>
+		<?php } ?>
+			<option disabled></option>
+		<?php foreach(Ekc_Drop_Down_Helper::COUNTRY_OTHER as $key => $value) { ?>
+			<option class="flag-icon <?php echo esc_attr( 'flag-icon-' . $key ) ?>" <?php if ( $selected_value === $key ) echo 'selected' ?> value="<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $value ) ?></option>
+		<?php } ?>
+			<option disabled></option>
+			<option class="flag-icon <?php echo esc_attr( 'flag-icon-' . Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED ) ?>" value="<?php echo esc_attr( Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED ) ?>"><?php echo esc_html( Ekc_Drop_Down_Helper::COUNTRY_SPECIAL[Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED] ) ?></option>
+		</select>
+		<?php
 	}
 
 	public static function filter_country_small_drop_down( $id, $selected_key ) {
 		?>
-		<select name="<?php _e($id) ?>" id="<?php _e($id) ?>" >
-		<option <?php $selected_key === Ekc_Drop_Down_Helper::FILTER_ALL ? _e("selected") : _e("") ?> value="<?php _e(Ekc_Drop_Down_Helper::FILTER_ALL) ?>">All countries</option>
+		<select name="<?php echo esc_attr( $id ) ?>" id="<?php echo esc_attr( $id ) ?>" >
+			<option <?php if ( $selected_key === Ekc_Drop_Down_Helper::FILTER_ALL ) echo 'selected' ?> value="<?php echo esc_attr( Ekc_Drop_Down_Helper::FILTER_ALL ) ?>"><?php esc_html_e( 'All countries' ) ?></option>
 		<?php 
 		foreach(Ekc_Drop_Down_Helper::COUNTRY_COMMON as $key => $value) { ?>
-			<option <?php $selected_key === $key ? _e("selected") : _e("") ?> value="<?php _e($key) ?>"><?php _e($value) ?></option>
+			<option <?php if ( $selected_key === $key ) echo 'selected' ?> value="<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $value ) ?></option>
 		<?php
 		} ?>
 		</select>

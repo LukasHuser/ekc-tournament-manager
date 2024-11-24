@@ -75,7 +75,7 @@ class Ekc_Shareable_Links_Helper {
 	private function send_mail( $recipient_email_address, $subject, $email_content, $sender_email ) {
 		$headers = array('Content-Type: text/html; charset=UTF-8');
 		if ( $sender_email ) {
-			$headers[] = "From: " . $sender_email;
+			$headers[] = 'From: ' . $sender_email;
 		}
 		$html_email_content = '<html>' . $email_content . '</html>';
 		wp_mail( $recipient_email_address, $subject, $html_email_content, $headers );
@@ -103,7 +103,7 @@ class Ekc_Shareable_Links_Helper {
     string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     ): string {
     if ($length < 1) {
-        throw new \RangeException("Length must be a positive integer");
+        throw new \RangeException('Length must be a positive integer');
     }
     $pieces = [];
     $max = mb_strlen($keyspace, '8bit') - 1;

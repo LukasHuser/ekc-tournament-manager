@@ -27,7 +27,7 @@ class Ekc_Page_Helper {
         $post = get_post( $post_id );
         $new_post_author = wp_get_current_user()->ID;
         $new_post_status = 'draft';
-        $new_post_title = $post->post_title . ' ' . __('Copy');
+        $new_post_title = $post->post_title . ' ' . esc_html__( 'Copy' );
         if ( isset( $post ) && $post != null ) {
             $new_post_data = array(
                     'comment_status' => $post->comment_status,
@@ -45,7 +45,7 @@ class Ekc_Page_Helper {
             );
             $new_post_id = wp_insert_post( $new_post_data );
             if ( is_wp_error( $new_post_id ) ) {
-                wp_die(__($new_post_id->get_error_message()));
+                wp_die( esc_html( $new_post_id->get_error_message() ) );
             }
             
             // get all current post terms and set them to the new post draft
@@ -98,9 +98,9 @@ class Ekc_Page_Helper {
         if ( isset( $post ) && current_user_can( 'edit_page', $post->ID ) ) {
             $nonce_helper = new Ekc_Nonce_Helper();
             $post_id = intval( $post->ID );
-            $duplicate_url = sprintf( 'admin.php?action=ekc_duplicate_page&amp;post=%d', $post_id ); 
+            $duplicate_url = sprintf( 'admin.php?action=ekc_duplicate_page&post=%d', $post_id ); 
             $duplicate_url = $nonce_helper->nonce_url( $duplicate_url, $nonce_helper->nonce_text( 'ekc_duplicate_page', 'page', $post_id ) );
-            $actions['duplicate'] = sprintf( '<a href="%s" title="%s" rel="permalink">%s</a>', $duplicate_url,  __('Duplicate as draft'), __('Duplicate') );
+            $actions['duplicate'] = sprintf( '<a href="%s" title="%s" rel="permalink">%s</a>', esc_url( $duplicate_url ),  esc_attr__( 'Duplicate as draft' ), esc_html__( 'Duplicate' ) );
         }
         
         return $actions;

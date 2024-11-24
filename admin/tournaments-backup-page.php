@@ -37,11 +37,12 @@ class Ekc_Tournaments_Backup_Page {
   private function show_wp_header() {
     $validation_helper = new Ekc_Validation_Helper();
 		$page = $validation_helper->validate_get_text( 'page' );
+    $upload_url = sprintf( '?page=%s&action=showupload', $page );
     ?>
     <div class="wrap">
     
-      <h1 class="wp-heading-inline"><?php _e( 'Backup Files' ); ?></h1>
-      <a href="?page=<?php esc_html_e( $page ) ?>&amp;action=showupload" class="page-title-action"><?php _e( 'Upload backup file' ); ?></a>
+      <h1 class="wp-heading-inline"><?php esc_html_e( 'Backup Files' ); ?></h1>
+      <a href="<?php echo esc_url( $upload_url ) ?>" class="page-title-action"><?php esc_html_e( 'Upload backup file' ) ?></a>
     
       <hr class="wp-header-end">
     
@@ -61,10 +62,10 @@ class Ekc_Tournaments_Backup_Page {
     $validation_helper = new Ekc_Validation_Helper();
 		$page = $validation_helper->validate_get_text( 'page' );
 ?>
-<form enctype="multipart/form-data" action="?page=<?php esc_html_e( $page ) ?>" method="POST">
+<form enctype="multipart/form-data" action="<?php echo esc_url( '?page=' . $page ) ?>" method="POST">
     <input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
-    Backup file (JSON): <input name="backup-file" type="file" accept="text/csv, application/json" />
-    <input type="submit" value="Upload" />
+    <?php esc_html_e( 'Backup file (JSON)' ) ?><input name="backup-file" type="file" accept="text/csv, application/json" />
+    <input type="submit" value="<?php esc_attr_e( 'Upload' ) ?>" />
 </form>
 <?php
   }
@@ -87,7 +88,7 @@ class Ekc_Tournaments_Backup_Page {
       $backup_table->display();
     } 
     else {
-      esc_html_e("No backup files available.");
+      esc_html_e( 'No backup files available.' );
     }
 	}	
 

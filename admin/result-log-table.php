@@ -11,12 +11,12 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'log_time'		=> 'Timestamp',
-			'team1'			=> 'Team 1',
-			'team2'			=> 'Team 2',
-			'result'		=> 'Result',
-			'stage'			=> 'Stage',
-			'log_team'		=> 'Changed by',
+			'log_time'		=> esc_html__( 'Timestamp' ),
+			'team1'			=> esc_html__( 'Team 1' ),
+			'team2'			=> esc_html__( 'Team 2' ),
+			'result'		=> esc_html__( 'Result' ),
+			'stage'			=> esc_html__( 'Stage' ),
+			'log_team'		=> esc_html__( 'Changed by' )
 		);
 		return $columns;
 	}
@@ -56,7 +56,7 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 			case 'result':
 			case 'stage':
 			case 'log_team':
-			return $item[ $column_name ];
+			return esc_html( $item[ $column_name ] );
 			default:
 			return '';
 		}
@@ -64,7 +64,7 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 
 
 	function no_items() {
-		esc_html_e("No results available.");
+		esc_html_e( 'No results available.' );
 	}
 
 	/**

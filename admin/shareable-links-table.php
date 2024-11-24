@@ -11,11 +11,11 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'name'				=> 'Name',
-			'is_active'			=> 'Active',
-			'country'			=> 'Country',
-			'email'				=> 'E-mail',
-			'shareable_link'	=> 'Shareable link'
+			'name'				=> esc_html__( 'Name' ),
+			'is_active'			=> esc_html__( 'Active' ),
+			'country'			=> esc_html__( 'Country' ),
+			'email'				=> esc_html__( 'E-mail' ),
+			'shareable_link'	=> esc_html__( 'Shareable link' )
 		);
 		return $columns;
 	}
@@ -96,15 +96,15 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
 		$team_id = $item['team_id'];
 
-		$generate_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'generate', esc_html( $team_id ), esc_html( $tournament_id ) );
+		$generate_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'generate', $team_id, $tournament_id );
 		$generate_url = $nonce_helper->nonce_url( $generate_url, $nonce_helper->nonce_text( 'generate', 'team', $team_id ) );
-		$actions['generate'] = sprintf( '<a href="%s">Generate link</a>',  $generate_url );
+		$actions['generate'] = sprintf( '<a href="%s">%s</a>',  esc_url( $generate_url ), esc_html__( 'Generate link' ) );
 
-		$send_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'send', esc_html( $team_id ), esc_html( $tournament_id ) );
+		$send_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'send', $team_id, $tournament_id );
 		$send_url = $nonce_helper->nonce_url( $send_url, $nonce_helper->nonce_text( 'send', 'team', $team_id ) );
-		$actions['send'] = sprintf( '<a href="%s">Send link</a>',  $send_url );
+		$actions['send'] = sprintf( '<a href="%s">%s</a>', esc_url( $send_url ), esc_html__( 'Send link' ) );
 
-		return sprintf( '%s %s', $item['name'], $this->row_actions( $actions ) );
+		return sprintf( '%s %s', esc_html( $item['name'] ), $this->row_actions( $actions ) );
 	}
 
 	function column_default( $item, $column_name ) {
@@ -112,8 +112,9 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 			case 'is_active':
 			case 'country':
 			case 'email':
+				return esc_html( $item[ $column_name ] );
 			case 'shareable_link':
-			return $item[ $column_name ];
+				return esc_url( $item[ $column_name ] );
 			default:
 			return '';
 		}
@@ -121,7 +122,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 
 
 	function no_items() {
-		esc_html_e("No teams available.");
+		esc_html_e( 'No teams available.' );
 	}
 
 	/**
@@ -155,7 +156,7 @@ class Ekc_Shareable_Links_Table extends WP_List_Table {
 	}
 
 	protected function filter_active_dropdown() {
-		$this->filter_yes_no_dropdown( 'Active', 'filter-active' );
+		$this->filter_yes_no_dropdown( __( 'Active' ), 'filter-active' );
 	}
 
 	protected function filter_yes_no_dropdown( $name, $filter_id ) {

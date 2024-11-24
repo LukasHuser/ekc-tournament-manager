@@ -129,19 +129,20 @@ class Ekc_Shareable_links_Admin_Page {
     $nonce_helper = new Ekc_Nonce_Helper();
     $validation_helper = new Ekc_Validation_Helper();
     $page = $validation_helper->validate_get_text( 'page' );
+    $tournament_id = $tournament->get_tournament_id();
 
-    $generateall_url = sprintf( '?page=%s&amp;action=%s&amp;tournamentid=%s', esc_html( $page ), 'generateall', esc_html( $tournament->get_tournament_id() ) );
-    $generateall_url = $nonce_helper->nonce_url( $generateall_url, $nonce_helper->nonce_text( 'generateall', 'tournament', $tournament->get_tournament_id() ) );
+    $generateall_url = sprintf( '?page=%s&action=%s&tournamentid=%s', $page, 'generateall', $tournament_id );
+    $generateall_url = $nonce_helper->nonce_url( $generateall_url, $nonce_helper->nonce_text( 'generateall', 'tournament', $tournament_id ) );
 
-    $sendall_url = sprintf( '?page=%s&amp;action=%s&amp;tournamentid=%s', esc_html( $page ), 'sendall', esc_html( $tournament->get_tournament_id() ) );
-    $sendall_url = $nonce_helper->nonce_url( $sendall_url, $nonce_helper->nonce_text( 'sendall', 'tournament', $tournament->get_tournament_id() ) );
+    $sendall_url = sprintf( '?page=%s&action=%s&tournamentid=%s', $page, 'sendall', $tournament_id );
+    $sendall_url = $nonce_helper->nonce_url( $sendall_url, $nonce_helper->nonce_text( 'sendall', 'tournament', $tournament_id ) );
 
     ?>
     <div class="wrap">
     
-      <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() ) ?> shareable links</h1>
-      <a href="<?php esc_html_e( $generateall_url ) ?>" class="page-title-action"><?php _e( 'Generate all shareable links' ) ?></a>
-      <a href="<?php esc_html_e( $sendall_url ) ?>" class="page-title-action"><?php _e( 'Send all shareable links' ) ?></a>
+      <h1 class="wp-heading-inline"><?php printf( '%s %s', esc_html( $tournament->get_name() ), esc_html__( 'Shareable Links') ) ?></h1>
+      <a href="<?php echo esc_url( $generateall_url ) ?>" class="page-title-action"><?php esc_html_e( 'Generate all shareable links' ) ?></a>
+      <a href="<?php echo esc_url( $sendall_url ) ?>" class="page-title-action"><?php esc_html_e( 'Send all shareable links' ) ?></a>
     
       <hr class="wp-header-end">
     <?php 
@@ -170,15 +171,15 @@ class Ekc_Shareable_links_Admin_Page {
        The link will point to a personalized page for the given team, showing all matches and results, and allows entering the result for the current round.</p>
     <p>Note: make sure that sending e-mails is correctly configured for your wordpress installation.<br/>
        We recommend to use an SMTP server, configured through a plugin such as <a href="https://wordpress.org/plugins/wp-mail-smtp/">WP Mail SMTP</a>.</p>
-      <form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>" accept-charset="utf-8">
+      <form class="ekc-form" method="post" action="<?php echo esc_url( '?page=' . $page ) ?>" accept-charset="utf-8">
         <fieldset>
           <div class="ekc-control-group">
             <label for="urlprefix">URL prefix</label>
-            <input id="urlprefix" name="urlprefix" type="text" placeholder="http://mydomain.com/mytournament/team" size="40" maxlength="500" value="<?php esc_html_e( $url_prefix ) ?>" />
+            <input id="urlprefix" name="urlprefix" type="text" placeholder="https://mydomain.com/mytournament/team" size="40" maxlength="500" value="<?php echo esc_url( $url_prefix ) ?>" />
           </div>
           <div class="ekc-control-group">
             <label for="senderemail">Sender e-mail</label>
-            <div><input id="senderemail" name="senderemail" type="text" placeholder="Full Name &lt;name@example.com&gt;" size="40" maxlength="500" value="<?php esc_html_e( $sender_email ) ?>" />
+            <div><input id="senderemail" name="senderemail" type="text" placeholder="Full Name &lt;name@example.com&gt;" size="40" maxlength="500" value="<?php echo esc_html( $sender_email ) ?>" />
                  <p>Format: &quot;name@example.com&quot; or &quot;Full Name &lt;name@example.com&gt;&quot;</p></div>
           </div>
           <div class="ekc-control-group">
@@ -203,9 +204,9 @@ class Ekc_Shareable_links_Admin_Page {
             ?>
           </div>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary button button-primary">Save</button>
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( 'Save' ) ?></button>
             <input id="action" name="action" type="hidden" value="shareable-links-store" />
-            <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
+            <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
             <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'shareable-links-store', 'tournament', $tournament->get_tournament_id() ) ) ?>
           </div>
         </fieldset>
@@ -219,8 +220,8 @@ class Ekc_Shareable_links_Admin_Page {
 		$links_table = new Ekc_Shareable_Links_Table( $tournament_id );
     ?>
     <form id="links-filter" method="get" >
-    <input id="page" name="page" type="hidden" value="<?php esc_html_e( $page ) ?>" />
-    <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament_id ) ?>" />
+    <input id="page" name="page" type="hidden" value="<?php echo esc_attr( $page ) ?>" />
+    <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament_id ) ?>" />
     <?php
 	$links_table->prepare_items();
 	$links_table->display();

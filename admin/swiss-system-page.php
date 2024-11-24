@@ -92,12 +92,12 @@ class Ekc_Swiss_System_Admin_Page {
       elseif ( $action === 'ekc_admin_swiss_system_store_result' ) {
         // asynchronous ajax request
         if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'result', $result_id ) ) ) {
-          _e('<span class="dashicons dashicons-no"></span>');
+          ?><span class="dashicons dashicons-no"></span><?php
           wp_die();
         }
         $existing_result = $db->get_tournament_result_by_id( $result_id );
         $this->update_results( array( $existing_result ) );
-        _e('<span class="dashicons dashicons-yes"></span>');
+        ?><span class="dashicons dashicons-yes"></span><?php
         wp_die();
       }
       elseif ( $action === 'swiss-system-new-round' ) {
@@ -164,7 +164,7 @@ class Ekc_Swiss_System_Admin_Page {
 
 ?>
   <div class="wrap">
-    <h1 class="wp-heading-inline"><?php esc_html_e( $tournament->get_name() . ' ' ); _e('Swiss System') ?></h1>
+    <h1 class="wp-heading-inline"><?php printf( '%s %s', esc_html( $tournament->get_name() ), esc_html__( 'Swiss System' ) ) ?></h1>
     <hr class="wp-header-end">
 
 <?php
@@ -203,30 +203,32 @@ class Ekc_Swiss_System_Admin_Page {
 
   private function show_round_links( $tournament, $current_round ) {
     for ( $round = 1; $round <= $current_round; $round++ ) {
-      $display_round = 'round ' . $round;
+      $display_round = sprintf( /* translators: %s: tournament round number */ __( 'round %s' ), $round );
       if ( $round > $tournament->get_swiss_system_rounds() ) {
-        $display_round = 'additional round ' . ( $round - $tournament->get_swiss_system_rounds() );
+        $display_round = sprintf( /* translators: %s: tournament additional round number */ __( 'additional round %s' ), $round - $tournament->get_swiss_system_rounds() );
       }
+      $round_url = sprintf( '?page=ekc-swiss&action=swiss-system&tournamentid=%s&round=%s', $tournament->get_tournament_id(), $round );
       ?>
-      <a href="?page=ekc-swiss&amp;action=swiss-system&amp;tournamentid=<?php esc_html_e( $tournament->get_tournament_id() ) ?>&amp;round=<?php esc_html_e( $round ) ?>"><?php esc_html_e( $display_round ) ?></a> &nbsp;
+      <a href="<?php echo esc_url( $round_url ) ?>"><?php echo esc_html( $display_round ) ?></a> &nbsp;
       <?php
     }
   }
 
   private function show_delete_round_link( $tournament, $current_round ) {
     $nonce_helper = new Ekc_Nonce_Helper();
-    $delete_url = sprintf( '?page=ekc-swiss&amp;action=delete-round&amp;tournamentid=%s', esc_html( $tournament->get_tournament_id() ) );
+    $delete_url = sprintf( '?page=ekc-swiss&action=delete-round&tournamentid=%s', $tournament->get_tournament_id() );
     $delete_url = $nonce_helper->nonce_url( $delete_url, $nonce_helper->nonce_text( 'delete-round', 'tournament', $tournament->get_tournament_id() ) );
     ?>
     <span class="delete ekc-page-delete-link" >
-    <a href="<?php esc_html_e( $delete_url ) ?>"><?php _e( 'delete round' ) ?>&nbsp;<?php esc_html_e( $current_round ) ?></a>
+    <a href="<?php echo esc_url( $delete_url ) ?>"><?php printf( /* translators: %s: tournament round number */ esc_html__( 'delete round %s' ), esc_html( $current_round ) ) ?></a>
     </span>
     <?php
   }
 
   private function show_ranking_link( $tournament_id ) {
+    $ranking_url = sprintf( '?page=ekc-swiss&action=swiss-system-ranking&tournamentid=%s', $tournament_id );
     ?>
-    <a href="?page=ekc-swiss&amp;action=swiss-system-ranking&amp;tournamentid=<?php esc_html_e( $tournament_id ) ?>"><?php _e( 'ranking' ) ?></a> &nbsp;
+    <a href="<?php echo esc_url( $ranking_url ) ?>"><?php esc_html_e( 'ranking' ) ?></a> &nbsp;
     <?php    
   }
 
@@ -236,23 +238,23 @@ class Ekc_Swiss_System_Admin_Page {
     $page = $validation_helper->validate_get_text( 'page' ); 
 
     $button_disabled = '';
-    $button_label = 'Start round ' . $next_round;
+    $button_label = sprintf( /* translators: %s: tournament round number */ __( 'Start round %s' ), $next_round );
     if ( $next_round > $tournament->get_swiss_system_rounds() ) {
-      $button_label = 'Start additional round ' . ($next_round - $tournament->get_swiss_system_rounds() );
+      $button_label = sprintf( /* translators: %s: tournament additional round number */ __( 'Start additional round %s' ), $next_round - $tournament->get_swiss_system_rounds() );
     }
     if ( intval( $next_round ) === 1 ) {
-      $button_label = 'Start tournament!';
+      $button_label = __( 'Start tournament!' );
       ?><p>When starting the tournament, all <i>active</i> players/teams are considered.
            Make sure that all players/teams on the waiting list are set to inactive!</p>
         <p>If possible, always try to run a Swiss System tournament with an even number of players/teams.
-           If the number of players/teams is odd, an additional player/team "BYE" is automatically added.</p> <?php
+           If the number of players/teams is odd, an additional player/team &quot;BYE&quot; is automatically added.</p> <?php
       
       if ( $tournament->get_swiss_system_pitch_limit() ) {
         $helper = new Ekc_Swiss_System_Helper();
         if ( $helper->is_pitch_limit_mode( $tournament ) ) {
           if ( $helper->is_pitch_limit_valid( $tournament ) ) {
             ?><p>Note: The number of players/teams exceeds the number of available pitches for this tournament. 
-            Additional "BYEs" will be added to match the number of players/teams.</p><?php
+            Additional &quot;BYEs&quot; will be added to match the number of players/teams.</p><?php
           }
           else {
             $button_disabled = 'disabled';
@@ -264,13 +266,13 @@ class Ekc_Swiss_System_Admin_Page {
     }
 ?>
 <!-- onsubmit handler for validation defined in admin.js -->
-<form class="ekc-form confirm" id="swiss-system-new-round-form" method="post" action="?page=<?php esc_html_e( $page ) ?>" accept-charset="utf-8">
+<form class="ekc-form confirm" id="swiss-system-new-round-form" method="post" action="<?php echo esc_url( '?page=' . $page ) ?>" accept-charset="utf-8">
   <fieldset>
     <div class="ekc-controls">
-        <button type="submit" <?php esc_html_e( $button_disabled ) ?> class="ekc-button ekc-button-primary button"><?php esc_html_e( $button_label ) ?></button>
+        <button type="submit" <?php echo esc_attr( $button_disabled ) ?> class="ekc-button ekc-button-primary button"><?php echo esc_html( $button_label ) ?></button>
         <p id="swiss-system-new-round-form-validation-text"></p>
-        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
-        <input id="tournamentround" name="tournamentround" type="hidden" value="<?php esc_html_e( $next_round ) ?>" />
+        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
+        <input id="tournamentround" name="tournamentround" type="hidden" value="<?php echo esc_attr( $next_round ) ?>" />
         <input id="action" name="action" type="hidden" value="swiss-system-new-round" />
         <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'swiss-system-new-round', 'tournament', $tournament->get_tournament_id() ) ) ?>
     </div>
@@ -287,12 +289,13 @@ class Ekc_Swiss_System_Admin_Page {
     $nonce_helper = new Ekc_Nonce_Helper();
     $db = new Ekc_Database_Access();
     $round_start_time = $db->get_tournament_round_start( $tournament->get_tournament_id(), $current_round );
-    $timer_url = sprintf( '?page=ekc-swiss&amp;action=swiss-system-start-timer&amp;tournamentid=%s&amp;round=%s', esc_html( $tournament->get_tournament_id() ), esc_html( $current_round ) );
+    $timer_url = sprintf( '?page=ekc-swiss&action=swiss-system-start-timer&tournamentid=%s&round=%s', $tournament->get_tournament_id(), $current_round );
     $timer_url = $nonce_helper->nonce_url( $timer_url, $nonce_helper->nonce_text( 'swiss-system-start-timer', 'tournament', $tournament->get_tournament_id() ) );
 
     if ( $round_start_time ) {
       $now = new DateTime();
-      ?><p>round <?php _e( $current_round ) ?> started at <?php _e( $round_start_time ) ?>.<?php    
+      ?><p><?php
+      printf( /* translators: 1: tournament round number 2: round start time */ esc_html__( 'round %1$s started at %2$s.' ), esc_html( $current_round ), esc_html( $round_start_time ) );
 
       $is_round_finished = false;
       if ( $tournament->get_swiss_system_round_time() > 0 ) {
@@ -305,31 +308,31 @@ class Ekc_Swiss_System_Admin_Page {
         else {
           $is_round_finished = true;
         }
-        ?> <strong><?php _e( $time_left ) ?></strong> minutes left for round.<?php
+        printf( /* translators: %s: tournament round number */ esc_html__( ' %s minutes left for round.' ), esc_html( $time_left ) );
       }
       if ( ! $is_round_finished && $tournament->get_swiss_system_tiebreak_time() > 0 ) {
         $tiebreak_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
         $tiebreak_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_tiebreak_time()) . 'M')); // add minutes
         if ( $tiebreak_date > $now ) {
           $time_until_tiebreak = intval( $now->diff( $tiebreak_date )->format('%i') ) + 1; // i for minutes, +1 for 'rounding up'
-          ?> <strong>&nbsp;<?php _e( $time_until_tiebreak ) ?></strong> minutes until tie break.<?php
+          printf( /* translators: %s: tournament round number */ esc_html__( ' %s minutes until tie break.' ), esc_html( $time_until_tiebreak ) );
         }
         else {
           $time_since_tiebreak = intval( $tiebreak_date->diff( $now )->format('%i') ); // i for minutes
           if ( $time_since_tiebreak < 30 ) {
-            ?> <strong>&nbsp;<?php _e( $time_since_tiebreak ) ?></strong> minutes since tie break.<?php
+            printf( /* translators: %s: tournament round number */ esc_html__( ' %s minutes since tie break.' ), esc_html( $time_since_tiebreak ) );
           }
         }
       }
 
-      ?>&nbsp;<a href="<?php esc_html_e( $timer_url ) ?>">reset timer</a> &nbsp;
+      ?>&nbsp;<a href="<?php echo esc_url( $timer_url ) ?>"><?php esc_html_e( 'reset timer' ) ?></a> &nbsp;
       </p>
       <?php
     }
     else {
       ?>
-      <p>timer for round <?php _e( $current_round ) ?> not started yet.
-      &nbsp;<a href="<?php esc_html_e( $timer_url ) ?>">start timer</a> &nbsp;
+      <p><?php printf( /* translators: %s: tournament round number */ esc_html__( 'timer for round %s not started yet.' ),  esc_html( $current_round ) ) ?>
+      &nbsp;<a href="<?php echo esc_url( $timer_url ) ?>"><?php esc_html_e( 'start timer' ) ?></a> &nbsp;
       </p>
       <?php
     }
@@ -341,12 +344,12 @@ class Ekc_Swiss_System_Admin_Page {
     $page = $validation_helper->validate_get_text( 'page' ); 
     $teams = Ekc_Drop_Down_Helper::teams_drop_down_data( $tournament->get_tournament_id() );
 ?>
-<form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>" accept-charset="utf-8">
+<form class="ekc-form" method="post" action="<?php echo esc_url( '?page=' . $page ) ?>" accept-charset="utf-8">
   <fieldset>
-    <legend><h3>Results for round <?php esc_html_e( $round ) ?></h3></legend>
+    <legend><h3><?php printf( /* translators: %s: tournament round number */ esc_html__( 'Results for round %s' ), esc_html( $round ) ) ?></h3></legend>
     <table>
       <thead>
-        <tr><td>Pitch</td><td>Teams</td><td>Result</td></tr>
+        <tr><td><?php esc_html_e( 'Pitch' ) ?></td><td><?php esc_html_e( 'Teams' ) ?></td><td><?php esc_html_e( 'Result' ) ?></td></tr>
       </thead>
       <tbody>
     <?php
@@ -358,9 +361,9 @@ class Ekc_Swiss_System_Admin_Page {
       </tbody>
     </table>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary button">Save all results for round <?php esc_html_e( $round ) ?></button>
-        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
-        <input id="tournamentround" name="tournamentround" type="hidden" value="<?php esc_html_e( $round ) ?>" />
+        <button type="submit" class="ekc-button ekc-button-primary button"><?php printf( /* translators: %s: tournament round number */ esc_html__( 'Save all results for round %s' ), esc_html( $round ) ) ?></button>
+        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
+        <input id="tournamentround" name="tournamentround" type="hidden" value="<?php echo esc_attr( $round ) ?>" />
         <input id="action" name="action" type="hidden" value="swiss-system-store-round" />
         <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'swiss-system-store-round', 'tournament', $tournament->get_tournament_id() ) ) ?>
     </div>
@@ -371,21 +374,22 @@ class Ekc_Swiss_System_Admin_Page {
 
   private function show_result( $result, $teams, $max_points_per_round ) {
     $nonce_helper = new Ekc_Nonce_Helper();
-    $is_result_missing = ( is_null( $result->get_team1_score() ) || is_null( $result->get_team2_score() ) );
+    $is_result_missing = is_null( $result->get_team1_score() ) || is_null( $result->get_team2_score() );
+    $result_id = $result->get_result_id();
 ?>
 <tr>
-  <td><input id="pitch-<?php esc_html_e( $result->get_result_id() ) ?>" name="pitch-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="20" size="5" value="<?php esc_html_e( $result->get_pitch() ) ?>" /></td>
+  <td><input id="<?php echo esc_attr( 'pitch-' . $result_id ) ?>" name="<?php echo esc_attr( 'pitch-' . $result_id ) ?>" type="text" maxlength="20" size="5" value="<?php echo esc_attr( $result->get_pitch() ) ?>" /></td>
   <td><?php 
         $team_id = Ekc_Drop_Down_Helper::none_if_empty( $result->get_team1_id() );
         $team = '';
         if ( array_key_exists( $team_id, $teams ) ) {
           $team = $teams[$team_id];
         }
-      Ekc_Drop_Down_Helper::teams_drop_down("team1-" . $result->get_result_id(), $team_id, $team ) ?>
-    <input id="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team1_placeholder() ) ?>" />
+      Ekc_Drop_Down_Helper::teams_drop_down( 'team1-' . $result_id, $team_id, $team ) ?>
+    <input id="<?php echo esc_attr( 'team1-placeholder-' . $result_id ) ?>" name="<?php echo esc_attr( 'team1-placeholder-' . $result_id ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder' ) ?>" value="<?php echo esc_attr( $result->get_team1_placeholder() ) ?>" />
   </td>
-  <td><div <?php $is_result_missing ? _e( 'class="ekc-result-missing"' ) : _e( '' ) ?> data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>"><input id="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team1-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team1_score() ) ?>" /></div></td>
-  <td><a class="ekc-post-result" href="javascript:void(0);" data-resultid="<?php esc_html_e( $result->get_result_id() ) ?>" data-nonce="<?php esc_html_e( wp_create_nonce( $nonce_helper->nonce_text( 'ekc_admin_swiss_system_store_result', 'result', $result->get_result_id()  ) ) ) ?>">Save result</a><span id="post-result-<?php esc_html_e( $result->get_result_id() ) ?>"></span></td> <!-- see admin.js for onClick handler -->
+  <td><div <?php if ( $is_result_missing ) echo 'class="ekc-result-missing"'; ?> data-resultid="<?php echo esc_attr( $result_id ) ?>"><input id="<?php echo esc_attr( 'team1-score-' . $result_id ) ?>" name="<?php echo esc_attr( 'team1-score-' . $result_id ) ?>" type="number" size="5" step="any" min="0" max="<?php echo esc_attr( $max_points_per_round ) ?>" value="<?php echo esc_attr( $result->get_team1_score() ) ?>" /></div></td>
+  <td><a class="ekc-post-result" href="javascript:void(0);" data-resultid="<?php echo esc_attr( $result_id ) ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $nonce_helper->nonce_text( 'ekc_admin_swiss_system_store_result', 'result', $result_id  ) ) ) ?>"><?php esc_html_e( 'Save result' ) ?></a><span id="<?php echo esc_attr( 'post-result-' . $result_id ) ?>"></span></td> <!-- see admin.js for onClick handler -->
 </tr>
 <tr>
   <td></td>
@@ -395,10 +399,10 @@ class Ekc_Swiss_System_Admin_Page {
         if ( array_key_exists( $team_id, $teams ) ) {
           $team = $teams[$team_id];
         }
-      Ekc_Drop_Down_Helper::teams_drop_down("team2-" . $result->get_result_id(), $team_id, $team ) ?>
-    <input id="team2-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-placeholder-<?php esc_html_e( $result->get_result_id() ) ?>" type="text" maxlength="500" size="20" placeholder="Placeholder" value="<?php esc_html_e( $result->get_team2_placeholder() ) ?>" />
+      Ekc_Drop_Down_Helper::teams_drop_down( 'team2-' . $result_id, $team_id, $team ) ?>
+    <input id="<?php echo esc_attr( 'team2-placeholder-' . $result_id ) ?>" name="<?php echo esc_attr( 'team2-placeholder-' . $result_id ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder' ) ?>" value="<?php echo esc_attr( $result->get_team2_placeholder() ) ?>" />
   </td>
-  <td><div <?php $is_result_missing ? _e( 'class="ekc-result-missing"' ) : _e( '' ) ?>><input id="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" name="team2-score-<?php esc_html_e( $result->get_result_id() ) ?>" type="number" size="5" step="any" min="0" max="<?php esc_html_e( $max_points_per_round ) ?>" value="<?php esc_html_e( $result->get_team2_score() ) ?>" /></div></td>
+  <td><div <?php if ( $is_result_missing ) echo 'class="ekc-result-missing"'; ?>><input id="<?php echo esc_attr( 'team2-score-' . $result_id ) ?>" name="<?php echo esc_attr( 'team2-score-' . $result_id ) ?>" type="number" size="5" step="any" min="0" max="<?php echo esc_attr( $max_points_per_round ) ?>" value="<?php echo esc_attr( $result->get_team2_score() ) ?>" /></div></td>
   <td></td>
 </tr>
 
@@ -412,10 +416,10 @@ class Ekc_Swiss_System_Admin_Page {
       return;
     }
     $nonce_helper = new Ekc_Nonce_Helper();
-    $random_seed_url = sprintf( '?page=ekc-swiss&amp;action=random-seed&amp;tournamentid=%s', esc_html( $tournament_id ) );
+    $random_seed_url = sprintf( '?page=ekc-swiss&action=random-seed&tournamentid=%s', $tournament_id );
     $random_seed_url = $nonce_helper->nonce_url( $random_seed_url, $nonce_helper->nonce_text( 'random-seed', 'tournament', $tournament_id ) );
     ?>
-    <p><a href="<?php esc_html_e( $random_seed_url ) ?>">Generate random seeding scores</a></p>
+    <p><a href="<?php echo esc_url( $random_seed_url ) ?>"><?php esc_html_e( 'Generate random seeding scores' ) ?></a></p>
     <?php
   }
 
@@ -436,12 +440,21 @@ class Ekc_Swiss_System_Admin_Page {
 
 
 ?>
-<form class="ekc-form" method="post" action="?page=<?php esc_html_e( $page ) ?>" accept-charset="utf-8">
+<form class="ekc-form" method="post" action="<?php echo esc_url( '?page=' . $page ) ?>" accept-charset="utf-8">
   <fieldset>
-    <legend><h3>Current ranking</h3></legend>
+    <legend><h3><?php esc_html_e( 'Current ranking' ) ?></h3></legend>
     <table>
       <thead>
-        <tr><th>Rank</th><th><?php $is_single_player ? _e('Player') : _e('Team') ?></th><th>Total score</th><th>Opponent score</th><th>Seeding score</th><th>Initial score</th><th>Virtual rank</th><th></th></tr>
+        <tr>
+          <th><?php esc_html_e( 'Rank' ) ?></th>
+          <th><?php $is_single_player ? esc_html_e( 'Player' ) : esc_html_e( 'Team' ) ?></th>
+          <th><?php esc_html_e( 'Total score' ) ?></th>
+          <th><?php esc_html_e( 'Opponent score' ) ?></th>
+          <th><?php esc_html_e( 'Seeding score' ) ?></th>
+          <th><?php esc_html_e( 'Initial score' ) ?></th>
+          <th><?php esc_html_e( 'Virtual rank' ) ?></th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
     <?php
@@ -454,8 +467,8 @@ class Ekc_Swiss_System_Admin_Page {
       </tbody>
     </table>
     <div class="ekc-controls">
-        <button type="submit" class="ekc-button ekc-button-primary button">Save data</button>
-        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php esc_html_e( $tournament->get_tournament_id() ) ?>" />
+        <button type="submit" class="ekc-button ekc-button-primary button"><?php esc_html_e( 'Save data' ) ?></button>
+        <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
         <input id="action" name="action" type="hidden" value="swiss-system-store-ranking" />
         <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'swiss-system-store-ranking', 'tournament', $tournament->get_tournament_id() ) ) ?>
     </div>
@@ -465,21 +478,22 @@ class Ekc_Swiss_System_Admin_Page {
   }
 
   private function show_ranking_row( $ranking, $team, $rank ) {
+    $team_id = $team->get_team_id();
 ?>
 <tr>
-  <td><?php _e( $rank ) ?></td>
-  <td><?php esc_html_e( $team->get_name() ) ?></td>
-  <td><?php _e( $ranking->get_total_score() ) ?></td>
-  <td><?php _e( $ranking->get_opponent_score() ) ?></td>
-  <td><input id="seeding-score-<?php esc_html_e( $team->get_team_id() ) ?>" name="seeding-score-<?php esc_html_e( $team->get_team_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $team->get_seeding_score() ) ?>" /></td>
-  <td><input id="initial-score-<?php esc_html_e( $team->get_team_id() ) ?>" name="initial-score-<?php esc_html_e( $team->get_team_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $team->get_initial_score() ) ?>" /></td>
-  <td><input id="virtual-rank-<?php esc_html_e( $team->get_team_id() ) ?>" name="virtual-rank-<?php esc_html_e( $team->get_team_id() ) ?>" type="number" step="any" value="<?php esc_html_e( $team->get_virtual_rank() ) ?>" /></td>
+  <td><?php echo esc_html( $rank ) ?></td>
+  <td><?php echo esc_html( $team->get_name() ) ?></td>
+  <td><?php echo esc_html( $ranking->get_total_score() ) ?></td>
+  <td><?php echo esc_html( $ranking->get_opponent_score() ) ?></td>
+  <td><input id="<?php echo esc_attr( 'seeding-score-' . $team_id ) ?>" name="<?php echo esc_attr( 'seeding-score-' . $team_id ) ?>" type="number" step="any" value="<?php echo esc_attr( $team->get_seeding_score() ) ?>" /></td>
+  <td><input id="<?php echo esc_attr( 'initial-score-' . $team_id ) ?>" name="<?php echo esc_attr( 'initial-score-' . $team_id ) ?>" type="number" step="any" value="<?php echo esc_attr( $team->get_initial_score() ) ?>" /></td>
+  <td><input id="<?php echo esc_attr( 'virtual-rank-' . $team_id ) ?>" name="<?php echo esc_attr( 'virtual-rank-' . $team_id ) ?>" type="number" step="any" value="<?php echo esc_attr( $team->get_virtual_rank() ) ?>" /></td>
   <?php
     $nonce_helper = new Ekc_Nonce_Helper();
-    $remove_url = sprintf( '?page=ekc-swiss&amp;action=remove-team&amp;tournamentid=%s&amp;teamid=%s', esc_html( $team->get_tournament_id() ), esc_html( $team->get_team_id() ) );
-    $remove_url = $nonce_helper->nonce_url( $remove_url, $nonce_helper->nonce_text( 'remove-team', 'team', $team->get_team_id() ) );
+    $remove_url = sprintf( '?page=ekc-swiss&action=remove-team&tournamentid=%s&teamid=%s', $team->get_tournament_id(), $team_id );
+    $remove_url = $nonce_helper->nonce_url( $remove_url, $nonce_helper->nonce_text( 'remove-team', 'team', $team_id ) );
   ?>
-  <td><a href="<?php esc_html_e( $remove_url ) ?>">Remove from tournament</a></td>
+  <td><a href="<?php echo esc_url( $remove_url ) ?>"><?php esc_html_e( 'Remove from tournament' ) ?></a></td>
 </tr>
 <?php
   }

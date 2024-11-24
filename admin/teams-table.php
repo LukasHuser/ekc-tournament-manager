@@ -11,17 +11,17 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'name'				=> 'Name',
-			'is_active'			=> 'Active',
-			'country'			=> 'Country',
-			'club'              => 'Club / City',
-			'email'				=> 'E-mail',
-			'phone'				=> 'Phone',
-			'registration_date'	=> 'Registered',
-			'registration_order' => 'Order',
-			'is_on_wait_list'	=> 'Waiting list',
-			'seeding_score'		=> 'Seeding score',
-			'players'			=> 'Players',
+			'name'				=> esc_html__( 'Name' ),
+			'is_active'			=> esc_html__( 'Active' ),
+			'country'			=> esc_html__( 'Country' ),
+			'club'              => esc_html__( 'Club / City' ),
+			'email'				=> esc_html__( 'E-mail' ),
+			'phone'				=> esc_html__( 'Phone' ),
+			'registration_date'	=> esc_html__( 'Registered' ),
+			'registration_order' => esc_html__( 'Order' ),
+			'is_on_wait_list'	=> esc_html__( 'Waiting list' ),
+			'seeding_score'		=> esc_html__( 'Seeding score' ),
+			'players'			=> esc_html__( 'Players' )
 		);
 		return $columns;
 	}
@@ -93,9 +93,10 @@ class Ekc_Teams_Table extends WP_List_Table {
 		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
 
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
-			$actions['edit'] = sprintf('<a href="?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s">Edit</a>', esc_html( $page ), 'edit', esc_html( $item['team_id'] ), esc_html( $tournament_id ) );
+			$edit_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'edit', $item['team_id'], $tournament_id );
+			$actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url( $edit_url ), esc_html__( 'Edit' ) );
 		}
-		return sprintf( '%s %s', $item['name'], $this->row_actions( $actions ) );
+		return sprintf( '%s %s', esc_html( $item['name'] ), $this->row_actions( $actions ) );
 	}
 
 	function column_is_active( $item ) {
@@ -108,17 +109,17 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
 			if ( filter_var( $item['is_active'], FILTER_VALIDATE_BOOLEAN ) ) {
-				$inactivate_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'inactivate', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$inactivate_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'inactivate', $team_id, $tournament_id );
 				$inactivate_url = $nonce_helper->nonce_url( $inactivate_url, $nonce_helper->nonce_text( 'inactivate', 'team', $team_id ) );
-				$actions['inactivate'] = sprintf( '<a href="%s">Inactivate</a>', $inactivate_url );
+				$actions['inactivate'] = sprintf( '<a href="%s">%s</a>', esc_url ( $inactivate_url ), esc_html__( 'Inactivate' ) );
 			}
 			else {
-				$activate_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'activate', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$activate_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'activate', $team_id, $tournament_id );
 				$activate_url = $nonce_helper->nonce_url( $activate_url, $nonce_helper->nonce_text( 'activate', 'team', $team_id ) );
-				$actions['activate'] = sprintf( '<a href="%s">Activate</a>', $activate_url );
+				$actions['activate'] = sprintf( '<a href="%s">%s</a>', $activate_url, esc_html__( 'Activate' ) );
 			}
 		}
-		return sprintf( '%s %s', $item['is_active'], $this->row_actions( $actions ) );
+		return sprintf( '%s %s', esc_html( $item['is_active'] ), $this->row_actions( $actions ) );
 	}
 
 	function column_is_on_wait_list( $item ) {
@@ -131,17 +132,17 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
 			if ( filter_var( $item['is_on_wait_list'], FILTER_VALIDATE_BOOLEAN ) ) {
-				$offwaitlist_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'offwaitlist', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$offwaitlist_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'offwaitlist', $team_id, $tournament_id );
 				$offwaitlist_url = $nonce_helper->nonce_url( $offwaitlist_url, $nonce_helper->nonce_text( 'offwaitlist', 'team', $team_id ) );
-				$actions['offwaitlist'] = sprintf( '<a href="%s">Remove</a>',  $offwaitlist_url );
+				$actions['offwaitlist'] = sprintf( '<a href="%s">%s</a>', esc_url( $offwaitlist_url ), esc_html__( 'Remove' ) );
 			}
 			else {
-				$onwaitlist_url = sprintf( '?page=%s&amp;action=%s&amp;teamid=%s&amp;tournamentid=%s', esc_html( $page ), 'onwaitlist', esc_html( $team_id ), esc_html( $tournament_id ) );
+				$onwaitlist_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'onwaitlist', $team_id, $tournament_id );
 				$onwaitlist_url = $nonce_helper->nonce_url( $onwaitlist_url, $nonce_helper->nonce_text( 'onwaitlist', 'team', $team_id ) );
-				$actions['onwaitlist'] = sprintf( '<a href="%s">Add</a>',  $onwaitlist_url );
+				$actions['onwaitlist'] = sprintf( '<a href="%s">%s</a>', esc_url( $onwaitlist_url ), esc_html__( 'Add' ) );
 			}
 		}
-		return sprintf( '%s %s', $item['is_on_wait_list'], $this->row_actions( $actions ) );
+		return sprintf( '%s %s', esc_html( $item['is_on_wait_list'] ), $this->row_actions( $actions ) );
 	}
 
 	function column_default( $item, $column_name ) {
@@ -154,7 +155,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 			case 'registration_order':
 			case 'seeding_score':
 			case 'players':
-			return $item[ $column_name ];
+			return esc_html( $item[ $column_name ] );
 			default:
 			return '';
 		}
@@ -196,11 +197,11 @@ class Ekc_Teams_Table extends WP_List_Table {
 	}
 
 	protected function filter_active_dropdown() {
-		$this->filter_yes_no_dropdown( 'Active', 'filter-active' );
+		$this->filter_yes_no_dropdown( __( 'Active' ), 'filter-active' );
 	}
 
 	protected function filter_wait_list_dropdown() {
-		$this->filter_yes_no_dropdown( 'Waiting list', 'filter-wait-list' );
+		$this->filter_yes_no_dropdown( __( 'Waiting list' ), 'filter-wait-list' );
 	}
 
 	protected function filter_yes_no_dropdown( $name, $filter_id ) {

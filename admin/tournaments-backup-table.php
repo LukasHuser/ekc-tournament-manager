@@ -11,8 +11,8 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'file_name'		=> 'Backup File',
-			'file_size'		=> 'Size',	
+			'file_name'		=> esc_html__( 'Backup File' ),
+			'file_size'		=> esc_html__( 'Size' )	
 		);
 		return $columns;
 	}
@@ -57,23 +57,24 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 		$validation_helper = new Ekc_Validation_Helper();
 		$page = $validation_helper->validate_get_text( 'page' );
 
-		$actions['download'] = sprintf( '<a href="?page=%s&amp;action=%s&amp;backup=%s">Download</a>', esc_html( $page ), 'download', $file_name_encoded );
+		$download_url = sprintf( '?page=%s&action=%s&backup=%s', $page, 'download', $file_name_encoded );
+		$actions['download'] = sprintf( '<a href="%s">%s</a>', esc_url( $download_url ), esc_html__( 'Download' ) );
 		
-		$delete_url = sprintf( '?page=%s&amp;action=%s&amp;backup=%s', esc_html( $page ), 'delete', $file_name_encoded );
+		$delete_url = sprintf( '?page=%s&action=%s&backup=%s', $page, 'delete', $file_name_encoded );
 		$delete_url =  $nonce_helper->nonce_url( $delete_url, $nonce_helper->nonce_text( 'delete', 'filename', $file_name ) );
-		$actions['delete'] = sprintf('<a href="%s">Delete</a>', $delete_url );
+		$actions['delete'] = sprintf('<a href="%s">%s</a>', esc_url( $delete_url ), esc_html__( 'Delete' ) );
 
-		$jsonimport_url = sprintf( '?page=%s&amp;action=%s&amp;backup=%s', 'ekc-tournaments', 'jsonimport', $file_name_encoded );
+		$jsonimport_url = sprintf( '?page=%s&action=%s&backup=%s', 'ekc-tournaments', 'jsonimport', $file_name_encoded );
 		$jsonimport_url =  $nonce_helper->nonce_url( $jsonimport_url, $nonce_helper->nonce_text( 'jsonimport', 'filename', $file_name ) );
-		$actions['jsonimport'] = sprintf( '<a href="%s">Import</a>', $jsonimport_url );
+		$actions['jsonimport'] = sprintf( '<a href="%s">%s</a>', esc_url( $jsonimport_url ), esc_html__( 'Import' ) );
 
-		return sprintf( '%s %s', $file_name, $this->row_actions( $actions ) );
+		return sprintf( '%s %s', esc_html( $file_name ), $this->row_actions( $actions ) );
 	}
 
 	function column_default( $item, $column_name ) {
 		switch( $column_name ) { 
 			case 'file_size':
-			return $item[ $column_name ];
+			return esc_html( $item[ $column_name ] );
 			default:
 			return '';
 		}
@@ -81,7 +82,7 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 
 
 	function no_items() {
-		esc_html_e("No backups available.");
+		esc_html_e( 'No backups available.' );
 	}
 
 	/**

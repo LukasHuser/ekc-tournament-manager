@@ -7,19 +7,19 @@ class Ekc_Role_Helper {
 
 	const CUSTOM_FIELD_EKC_PUBLIC_TEMPLATE = 'ekc-public-template';
 
-	const ROLE_ADMINISTRATOR = 	"administrator"; // standard WP role 
-	const ROLE_EKC_TOURNAMENT_ADMINISTRATOR = "ekc_tournament_administrator";
-	const ROLE_EKC_TOURNAMENT_DIRECTOR = "ekc_tournament_director";
+	const ROLE_ADMINISTRATOR = 	'administrator'; // standard WP role 
+	const ROLE_EKC_TOURNAMENT_ADMINISTRATOR = 'ekc_tournament_administrator';
+	const ROLE_EKC_TOURNAMENT_DIRECTOR = 'ekc_tournament_director';
 
 	// EKC Tournament Manager custom capabilities
-	const CAPABILITY_EKC_READ_TOURNAMENTS = "ekc_read_tournaments";
-	const CAPABILITY_EKC_EDIT_TOURNAMENTS = "ekc_edit_tournaments";
-	const CAPABILITY_EKC_EDIT_OTHERS_TOURNAMENTS = "ekc_edit_others_tournaments";
-	const CAPABILITY_EKC_MANAGE_TOURNAMENTS = "ekc_manage_tournaments";
-	const CAPABILITY_EKC_MANAGE_OTHERS_TOURNAMENTS = "ekc_manage_others_tournaments";
-	const CAPABILITY_EKC_DELETE_TOURNAMENTS = "ekc_delete_tournaments";
-	const CAPABILITY_EKC_DELETE_OTHERS_TOURNAMENTS = "ekc_delete_others_tournaments";
-	const CAPABILITY_EKC_MANAGE_BACKUPS = "ekc_manage_backups";
+	const CAPABILITY_EKC_READ_TOURNAMENTS = 'ekc_read_tournaments';
+	const CAPABILITY_EKC_EDIT_TOURNAMENTS = 'ekc_edit_tournaments';
+	const CAPABILITY_EKC_EDIT_OTHERS_TOURNAMENTS = 'ekc_edit_others_tournaments';
+	const CAPABILITY_EKC_MANAGE_TOURNAMENTS = 'ekc_manage_tournaments';
+	const CAPABILITY_EKC_MANAGE_OTHERS_TOURNAMENTS = 'ekc_manage_others_tournaments';
+	const CAPABILITY_EKC_DELETE_TOURNAMENTS = 'ekc_delete_tournaments';
+	const CAPABILITY_EKC_DELETE_OTHERS_TOURNAMENTS = 'ekc_delete_others_tournaments';
+	const CAPABILITY_EKC_MANAGE_BACKUPS = 'ekc_manage_backups';
 
 	const EKC_TOURNAMENT_META_CAPS = array(
 		self::CAPABILITY_EKC_EDIT_TOURNAMENTS => self::CAPABILITY_EKC_EDIT_OTHERS_TOURNAMENTS,
@@ -28,19 +28,19 @@ class Ekc_Role_Helper {
 	);
 
 	// WP standard capabilities
-	const CAPABILITY_READ = "read";
-	const CAPABILITY_READ_PRIVATE_PAGES = "read_private_pages";
-	const CAPABILITY_PUBLISH_PAGES = "publish_pages";
-	const CAPABILITY_EDIT_PAGES = "edit_pages";
-	const CAPABILITY_EDIT_PRIVATE_PAGES = "edit_private_pages";
-	const CAPABILITY_EDIT_PUBLISHED_PAGES = "edit_published_pages";
-	const CAPABILITY_EDIT_OTHERS_PAGES = "edit_others_pages";
-	const CAPABILITY_DELETE_PAGES = "delete_pages";
-	const CAPABILITY_DELETE_PRIVATE_PAGES = "delete_private_pages";
-	const CAPABILITY_DELETE_PUBLISHED_PAGES = "delete_published_pages";
-	const CAPABILITY_DELETE_OTHERS_PAGES = "delete_others_pages";
-	const CAPABILITY_UPLOAD_FILES = "upload_files";
-	const CAPABILITY_EDIT_THEME_OPTIONS = "edit_theme_options"; // Appearance -> Menus
+	const CAPABILITY_READ = 'read';
+	const CAPABILITY_READ_PRIVATE_PAGES = 'read_private_pages';
+	const CAPABILITY_PUBLISH_PAGES = 'publish_pages';
+	const CAPABILITY_EDIT_PAGES = 'edit_pages';
+	const CAPABILITY_EDIT_PRIVATE_PAGES = 'edit_private_pages';
+	const CAPABILITY_EDIT_PUBLISHED_PAGES = 'edit_published_pages';
+	const CAPABILITY_EDIT_OTHERS_PAGES = 'edit_others_pages';
+	const CAPABILITY_DELETE_PAGES = 'delete_pages';
+	const CAPABILITY_DELETE_PRIVATE_PAGES = 'delete_private_pages';
+	const CAPABILITY_DELETE_PUBLISHED_PAGES = 'delete_published_pages';
+	const CAPABILITY_DELETE_OTHERS_PAGES = 'delete_others_pages';
+	const CAPABILITY_UPLOAD_FILES = 'upload_files';
+	const CAPABILITY_EDIT_THEME_OPTIONS = 'edit_theme_options'; // Appearance -> Menus
 
 
 	public function init_roles_and_capabilities() {
@@ -60,8 +60,8 @@ class Ekc_Role_Helper {
 		// EKC Tournament Administrator gets all capabilities (without WP admin capabilities)
 		$roles->add_role(
 			self::ROLE_EKC_TOURNAMENT_ADMINISTRATOR,
-			__('EKC Tournament Administrator'), 
-			array( 
+			'EKC Tournament Administrator',
+			array(
 				 self::CAPABILITY_READ => true,
 				 self::CAPABILITY_READ_PRIVATE_PAGES => true,
 				 self::CAPABILITY_PUBLISH_PAGES => true,
@@ -89,8 +89,8 @@ class Ekc_Role_Helper {
 	   	// EKC Tournament Director gets capabilities required for own tournaments
 		$roles->add_role(
 			self::ROLE_EKC_TOURNAMENT_DIRECTOR,
-			__('EKC Tournament Director'), 
-			array( 
+			'EKC Tournament Director',
+			array(
 				 self::CAPABILITY_READ => true,
 				 self::CAPABILITY_READ_PRIVATE_PAGES => true,
 				 self::CAPABILITY_PUBLISH_PAGES => true,

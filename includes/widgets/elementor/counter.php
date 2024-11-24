@@ -386,7 +386,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		<div class="elementor-counter">
 			<div class="elementor-counter-number-wrapper">
 				<span class="elementor-counter-number-prefix"><?php $this->print_unescaped_setting( 'prefix' ); ?></span>
-				<span <?php $this->print_render_attribute_string( 'counter' ); ?>><?php echo $starting_number; ?></span>
+				<span <?php $this->print_render_attribute_string( 'counter' ); ?>><?php echo esc_html( $starting_number ); ?></span>
 				<span class="elementor-counter-number-suffix"><?php $this->print_unescaped_setting( 'suffix' ); ?></span>
 			</div>
 			<?php if ( $settings['title'] ) : ?>

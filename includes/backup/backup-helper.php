@@ -95,8 +95,8 @@ class Ekc_Backup_Helper {
 			?>
 			<div class="notice notice-error is-dismissible">
 				<p>Failed to import tournament. 
-				   Expected data model version <?php _e(Ekc_Tournament_Backup::DATA_MODEL_VERSION); ?>, 
-				   but was <?php _e($import->get_version()); ?>.</p>
+				   Expected data model version <?php echo esc_html( Ekc_Tournament_Backup::DATA_MODEL_VERSION ) ?>, 
+				   but was <?php echo esc_html( $import->get_version() ) ?>.</p>
 			</div>
 			<?php
 			return;
