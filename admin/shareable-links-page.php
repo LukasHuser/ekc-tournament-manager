@@ -140,9 +140,9 @@ class Ekc_Shareable_links_Admin_Page {
     ?>
     <div class="wrap">
     
-      <h1 class="wp-heading-inline"><?php printf( '%s %s', esc_html( $tournament->get_name() ), esc_html__( 'Shareable Links') ) ?></h1>
-      <a href="<?php echo esc_url( $generateall_url ) ?>" class="page-title-action"><?php esc_html_e( 'Generate all shareable links' ) ?></a>
-      <a href="<?php echo esc_url( $sendall_url ) ?>" class="page-title-action"><?php esc_html_e( 'Send all shareable links' ) ?></a>
+      <h1 class="wp-heading-inline"><?php printf( '%s %s', esc_html( $tournament->get_name() ), esc_html__( 'Shareable Links', 'ekc-tournament-manager' ) ) ?></h1>
+      <a href="<?php echo esc_url( $generateall_url ) ?>" class="page-title-action"><?php esc_html_e( 'Generate all shareable links', 'ekc-tournament-manager' ) ?></a>
+      <a href="<?php echo esc_url( $sendall_url ) ?>" class="page-title-action"><?php esc_html_e( 'Send all shareable links', 'ekc-tournament-manager' ) ?></a>
     
       <hr class="wp-header-end">
     <?php 
@@ -204,7 +204,7 @@ class Ekc_Shareable_links_Admin_Page {
             ?>
           </div>
           <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( 'Save' ) ?></button>
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( 'Save', 'ekc-tournament-manager' ) ?></button>
             <input id="action" name="action" type="hidden" value="shareable-links-store" />
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
             <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'shareable-links-store', 'tournament', $tournament->get_tournament_id() ) ) ?>

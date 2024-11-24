@@ -4,16 +4,16 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'code_name'				=> esc_html__( 'Code Name' ),
-			'name'					=> esc_html__( 'Name' ),
-			'team_size'				=> esc_html__( 'Team size' ),
-			'tournament_date'		=> esc_html__( 'Date' ),
-			'max_teams'				=> esc_html__( 'Max teams' ),
-			'is_wait_list_enabled'	=> esc_html__( 'Wait list' ),
-			'tournament_system'		=> esc_html__( 'Tournament system' ),
-			'elimination_rounds'	=> esc_html__( 'Elimination rounds' ),
-			'swiss_system_rounds'	=> esc_html__( 'Swiss rounds' ),
-			'owner_user'			=> esc_html__( 'Owner user' )
+			'code_name'				=> esc_html__( 'Code Name', 'ekc-tournament-manager' ),
+			'name'					=> esc_html__( 'Name', 'ekc-tournament-manager' ),
+			'team_size'				=> esc_html__( 'Team size', 'ekc-tournament-manager' ),
+			'tournament_date'		=> esc_html__( 'Date', 'ekc-tournament-manager' ),
+			'max_teams'				=> esc_html__( 'Max teams', 'ekc-tournament-manager' ),
+			'is_wait_list_enabled'	=> esc_html__( 'Wait list', 'ekc-tournament-manager' ),
+			'tournament_system'		=> esc_html__( 'Tournament system', 'ekc-tournament-manager' ),
+			'elimination_rounds'	=> esc_html__( 'Elimination rounds', 'ekc-tournament-manager' ),
+			'swiss_system_rounds'	=> esc_html__( 'Swiss rounds', 'ekc-tournament-manager' ),
+			'owner_user'			=> esc_html__( 'Owner user', 'ekc-tournament-manager' )
 		);
 		return $columns;
 	}
@@ -56,13 +56,13 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 		$can_manage_tournaments = current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ); 
 		if ( $can_edit_tournaments || $can_manage_tournaments ) {
 			$teams_url = sprintf( '?page=%s&tournamentid=%s', 'ekc-teams', $tournament_id );
-			$actions['teams'] = sprintf('<a href="%s">%s</a>', esc_url( $teams_url ), esc_html__( 'Teams' ) );
+			$actions['teams'] = sprintf('<a href="%s">%s</a>', esc_url( $teams_url ), esc_html__( 'Teams', 'ekc-tournament-manager' ) );
 		}
 		if ( $can_edit_tournaments ) {
 			$validation_helper = new Ekc_Validation_Helper();
 			$page = $validation_helper->validate_get_text( 'page' );
 			$edit_url = sprintf( '?page=%s&action=%s&tournamentid=%s', $page, 'edit', $tournament_id );
-			$actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url( $edit_url ), esc_html__( 'Edit' ) );
+			$actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url( $edit_url ), esc_html__( 'Edit', 'ekc-tournament-manager' ) );
 		}
 		return sprintf('%s %s', esc_html( $item['code_name'] ), $this->row_actions( $actions ) );
 	}
@@ -74,11 +74,11 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
 			if ( $item['elimination_rounds'] ) {
 				$elimination_bracket_url = sprintf( '?page=%s&action=%s&tournamentid=%s', 'ekc-bracket', 'elimination-bracket', $tournament_id );
-				$actions['elimination-bracket'] = sprintf('<a href="%s">%s</a>', esc_url( $elimination_bracket_url ), esc_html__( 'Elimination Bracket' ) );
+				$actions['elimination-bracket'] = sprintf('<a href="%s">%s</a>', esc_url( $elimination_bracket_url ), esc_html__( 'Elimination Bracket', 'ekc-tournament-manager' ) );
 			}
 			if ( $item['swiss_system_rounds'] > 0 ) {
 				$swiss_system_url = sprintf( '?page=%s&action=%s&tournamentid=%s', 'ekc-swiss', 'swiss-system', $tournament_id );
-				$actions['swiss-system'] = sprintf('<a href="%s">%s</a>', esc_url( $swiss_system_url ), esc_html__( 'Swiss System' ) );
+				$actions['swiss-system'] = sprintf('<a href="%s">%s</a>', esc_url( $swiss_system_url ), esc_html__( 'Swiss System', 'ekc-tournament-manager' ) );
 			}
 		}
 		return sprintf('%s %s', esc_html( $item['name'] ), $this->row_actions( $actions ) );
@@ -93,20 +93,20 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
 			$copy_url = sprintf('?page=%s&action=%s&tournamentid=%s', $page, 'copy', $tournament_id );
-			$actions['copy'] = sprintf('<a href="%s">%s</a>', esc_url( $copy_url ), esc_html__( 'Copy' ) );
+			$actions['copy'] = sprintf('<a href="%s">%s</a>', esc_url( $copy_url ), esc_html__( 'Copy', 'ekc-tournament-manager' ) );
 		}
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
 			$result_log_url = sprintf( '?page=%s&tournamentid=%s', 'ekc-result-log', $tournament_id );
-			$actions['result-log'] = sprintf('<a href="%s">%s</a>', esc_url( $result_log_url ), esc_html__( 'Result Log' ) );
+			$actions['result-log'] = sprintf('<a href="%s">%s</a>', esc_url( $result_log_url ), esc_html__( 'Result Log', 'ekc-tournament-manager' ) );
 			
 			$backup_url = sprintf('?page=%s&action=%s&tournamentid=%s', $page, 'backup', $tournament_id );
 			$backup_url = $nonce_helper->nonce_url( $backup_url, $nonce_helper->nonce_text( 'backup', 'tournament', $tournament_id ) );
-			$actions['backup'] = sprintf('<a href="%s">%s</a>', esc_url( $backup_url ), esc_html__( 'Backup' ) );
+			$actions['backup'] = sprintf('<a href="%s">%s</a>', esc_url( $backup_url ), esc_html__( 'Backup', 'ekc-tournament-manager' ) );
 		}
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_DELETE_TOURNAMENTS, $tournament_id ) ) {
 			$delete_url = sprintf('?page=%s&action=%s&tournamentid=%s', $page, 'delete', $tournament_id );
 			$delete_url = $nonce_helper->nonce_url( $delete_url, $nonce_helper->nonce_text( 'delete', 'tournament', $tournament_id ) );
-			$actions['delete'] = sprintf('<a href="%s">%s</a>', esc_url( $delete_url ), esc_html__( 'Delete' ) );
+			$actions['delete'] = sprintf('<a href="%s">%s</a>', esc_url( $delete_url ), esc_html__( 'Delete', 'ekc-tournament-manager' ) );
 		}
 		return sprintf('%s %s', esc_html( $item['owner_user'] ), $this->row_actions( $actions ) );
 	}
@@ -127,7 +127,7 @@ class Ekc_Tournaments_Table extends WP_List_Table {
 	}
 
 	function no_items() {
-		esc_html_e( 'No tournaments available yet.' );
+		esc_html_e( 'No tournaments available yet.', 'ekc-tournament-manager' );
 	}
 
 	/**

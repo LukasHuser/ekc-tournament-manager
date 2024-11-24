@@ -11,12 +11,12 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'log_time'		=> esc_html__( 'Timestamp' ),
-			'team1'			=> esc_html__( 'Team 1' ),
-			'team2'			=> esc_html__( 'Team 2' ),
-			'result'		=> esc_html__( 'Result' ),
-			'stage'			=> esc_html__( 'Stage' ),
-			'log_team'		=> esc_html__( 'Changed by' )
+			'log_time'		=> esc_html__( 'Timestamp', 'ekc-tournament-manager' ),
+			'team1'			=> esc_html__( 'Team 1', 'ekc-tournament-manager' ),
+			'team2'			=> esc_html__( 'Team 2', 'ekc-tournament-manager' ),
+			'result'		=> esc_html__( 'Result', 'ekc-tournament-manager' ),
+			'stage'			=> esc_html__( 'Stage', 'ekc-tournament-manager' ),
+			'log_team'		=> esc_html__( 'Changed by', 'ekc-tournament-manager' )
 		);
 		return $columns;
 	}
@@ -64,7 +64,7 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 
 
 	function no_items() {
-		esc_html_e( 'No results available.' );
+		esc_html_e( 'No results available.', 'ekc-tournament-manager' );
 	}
 
 	/**

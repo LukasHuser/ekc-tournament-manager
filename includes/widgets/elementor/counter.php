@@ -46,7 +46,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 	 * @return string Widget title.
 	 */
 	public function get_title() {
-		return esc_html__( 'EKC Counter', 'elementor' );
+		return esc_html__( 'EKC Counter', 'ekc-tournament-manager' );
 	}
 
 	/**
@@ -103,14 +103,14 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->start_controls_section(
 			'section_counter',
 			[
-				'label' => esc_html__( 'EKC Counter', 'elementor' ),
+				'label' => esc_html__( 'EKC Counter', 'ekc-tournament-manager' ),
 			]
 		);
 
 		$this->add_control(
 			'starting_number',
 			[
-				'label' => esc_html__( 'Starting Number', 'elementor' ),
+				'label' => esc_html__( 'Starting Number', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::TEXT,
 				'default' => '0',
 				'dynamic' => [
@@ -122,7 +122,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'ending_number',
 			[
-				'label' => esc_html__( 'Ending Number', 'elementor' ),
+				'label' => esc_html__( 'Ending Number', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::TEXT,
 				'default' => '100',
 				'dynamic' => [
@@ -134,7 +134,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'prefix',
 			[
-				'label' => esc_html__( 'Number Prefix', 'elementor' ),
+				'label' => esc_html__( 'Number Prefix', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::TEXT,
 				'dynamic' => [
 					'active' => true,
@@ -147,20 +147,20 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'suffix',
 			[
-				'label' => esc_html__( 'Number Suffix', 'elementor' ),
+				'label' => esc_html__( 'Number Suffix', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::TEXT,
 				'dynamic' => [
 					'active' => true,
 				],
 				'default' => '',
-				'placeholder' => esc_html__( 'Plus', 'elementor' ),
+				'placeholder' => esc_html__( 'Plus', 'ekc-tournament-manager' ),
 			]
 		);
 
 		$this->add_control(
 			'duration',
 			[
-				'label' => esc_html__( 'Animation Duration', 'elementor' ),
+				'label' => esc_html__( 'Animation Duration', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::NUMBER,
 				'default' => 2000,
 				'min' => 100,
@@ -171,18 +171,18 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'thousand_separator',
 			[
-				'label' => esc_html__( 'Thousand Separator', 'elementor' ),
+				'label' => esc_html__( 'Thousand Separator', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::SWITCHER,
 				'default' => 'yes',
-				'label_on' => esc_html__( 'Show', 'elementor' ),
-				'label_off' => esc_html__( 'Hide', 'elementor' ),
+				'label_on' => esc_html__( 'Show', 'ekc-tournament-manager' ),
+				'label_off' => esc_html__( 'Hide', 'ekc-tournament-manager' ),
 			]
 		);
 
 		$this->add_control(
 			'thousand_separator_char',
 			[
-				'label' => esc_html__( 'Separator', 'elementor' ),
+				'label' => esc_html__( 'Separator', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::SELECT,
 				'condition' => [
 					'thousand_separator' => 'yes',
@@ -200,21 +200,21 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'title',
 			[
-				'label' => esc_html__( 'Title', 'elementor' ),
+				'label' => esc_html__( 'Title', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::TEXT,
 				'label_block' => true,
 				'dynamic' => [
 					'active' => true,
 				],
-				'default' => esc_html__( 'Cool Number', 'elementor' ),
-				'placeholder' => esc_html__( 'Cool Number', 'elementor' ),
+				'default' => esc_html__( 'Cool Number', 'ekc-tournament-manager' ),
+				'placeholder' => esc_html__( 'Cool Number', 'ekc-tournament-manager' ),
 			]
 		);
 
 		$this->add_control(
 			'view',
 			[
-				'label' => esc_html__( 'View', 'elementor' ),
+				'label' => esc_html__( 'View', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::HIDDEN,
 				'default' => 'traditional',
 			]
@@ -225,7 +225,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->start_controls_section(
 			'section_number',
 			[
-				'label' => esc_html__( 'Number', 'elementor' ),
+				'label' => esc_html__( 'Number', 'ekc-tournament-manager' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -233,7 +233,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'number_color',
 			[
-				'label' => esc_html__( 'Text Color', 'elementor' ),
+				'label' => esc_html__( 'Text Color', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::COLOR,
 				'global' => [
 					'default' => Global_Colors::COLOR_PRIMARY,
@@ -276,7 +276,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->start_controls_section(
 			'section_title',
 			[
-				'label' => esc_html__( 'Title', 'elementor' ),
+				'label' => esc_html__( 'Title', 'ekc-tournament-manager' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -284,7 +284,7 @@ class Ekc_Widget_Counter extends Widget_Base {
 		$this->add_control(
 			'title_color',
 			[
-				'label' => esc_html__( 'Text Color', 'elementor' ),
+				'label' => esc_html__( 'Text Color', 'ekc-tournament-manager' ),
 				'type' => Controls_Manager::COLOR,
 				'global' => [
 					'default' => Global_Colors::COLOR_SECONDARY,

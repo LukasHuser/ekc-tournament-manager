@@ -11,8 +11,8 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'file_name'		=> esc_html__( 'Backup File' ),
-			'file_size'		=> esc_html__( 'Size' )	
+			'file_name'		=> esc_html__( 'Backup File', 'ekc-tournament-manager' ),
+			'file_size'		=> esc_html__( 'Size', 'ekc-tournament-manager' )	
 		);
 		return $columns;
 	}
@@ -58,15 +58,15 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 		$page = $validation_helper->validate_get_text( 'page' );
 
 		$download_url = sprintf( '?page=%s&action=%s&backup=%s', $page, 'download', $file_name_encoded );
-		$actions['download'] = sprintf( '<a href="%s">%s</a>', esc_url( $download_url ), esc_html__( 'Download' ) );
+		$actions['download'] = sprintf( '<a href="%s">%s</a>', esc_url( $download_url ), esc_html__( 'Download', 'ekc-tournament-manager' ) );
 		
 		$delete_url = sprintf( '?page=%s&action=%s&backup=%s', $page, 'delete', $file_name_encoded );
 		$delete_url =  $nonce_helper->nonce_url( $delete_url, $nonce_helper->nonce_text( 'delete', 'filename', $file_name ) );
-		$actions['delete'] = sprintf('<a href="%s">%s</a>', esc_url( $delete_url ), esc_html__( 'Delete' ) );
+		$actions['delete'] = sprintf('<a href="%s">%s</a>', esc_url( $delete_url ), esc_html__( 'Delete', 'ekc-tournament-manager' ) );
 
 		$jsonimport_url = sprintf( '?page=%s&action=%s&backup=%s', 'ekc-tournaments', 'jsonimport', $file_name_encoded );
 		$jsonimport_url =  $nonce_helper->nonce_url( $jsonimport_url, $nonce_helper->nonce_text( 'jsonimport', 'filename', $file_name ) );
-		$actions['jsonimport'] = sprintf( '<a href="%s">%s</a>', esc_url( $jsonimport_url ), esc_html__( 'Import' ) );
+		$actions['jsonimport'] = sprintf( '<a href="%s">%s</a>', esc_url( $jsonimport_url ), esc_html__( 'Import', 'ekc-tournament-manager' ) );
 
 		return sprintf( '%s %s', esc_html( $file_name ), $this->row_actions( $actions ) );
 	}
@@ -82,7 +82,7 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 
 
 	function no_items() {
-		esc_html_e( 'No backups available.' );
+		esc_html_e( 'No backups available.', 'ekc-tournament-manager' );
 	}
 
 	/**

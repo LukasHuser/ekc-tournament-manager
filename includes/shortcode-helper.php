@@ -122,16 +122,16 @@ class Ekc_Shortcode_Helper {
 			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
 		}
 		if ( $is_single_player ) {
-			$header[] = array( esc_html__( 'Player' ), 'ekc-column-player');
+			$header[] = array( esc_html__( 'Player', 'ekc-tournament-manager' ), 'ekc-column-player');
 		}
 		else {
-			$header[] = array( esc_html__( 'Team' ), 'ekc-column-team');
+			$header[] = array( esc_html__( 'Team', 'ekc-tournament-manager' ), 'ekc-column-team');
 		}
 		if ( $show_club ) {
-			$header[] = array( esc_html__( 'Club / City' ), 'ekc-column-club');
+			$header[] = array( esc_html__( 'Club / City', 'ekc-tournament-manager' ), 'ekc-column-club');
 		}
 		if ( ! $is_single_player && $tournament->is_player_names_required() ) {	
-			$header[] = array( esc_html__( 'Players' ), 'ekc-column-players');
+			$header[] = array( esc_html__( 'Players', 'ekc-tournament-manager' ), 'ekc-column-players');
 		}
 		$html_header = $this->html_table_head($header);
 		$html_body = '';
@@ -285,7 +285,7 @@ class Ekc_Shortcode_Helper {
 		$result_3rd = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_2);
 
 		$html = $this->bracket_matchups( $db, $result_final, $result_3rd, $show_country, false );
-		return $this->bracket_round( 'finals', __( 'Finals' ), $html );
+		return $this->bracket_round( 'finals', __( 'Finals', 'ekc-tournament-manager' ), $html );
 	}
 
 	private function bracket_semifinals_div( $results, $show_country ) {
@@ -294,7 +294,7 @@ class Ekc_Shortcode_Helper {
 		$result_semi_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_2);
 		
 		$html = $this->bracket_matchups( $db, $result_semi_1, $result_semi_2, $show_country, true );
-		return $this->bracket_round( 'semifinals', __( 'Semifinals' ), $html );
+		return $this->bracket_round( 'semifinals', __( 'Semifinals', 'ekc-tournament-manager' ), $html );
 	}
 
 	private function bracket_quarterfinals_div( $results, $show_country ) {
@@ -306,7 +306,7 @@ class Ekc_Shortcode_Helper {
 		
 		$html = $this->bracket_matchups( $db, $result_quarter_1, $result_quarter_2, $show_country, true )
 		      . $this->bracket_matchups( $db, $result_quarter_3, $result_quarter_4, $show_country, true );
-		return $this->bracket_round( 'quarterfinals', __( '1/4 Finals' ), $html );
+		return $this->bracket_round( 'quarterfinals', __( '1/4 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
 	private function bracket_round_of_16_div( $results, $show_country ) {
@@ -325,7 +325,7 @@ class Ekc_Shortcode_Helper {
 			  . $this->bracket_matchups( $db, $result_1_8_3, $result_1_8_4, $show_country, true )
 			  . $this->bracket_matchups( $db, $result_1_8_5, $result_1_8_6, $show_country, true )
 		      . $this->bracket_matchups( $db, $result_1_8_7, $result_1_8_8, $show_country, true );
-		return $this->bracket_round( 'round-of-16', __( '1/8 Finals' ), $html );
+		return $this->bracket_round( 'round-of-16', __( '1/8 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
 	private function bracket_round_of_32_div( $results, $show_country ) {
@@ -356,7 +356,7 @@ class Ekc_Shortcode_Helper {
 			  . $this->bracket_matchups( $db, $result_1_16_11, $result_1_16_12, $show_country, true )
 		      . $this->bracket_matchups( $db, $result_1_16_13, $result_1_16_14, $show_country, true )
 		      . $this->bracket_matchups( $db, $result_1_16_15, $result_1_16_16, $show_country, true );
-  		return $this->bracket_round( 'round-of-32', __( '1/16 Finals' ), $html );
+  		return $this->bracket_round( 'round-of-32', __( '1/16 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
 	private function bracket_round( $round_css_class, $round_label, $inner_html ) {
@@ -524,7 +524,7 @@ class Ekc_Shortcode_Helper {
 		for ( $round = $current_round; $round > $round_limit; $round-- ) {
 			$results_for_round = $this->get_results_for_round( $all_results, $round );
 			if (count( $results_for_round ) > 0) {
-				$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s' ), $round ) . '</h3>';
+				$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s', 'ekc-tournament-manager' ), $round ) . '</h3>';
 				$html .= $this->create_swiss_round_table( $tournament, $results_for_round, $round, $show_country );
 			}
 		}
@@ -542,8 +542,8 @@ class Ekc_Shortcode_Helper {
 		if ( $show_country ) {
 			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
 		}
-		$header[] = array($is_single_player ? esc_html__( 'Player' ) : esc_html__( 'Team' ), 'ekc-column-team');
-		$header[] = array( esc_html__( 'Score' ), 'ekc-column-score');
+		$header[] = array($is_single_player ? esc_html__( 'Player', 'ekc-tournament-manager' ) : esc_html__( 'Team', 'ekc-tournament-manager' ), 'ekc-column-team');
+		$header[] = array( esc_html__( 'Score', 'ekc-tournament-manager' ), 'ekc-column-score');
 		$html_header = $this->html_table_head($header);
 		$html_body = '';
 
@@ -573,12 +573,12 @@ class Ekc_Shortcode_Helper {
 		$max_points_per_round = $tournament->get_swiss_system_max_points_per_round();
 
 		$header = array();
-		$header[] = array( esc_html__( 'Pitch' ), 'ekc-column-pitch');
+		$header[] = array( esc_html__( 'Pitch', 'ekc-tournament-manager' ), 'ekc-column-pitch');
 		if ( $show_country ) {
 			$header[] = array('<span class="dashicons dashicons-flag"></span>', 'ekc-column-country');
 		}
-		$header[] = array($is_single_player ? esc_html__( 'Player' ) : esc_html__( 'Team' ), 'ekc-column-team');
-		$header[] = array( esc_html__( 'Score' ), 'ekc-column-score');
+		$header[] = array($is_single_player ? esc_html__( 'Player', 'ekc-tournament-manager' ) : esc_html__( 'Team', 'ekc-tournament-manager' ), 'ekc-column-team');
+		$header[] = array( esc_html__( 'Score', 'ekc-tournament-manager' ), 'ekc-column-score');
 		$html_header = $this->html_table_head($header);
 		$html_body = '';
 
@@ -696,19 +696,19 @@ class Ekc_Shortcode_Helper {
 			  else {
 				$is_round_finished = true;
 			  }
-			  $display_text .= sprintf( /* translators: 1: tournament round number 2: time left in minutes */ esc_html__( 'Round %1$s: %2$s minutes left.' ), esc_html( $current_round ), esc_html( $time_left ) );
+			  $display_text .= sprintf( /* translators: 1: tournament round number 2: time left in minutes */ esc_html__( 'Round %1$s: %2$s minutes left.', 'ekc-tournament-manager' ), esc_html( $current_round ), esc_html( $time_left ) );
 		  }
 		  if ( !$is_round_finished && $tournament->get_swiss_system_tiebreak_time() ) {
 			$tiebreak_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $round_start_time );
 			$tiebreak_date->add(new DateInterval('PT' . ($tournament->get_swiss_system_tiebreak_time()) . 'M')); // add minutes
 			if ( $tiebreak_date > $now ) {
 			  $time_until_tiebreak = intval( $now->diff( $tiebreak_date )->format('%i') ) + 1; // i for minutes, +1 for 'rounding up'
-			  $display_text .= sprintf( /* translators: %s: time in minutes */  esc_html__( ' Tie break starts in %s minutes.' ), esc_html( $time_until_tiebreak ) );
+			  $display_text .= sprintf( /* translators: %s: time in minutes */  esc_html__( ' Tie break starts in %s minutes.', 'ekc-tournament-manager' ), esc_html( $time_until_tiebreak ) );
 			}
 			else {
 			  $time_since_tiebreak = intval( $tiebreak_date->diff( $now )->format('%i') ); // i for minutes
 			  if ( $time_since_tiebreak < 30) { 
-			  	$display_text .= sprintf( /* translators: %s: time in minutes */ esc_html__( ' Tie break since %s minutes.' ), esc_html( $time_since_tiebreak ) );
+			  	$display_text .= sprintf( /* translators: %s: time in minutes */ esc_html__( ' Tie break since %s minutes.', 'ekc-tournament-manager' ), esc_html( $time_since_tiebreak ) );
 			  }
 			}
 		  }
@@ -716,7 +716,7 @@ class Ekc_Shortcode_Helper {
 		}
 
 		if ( $current_round > 0 && ( $tournament->get_swiss_system_round_time() || $tournament->get_swiss_system_tiebreak_time() )) {
-			return sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s not started yet.' ), esc_html( $current_round ) );
+			return sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s not started yet.', 'ekc-tournament-manager' ), esc_html( $current_round ) );
 		}
 		return '';
 	}
@@ -759,7 +759,7 @@ class Ekc_Shortcode_Helper {
 		// else: type == team-results
 
 		if ( ! $team ) {
-			return esc_html__( 'No data found.' );
+			return esc_html__( 'No data found.', 'ekc-tournament-manager' );
 		}
 
 		$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
@@ -767,9 +767,9 @@ class Ekc_Shortcode_Helper {
 		$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
 		$current_round_result = $this->get_results_for_round( $all_results, $current_round, $team->get_team_id() );	
 		
-		$html = '<p><a href="' . esc_url( $validation_helper->validate_server_request_uri() ) . '">' . esc_html__( 'Reload page' ) . '</a></p>';
+		$html = '<p><a href="' . esc_url( $validation_helper->validate_server_request_uri() ) . '">' . esc_html__( 'Reload page', 'ekc-tournament-manager' ) . '</a></p>';
 		if (count( $current_round_result ) > 0) {
-			$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s' ), esc_html( $current_round ) ) . '</h3>';
+			$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s', 'ekc-tournament-manager' ), esc_html( $current_round ) ) . '</h3>';
 			$earliest_reported_result_time = $db->get_earliest_result_log_time( $tournament->get_tournament_id(), $current_round );
 			$report_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $earliest_reported_result_time );
 			if ( $report_end_date ) {
@@ -790,7 +790,7 @@ class Ekc_Shortcode_Helper {
 		for ( $round = $current_round - 1; $round > 0; $round-- ) {
 			$result_for_round = $this->get_results_for_round( $all_results, $round, $team->get_team_id() );
 			if (count( $result_for_round ) > 0) {
-				$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s' ), esc_html( $round ) ) . '</h3>';
+				$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s', 'ekc-tournament-manager' ), esc_html( $round ) ) . '</h3>';
 				$html .= $this->create_swiss_round_table( $tournament, $result_for_round, $round, $show_country );
 			}
 		}
@@ -807,7 +807,7 @@ class Ekc_Shortcode_Helper {
 		$html = '<form id="ekc-result-form" class="ekc-form"' . $data_result_id . ' data-linkid="' . esc_attr( $link_id ) . '" data-nonce="' . esc_attr( wp_create_nonce( $nonce_helper->nonce_text( 'ekc_public_swiss_system_store_result', 'link', $link_id ) ) ) . '">';
 		$html .= $this->create_swiss_round_table( $tournament, $current_round_result, $current_round, $show_country, true );
 		$html .= '<div class="ekc-controls">';
-		$html .= '<button class="ekc-button ekc-button-primary">' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Save result for round %s' ), esc_html( $current_round ) ) . '</button>';
+		$html .= '<button class="ekc-button ekc-button-primary">' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Save result for round %s', 'ekc-tournament-manager' ), esc_html( $current_round ) ) . '</button>';
 		$html .= '<p id="ekc-result-validation"></p>';
 		$html .= '</div>';
 		$html .= '</form>';
@@ -822,7 +822,7 @@ class Ekc_Shortcode_Helper {
 		
 		if ( $action === 'ekc_public_swiss_system_store_result' ) {
 			if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( 'ekc_public_swiss_system_store_result', 'link', $link_id ) ) ) {
-				echo '<span class="dashicons dashicons-no"></span>' . esc_html__( 'Failed to store result' );
+				echo '<span class="dashicons dashicons-no"></span>' . esc_html__( 'Failed to store result', 'ekc-tournament-manager' );
 			  	wp_die();
 			}
 			
@@ -836,12 +836,12 @@ class Ekc_Shortcode_Helper {
 				$current_result = $this->get_results_for_round( $current_round_results, $current_round, $team->get_team_id() );
 			
 				$this->store_result( $current_result[0], $team->get_team_id() );
-				echo '<span class="dashicons dashicons-yes"></span>' . esc_html__( 'Result saved' );
+				echo '<span class="dashicons dashicons-yes"></span>' . esc_html__( 'Result saved', 'ekc-tournament-manager' );
 				wp_die();
 			}
 
 			// Fallback
-			echo '<span class="dashicons dashicons-no"></span>' . esc_html__( 'Failed to store result' );
+			echo '<span class="dashicons dashicons-no"></span>' . esc_html__( 'Failed to store result', 'ekc-tournament-manager' );
 			wp_die();
 	  	}
 	}

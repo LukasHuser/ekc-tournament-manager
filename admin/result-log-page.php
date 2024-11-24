@@ -21,7 +21,7 @@ class Ekc_Result_Log_Page {
   private function show_wp_header() {
     ?>
     <div class="wrap">    
-      <h1 class="wp-heading-inline"><?php esc_html_e( 'Result Log' ) ?></h1>
+      <h1 class="wp-heading-inline"><?php esc_html_e( 'Result Log', 'ekc-tournament-manager' ) ?></h1>
       <hr class="wp-header-end">
     <?php 
   }

@@ -101,7 +101,7 @@ class Ekc_Drop_Down_Helper {
 	}
 
 	public static function filter_yes_no_drop_down( $id, $selected_key, $all_text ) {
-		$values = array( $all_text, __( 'Yes' ), __( 'No' ) );
+		$values = array( $all_text, __( 'Yes', 'ekc-tournament-manager' ), __( 'No', 'ekc-tournament-manager' ) );
 		Ekc_Drop_Down_Helper::drop_down( $id, $selected_key, Ekc_Drop_Down_Helper::FILTER_ALL_YES_NO, $values, '', false );
 	}
 
@@ -271,7 +271,7 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	public static function filter_country_small_drop_down( $id, $selected_key ) {
 		?>
 		<select name="<?php echo esc_attr( $id ) ?>" id="<?php echo esc_attr( $id ) ?>" >
-			<option <?php if ( $selected_key === Ekc_Drop_Down_Helper::FILTER_ALL ) echo 'selected' ?> value="<?php echo esc_attr( Ekc_Drop_Down_Helper::FILTER_ALL ) ?>"><?php esc_html_e( 'All countries' ) ?></option>
+			<option <?php if ( $selected_key === Ekc_Drop_Down_Helper::FILTER_ALL ) echo 'selected' ?> value="<?php echo esc_attr( Ekc_Drop_Down_Helper::FILTER_ALL ) ?>"><?php esc_html_e( 'All countries', 'ekc-tournament-manager' ) ?></option>
 		<?php 
 		foreach(Ekc_Drop_Down_Helper::COUNTRY_COMMON as $key => $value) { ?>
 			<option <?php if ( $selected_key === $key ) echo 'selected' ?> value="<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $value ) ?></option>

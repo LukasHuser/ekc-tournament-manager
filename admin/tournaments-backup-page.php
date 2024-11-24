@@ -41,8 +41,8 @@ class Ekc_Tournaments_Backup_Page {
     ?>
     <div class="wrap">
     
-      <h1 class="wp-heading-inline"><?php esc_html_e( 'Backup Files' ); ?></h1>
-      <a href="<?php echo esc_url( $upload_url ) ?>" class="page-title-action"><?php esc_html_e( 'Upload backup file' ) ?></a>
+      <h1 class="wp-heading-inline"><?php esc_html_e( 'Backup Files', 'ekc-tournament-manager' ); ?></h1>
+      <a href="<?php echo esc_url( $upload_url ) ?>" class="page-title-action"><?php esc_html_e( 'Upload backup file', 'ekc-tournament-manager' ) ?></a>
     
       <hr class="wp-header-end">
     
@@ -64,8 +64,8 @@ class Ekc_Tournaments_Backup_Page {
 ?>
 <form enctype="multipart/form-data" action="<?php echo esc_url( '?page=' . $page ) ?>" method="POST">
     <input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
-    <?php esc_html_e( 'Backup file (JSON)' ) ?><input name="backup-file" type="file" accept="text/csv, application/json" />
-    <input type="submit" value="<?php esc_attr_e( 'Upload' ) ?>" />
+    <?php esc_html_e( 'Backup file (JSON): ', 'ekc-tournament-manager' ) ?><input name="backup-file" type="file" accept="text/csv, application/json" />
+    <input type="submit" value="<?php esc_attr_e( 'Upload', 'ekc-tournament-manager' ) ?>" />
 </form>
 <?php
   }
@@ -88,7 +88,7 @@ class Ekc_Tournaments_Backup_Page {
       $backup_table->display();
     } 
     else {
-      esc_html_e( 'No backup files available.' );
+      esc_html_e( 'No backup files available.', 'ekc-tournament-manager' );
     }
 	}	
 

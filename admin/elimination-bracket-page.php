@@ -118,7 +118,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
 ?>
   <div class="wrap">
     
-    <h1 class="wp-heading-inline"><?php printf( '%s %s', esc_html( $tournament->get_name() ), esc_html__( 'Elimination Bracket' ) ) ?></h1>
+    <h1 class="wp-heading-inline"><?php printf( '%s %s', esc_html( $tournament->get_name() ), esc_html__( 'Elimination Bracket', 'ekc-tournament-manager' ) ) ?></h1>
     <hr class="wp-header-end">
 
     <?php 
@@ -134,26 +134,26 @@ class Ekc_Elimination_Bracket_Admin_Page {
 <?php 
     $show_rank_numbers = true; 
     if (Ekc_Elimination_Bracket_Helper::has_1_16_finals( $tournament->get_elimination_rounds() ) ) {
-      $this->show_column( __( '1/16 Finals' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
+      $this->show_column( __( '1/16 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
       $show_rank_numbers = false;
     }
     if (Ekc_Elimination_Bracket_Helper::has_1_8_finals( $tournament->get_elimination_rounds() ) ) {
-      $this->show_column( __( '1/8 Finals' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
+      $this->show_column( __( '1/8 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
       $show_rank_numbers = false;
     }
     if (Ekc_Elimination_Bracket_Helper::has_1_4_finals( $tournament->get_elimination_rounds() ) ) {
-      $this->show_column( __( '1/4 Finals' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
+      $this->show_column( __( '1/4 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS, $teams, $max_points_per_round, $show_rank_numbers );
     }
     // never show rank numbers for semifinals and finals
     if (Ekc_Elimination_Bracket_Helper::has_1_2_finals( $tournament->get_elimination_rounds() ) ) {
-      $this->show_column( __( 'Semifinals' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS, $teams, $max_points_per_round, false );
+      $this->show_column( __( 'Semifinals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS, $teams, $max_points_per_round, false );
     }
-    $this->show_column( __( 'Finals' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS, $teams, $max_points_per_round, false );
+    $this->show_column( __( 'Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS, $teams, $max_points_per_round, false );
 ?>
 
         </div>
         <div class="ekc-controls">
-            <button type="submit" class="ekc-button ekc-button-primary"><?php esc_html_e( 'Save results' ) ?></button>
+            <button type="submit" class="ekc-button ekc-button-primary"><?php esc_html_e( 'Save results', 'ekc-tournament-manager' ) ?></button>
             <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament->get_tournament_id() ) ?>" />
             <input id="action" name="action" type="hidden" value="elimination-bracket-store" />
             <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'elimination-bracket-store', 'tournament', $tournament->get_tournament_id() ) ) ?>
@@ -170,7 +170,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
       $swiss_url = sprintf( '?page=ekc-bracket&action=swiss-ranking&tournamentid=%s', $tournament->get_tournament_id() );
       $swiss_url = $nonce_helper->nonce_url( $swiss_url, $nonce_helper->nonce_text( 'swiss-ranking', 'tournament', $tournament->get_tournament_id() ) );
       ?>
-      <p><a href="<?php echo esc_url( $swiss_url ) ?>"><?php esc_html_e( 'populate elimination bracket from swiss system ranking' ) ?></a></p>
+      <p><a href="<?php echo esc_url( $swiss_url ) ?>"><?php esc_html_e( 'populate elimination bracket from swiss system ranking', 'ekc-tournament-manager' ) ?></a></p>
       <?php
     }
   }
@@ -181,7 +181,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
     $delete_url = $nonce_helper->nonce_url( $delete_url, $nonce_helper->nonce_text( 'delete', 'tournament', $tournament->get_tournament_id() ) );
     ?>
     <span class="delete ekc-page-delete-link" >
-    <a href="<?php echo esc_url( $delete_url ) ?>"><?php esc_html_e( 'delete results' ) ?></a>
+    <a href="<?php echo esc_url( $delete_url ) ?>"><?php esc_html_e( 'delete results', 'ekc-tournament-manager' ) ?></a>
     </span>
     <?php
   }
@@ -191,7 +191,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <h3><?php echo esc_html( $column_name ) ?></h3>
     <table>
       <thead>
-        <tr><td><?php esc_html_e( 'Pitch' ) ?></td><td><?php esc_html_e( 'Teams' ) ?></td><td><?php esc_html_e( 'Result' ) ?></td></tr>
+        <tr><td><?php esc_html_e( 'Pitch', 'ekc-tournament-manager' ) ?></td><td><?php esc_html_e( 'Teams', 'ekc-tournament-manager' ) ?></td><td><?php esc_html_e( 'Result', 'ekc-tournament-manager' ) ?></td></tr>
       </thead>
       <tbody>
     <?php
@@ -230,7 +230,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $team = $teams[$team_id];
         }
         Ekc_Drop_Down_Helper::teams_drop_down( 'team1-' . $result_type, $team_id, $team ) ?>
-        <input id="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder' ) ?>" value="<?php echo esc_attr( $result->get_team1_placeholder() ) ?>" />
+        <input id="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder', 'ekc-tournament-manager' ) ?>" value="<?php echo esc_attr( $result->get_team1_placeholder() ) ?>" />
   </td>
   <td><input id="<?php echo esc_attr( 'team1-score-' . $result_type ) ?>" name="<?php echo esc_attr( 'team1-score-' . $result_type ) ?>" type="number" size="5" step="any" min="0" max="<?php echo esc_attr( $max_points_per_round ) ?>" value="<?php echo esc_attr( $result->get_team1_score() ) ?>" />
     <?php 
@@ -248,7 +248,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $team = $teams[$team_id];
         }
         Ekc_Drop_Down_Helper::teams_drop_down( 'team2-' . $result_type, $team_id, $team ) ?>
-        <input id="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder' ) ?>" value="<?php echo esc_attr( $result->get_team2_placeholder() ) ?>" />
+        <input id="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder', 'ekc-tournament-manager' ) ?>" value="<?php echo esc_attr( $result->get_team2_placeholder() ) ?>" />
   </td>
   <td><input id="<?php echo esc_attr( 'team2-score-' . $result_type ) ?>" name="<?php echo esc_attr( 'team2-score-' . $result_type ) ?>" type="number" size="5" step="any" min="0" max="<?php echo esc_attr( $max_points_per_round ) ?>" value="<?php echo esc_attr( $result->get_team2_score() ) ?>" />
     <?php 
@@ -267,7 +267,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
       <td><input id="<?php echo esc_attr( 'pitch-' . $result_type ) ?>" name="<?php echo esc_attr( 'pitch-' . $result_type ) ?>" type="text" maxlength="20" size="5" /></td>
       <td><?php
           Ekc_Drop_Down_Helper::teams_drop_down( 'team1-' . $result_type, Ekc_Drop_Down_Helper::SELECTION_NONE, '' ) ?>
-          <input id="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder' ) ?>" />
+          <input id="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team1-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder', 'ekc-tournament-manager' ) ?>" />
       </td>
       <td><input id="<?php echo esc_attr( 'team1-score-' . $result_type ) ?>" name="<?php echo esc_attr( 'team1-score-' . $result_type ) ?>" type="number" size="5" step="any" min="0" max="<?php echo esc_attr( $max_points_per_round ) ?>" />
         <?php
@@ -280,7 +280,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
       <td></td>
       <td><?php
           Ekc_Drop_Down_Helper::teams_drop_down( 'team2-' . $result_type, Ekc_Drop_Down_Helper::SELECTION_NONE, '' ) ?>
-          <input id="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder' ) ?>" />
+          <input id="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" name="<?php echo esc_attr( 'team2-placeholder-' . $result_type ) ?>" type="text" maxlength="500" size="20" placeholder="<?php esc_attr_e( 'Placeholder', 'ekc-tournament-manager' ) ?>" />
       </td>
       <td><input id="<?php echo esc_attr( 'team2-score-' . $result_type ) ?>" name="<?php echo esc_attr( 'team2-score-' . $result_type ) ?>" type="number" size="5" step="any" min="0" max="<?php echo esc_attr( $max_points_per_round ) ?>" />
         <?php

@@ -11,17 +11,17 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'name'				=> esc_html__( 'Name' ),
-			'is_active'			=> esc_html__( 'Active' ),
-			'country'			=> esc_html__( 'Country' ),
-			'club'              => esc_html__( 'Club / City' ),
-			'email'				=> esc_html__( 'E-mail' ),
-			'phone'				=> esc_html__( 'Phone' ),
-			'registration_date'	=> esc_html__( 'Registered' ),
-			'registration_order' => esc_html__( 'Order' ),
-			'is_on_wait_list'	=> esc_html__( 'Waiting list' ),
-			'seeding_score'		=> esc_html__( 'Seeding score' ),
-			'players'			=> esc_html__( 'Players' )
+			'name'				=> esc_html__( 'Name', 'ekc-tournament-manager' ),
+			'is_active'			=> esc_html__( 'Active', 'ekc-tournament-manager' ),
+			'country'			=> esc_html__( 'Country', 'ekc-tournament-manager' ),
+			'club'              => esc_html__( 'Club / City', 'ekc-tournament-manager' ),
+			'email'				=> esc_html__( 'E-mail', 'ekc-tournament-manager' ),
+			'phone'				=> esc_html__( 'Phone', 'ekc-tournament-manager' ),
+			'registration_date'	=> esc_html__( 'Registered', 'ekc-tournament-manager' ),
+			'registration_order' => esc_html__( 'Order', 'ekc-tournament-manager' ),
+			'is_on_wait_list'	=> esc_html__( 'Waiting list', 'ekc-tournament-manager' ),
+			'seeding_score'		=> esc_html__( 'Seeding score', 'ekc-tournament-manager' ),
+			'players'			=> esc_html__( 'Players', 'ekc-tournament-manager' )
 		);
 		return $columns;
 	}
@@ -94,7 +94,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
 			$edit_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'edit', $item['team_id'], $tournament_id );
-			$actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url( $edit_url ), esc_html__( 'Edit' ) );
+			$actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url( $edit_url ), esc_html__( 'Edit', 'ekc-tournament-manager' ) );
 		}
 		return sprintf( '%s %s', esc_html( $item['name'] ), $this->row_actions( $actions ) );
 	}
@@ -111,12 +111,12 @@ class Ekc_Teams_Table extends WP_List_Table {
 			if ( filter_var( $item['is_active'], FILTER_VALIDATE_BOOLEAN ) ) {
 				$inactivate_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'inactivate', $team_id, $tournament_id );
 				$inactivate_url = $nonce_helper->nonce_url( $inactivate_url, $nonce_helper->nonce_text( 'inactivate', 'team', $team_id ) );
-				$actions['inactivate'] = sprintf( '<a href="%s">%s</a>', esc_url ( $inactivate_url ), esc_html__( 'Inactivate' ) );
+				$actions['inactivate'] = sprintf( '<a href="%s">%s</a>', esc_url ( $inactivate_url ), esc_html__( 'Inactivate', 'ekc-tournament-manager' ) );
 			}
 			else {
 				$activate_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'activate', $team_id, $tournament_id );
 				$activate_url = $nonce_helper->nonce_url( $activate_url, $nonce_helper->nonce_text( 'activate', 'team', $team_id ) );
-				$actions['activate'] = sprintf( '<a href="%s">%s</a>', $activate_url, esc_html__( 'Activate' ) );
+				$actions['activate'] = sprintf( '<a href="%s">%s</a>', $activate_url, esc_html__( 'Activate', 'ekc-tournament-manager' ) );
 			}
 		}
 		return sprintf( '%s %s', esc_html( $item['is_active'] ), $this->row_actions( $actions ) );
@@ -134,12 +134,12 @@ class Ekc_Teams_Table extends WP_List_Table {
 			if ( filter_var( $item['is_on_wait_list'], FILTER_VALIDATE_BOOLEAN ) ) {
 				$offwaitlist_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'offwaitlist', $team_id, $tournament_id );
 				$offwaitlist_url = $nonce_helper->nonce_url( $offwaitlist_url, $nonce_helper->nonce_text( 'offwaitlist', 'team', $team_id ) );
-				$actions['offwaitlist'] = sprintf( '<a href="%s">%s</a>', esc_url( $offwaitlist_url ), esc_html__( 'Remove' ) );
+				$actions['offwaitlist'] = sprintf( '<a href="%s">%s</a>', esc_url( $offwaitlist_url ), esc_html__( 'Remove', 'ekc-tournament-manager' ) );
 			}
 			else {
 				$onwaitlist_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'onwaitlist', $team_id, $tournament_id );
 				$onwaitlist_url = $nonce_helper->nonce_url( $onwaitlist_url, $nonce_helper->nonce_text( 'onwaitlist', 'team', $team_id ) );
-				$actions['onwaitlist'] = sprintf( '<a href="%s">%s</a>', esc_url( $onwaitlist_url ), esc_html__( 'Add' ) );
+				$actions['onwaitlist'] = sprintf( '<a href="%s">%s</a>', esc_url( $onwaitlist_url ), esc_html__( 'Add', 'ekc-tournament-manager' ) );
 			}
 		}
 		return sprintf( '%s %s', esc_html( $item['is_on_wait_list'] ), $this->row_actions( $actions ) );
@@ -162,7 +162,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 	}
 
 	function no_items() {
-		esc_html_e( 'No teams available yet.' );
+		esc_html_e( 'No teams available yet.', 'ekc-tournament-manager' );
 	}
 
 	/**
@@ -189,7 +189,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 			$this->filter_active_dropdown();
 			$this->filter_wait_list_dropdown();
 			$this->filter_country_dropdown();
-			submit_button( __( 'Filter' ), '', 'filter_action', false, array( 'id' => 'filter-submit' ) );
+			submit_button( __( 'Filter', 'ekc-tournament-manager' ), '', 'filter_action', false, array( 'id' => 'filter-submit' ) );
 		}
 		?>
 		</div>
@@ -197,11 +197,11 @@ class Ekc_Teams_Table extends WP_List_Table {
 	}
 
 	protected function filter_active_dropdown() {
-		$this->filter_yes_no_dropdown( __( 'Active' ), 'filter-active' );
+		$this->filter_yes_no_dropdown( __( 'Active', 'ekc-tournament-manager' ), 'filter-active' );
 	}
 
 	protected function filter_wait_list_dropdown() {
-		$this->filter_yes_no_dropdown( __( 'Waiting list' ), 'filter-wait-list' );
+		$this->filter_yes_no_dropdown( __( 'Waiting list', 'ekc-tournament-manager' ), 'filter-wait-list' );
 	}
 
 	protected function filter_yes_no_dropdown( $name, $filter_id ) {
