@@ -1,6 +1,14 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.2.2 / 2024-11-25
+* Security: Fix arbitrary file download issue when downloading backup files
+* Security: Use nonces against CSRF attacks
+* Security: Improved input sanitization and validation
+* Security: Improved output escaping
+* Plugin check: Avoid discouraged functions and replace them by corresponding WP functions
+* Plugin check: Add text domain to translatable texts. Cleanup of non-translatable texts.
+
 ## Version 2.2.1 / 2024-09-24
 * Fix waiting list: maximum number of teams not considered
 * Add Japan and Thailand to available countries

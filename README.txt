@@ -3,9 +3,9 @@ Contributors: lukashuser
 Donate link: http://kubb.live/ekc-tournament-manager
 Tags: kubb, ekc
 Requires at least: 6.0
-Tested up to: 6.6
-Stable tag: 2.2.1
-License: GPL v3 or later
+Tested up to: 6.7
+Stable tag: 2.2.2
+License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Manage Swiss system style tournaments, handle registration of teams and players.

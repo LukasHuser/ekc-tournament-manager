@@ -5,15 +5,16 @@ Plugin Name:  EKC Tournament Manager
 Plugin URI:   https://kubb.live/ekc-tournament-manager
 Description:  Manage Swiss system style tournaments, handle registrations of teams and players.
 			  Developed for the EKC European Kubb Championships.
-Version:      2.2.1
+Version:      2.2.2
 Author:       Lukas Huser, EKA European Kubb Association
 Author URI:   https://kubbeurope.com/about-eka
-License:      GNU General Public License GPL v3 or later
+License:      GPLv3 or later
 License URI:  http://www.gnu.org/licenses/gpl-3.0.html
+Text Domain:  ekc-tournament-manager
 
 
 EKC Tournament Manager
-Copyright (C) 2018-2023 Lukas Huser, EKA European Kubb Associaton
+Copyright (C) 2018-2024 Lukas Huser, EKA European Kubb Associaton
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,7 +33,7 @@ along with this program.  If not, see https://www.gnu.org/licenses/
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) die;
 
-define( 'EKC_PLUGIN_VERSION', '2.2.1' );
+define( 'EKC_PLUGIN_VERSION', '2.2.2' );
 define( 'EKC_DATABASE_VERSION', '2.2.0' );
 
 function ekc_activate_plugin() {
