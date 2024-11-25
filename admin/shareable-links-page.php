@@ -101,10 +101,10 @@ class Ekc_Shareable_links_Admin_Page {
     if ( isset($_POST['senderemail'] ) ) {
       // Supported formats: plain e-mail address (fullname@mail.tld) or mailbox address (Full Name <fullname@mail.tld>).
       // Parse an validate e-mail address separately.
-			$sender_email_raw = wp_unslash( $_POST['senderemail'] );
+			$sender_email_raw = trim( wp_unslash( $_POST['senderemail'] ) );
       $mailbox_parts = explode('<', $sender_email_raw );
       if ( count( $mailbox_parts ) > 1 ) {
-        $sender_email = sanitize_text_field( $mailbox_parts[0] ) . ' <' . sanitize_email( $mailbox_parts[1] ) . '>';
+        $sender_email = trim( $mailbox_parts[0] ) . ' <' . sanitize_email( $mailbox_parts[1] ) . '>';
       }
       else {
         $sender_email = sanitize_email( $sender_email_raw );

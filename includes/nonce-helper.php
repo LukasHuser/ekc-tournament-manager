@@ -33,6 +33,6 @@ class Ekc_Nonce_Helper {
 	}
 
 	public function read_nonce_request() {
-		return isset( $_REQUEST[ self::NONCE_NAME ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ self::NONCE_NAME ] ) ) : null;
+		return isset( $_REQUEST[ self::NONCE_NAME ] ) ? trim( wp_unslash( $_REQUEST[ self::NONCE_NAME ] ) ) : null;
 	}
 }

@@ -6,7 +6,8 @@
 class Ekc_Validation_Helper {
 
 	public function validate_get_text( $field ) {
-		return isset( $_GET[ $field ] ) ? sanitize_text_field( wp_unslash( $_GET[ $field ] ) ) : '';
+		// do not use sanitize_text_field here, it is more like an escaping function
+		return isset( $_GET[ $field ] ) ? trim( wp_unslash( $_GET[ $field ] ) ) : '';
 	}
 
 	public function validate_get_key( $field ) {
@@ -22,7 +23,8 @@ class Ekc_Validation_Helper {
 	}
 
 	public function validate_post_text( $field ) {
-		return isset( $_POST[ $field ] ) ? sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) : '';
+		// do not use sanitize_text_field here, it is more like an escaping function
+		return isset( $_POST[ $field ] ) ? trim( wp_unslash( $_POST[ $field ] ) ) : '';
 	}
 
 	public function validate_post_key( $field ) {

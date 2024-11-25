@@ -83,7 +83,7 @@ class Ekc_Form_Action_Team_Registration extends Action_Base {
 	public function run( $record, $ajax_handler ) {
 		$db = new Ekc_Database_Access();
 		$settings = $record->get( 'form_settings' );
-		$tournament_code_name = sanitize_text_field( wp_unslash( $settings[ 'tournament' ] ) );
+		$tournament_code_name = trim( wp_unslash( $settings[ 'tournament' ] ) );
 		
 		if ( !$tournament_code_name ) {
 			return;
@@ -159,7 +159,7 @@ class Ekc_Form_Action_Team_Registration extends Action_Base {
 
 	private function get_field_value( $fields, $field_id ) {
 		if ( $fields[ $field_id ] ) {
-			return sanitize_text_field( wp_unslash( $fields[ $field_id ][ 'value' ] ) );
+			return trim( wp_unslash( $fields[ $field_id ][ 'value' ] ) );
 		}
 		return '';
 	} 
