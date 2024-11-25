@@ -59,8 +59,8 @@ class Ekc_Shareable_Links_Helper {
 	} 
 
 	private function replace_placeholder( $email_content, $team_name, $url ) {
-		$email_content_replaced = str_replace( '${team}', $team_name, $email_content );
-		$email_content_replaced = str_replace( '${url}', $url, $email_content_replaced );
+		$email_content_replaced = str_replace( '${team}', esc_html( $team_name ), $email_content );
+		$email_content_replaced = str_replace( '${url}', esc_url( $url ), $email_content_replaced );
 		return $email_content_replaced;
 	}
 
