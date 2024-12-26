@@ -77,6 +77,7 @@ class Ekc_Tournaments_Admin_Page {
         $tournament->set_elimination_max_points_per_round( $validation_helper->validate_post_integer( 'eliminationmaxpoints' ) );
         $tournament->set_swiss_system_rounds( $validation_helper->validate_post_integer( 'swissrounds' ) );
         $tournament->set_swiss_system_max_points_per_round( $validation_helper->validate_post_integer( 'swissmaxpoints' ) );
+        $tournament->set_swiss_system_bye_points( $validation_helper->validate_post_integer( 'swissbyepoints' ) );
         $tournament->set_swiss_system_virtual_result_points( $validation_helper->validate_post_integer( 'swissvirtualresultpoints' ) );
         $tournament->set_swiss_system_additional_rounds( $validation_helper->validate_post_integer( 'swissadditionalrounds' ) );
         $tournament->set_swiss_system_slide_match_rounds( $validation_helper->validate_post_integer( 'swissslidematchrounds' ) );
@@ -255,6 +256,11 @@ class Ekc_Tournaments_Admin_Page {
             <label for="swissadditionalrounds"><?php esc_html_e( 'Additional rounds', 'ekc-tournament-manager' ) ?></label>
             <div><input id="swissadditionalrounds" name="swissadditionalrounds" type="number" value="<?php if ( $tournament ) echo esc_attr( $tournament->get_swiss_system_additional_rounds() ) ?>" />
             <p><?php esc_html_e( 'Number of additional rounds of Swiss System, i.e. ranking matches after elimination bracket has started', 'ekc-tournament-manager' ) ?></p></div>
+          </div>
+          <div class="ekc-control-group">
+            <label for="swissbyepoints"><?php esc_html_e( 'Points for BYE', 'ekc-tournament-manager' ) ?></label>
+            <div><input id="swissbyepoints" name="swissbyepoints" type="number" min="0" value="<?php if ( $tournament ) echo esc_attr( $tournament->get_swiss_system_bye_points() ) ?>" />
+                 <p><?php esc_html_e( 'Number of points for teams which have no opponent in case of an odd number of teams.', 'ekc-tournament-manager' ) ?></p></div>
           </div>
           <div class="ekc-control-group">
             <label for="swissvirtualresultpoints"><?php esc_html_e( 'Points for virtual result', 'ekc-tournament-manager' ) ?></label>

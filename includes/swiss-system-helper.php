@@ -132,6 +132,14 @@ class Ekc_Swiss_System_Helper {
 			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
 			$result->set_virtual_result( false );
 			$result->set_pitch( strval( $pitch ) );
+			if ( $result->get_team1_id() === Ekc_Team::TEAM_ID_BYE && !is_null( $tournament->get_swiss_system_bye_points() ) ) {
+				$result->set_team1_score( 0 );
+				$result->set_team2_score( $tournament->get_swiss_system_bye_points() );
+			}
+			else if ( $result->get_team2_id() === Ekc_Team::TEAM_ID_BYE && !is_null( $tournament->get_swiss_system_bye_points() ) ) {
+				$result->set_team1_score( $tournament->get_swiss_system_bye_points() );
+				$result->set_team2_score( 0 );
+			}
 
 			$db->insert_tournament_result( $result );
 			$pitch++;
@@ -141,6 +149,11 @@ class Ekc_Swiss_System_Helper {
 			$result = $this->create_result( $tournament_id, $next_round, $matchup[0], $matchup[1]);
 			$result->set_virtual_result( false );
 			$result->set_pitch( '-' );
+			if ( !is_null( $tournament->get_swiss_system_bye_points() ) ) {
+				// team1 is a regular team, team2 is a bye
+				$result->set_team1_score( $tournament->get_swiss_system_bye_points() );
+				$result->set_team2_score( 0 );
+			}
 
 			$db->insert_tournament_result( $result );
 		}
