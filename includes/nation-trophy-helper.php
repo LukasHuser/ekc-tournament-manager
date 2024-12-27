@@ -6,9 +6,9 @@
 class Ekc_Nation_Trophy_Helper {
 
 	// Nation trophy tournament types
-	const NATION_TROPHY_TOURNAMENT_TYPE_1VS1 = "1vs1";
-	const NATION_TROPHY_TOURNAMENT_TYPE_3VS3 = "3vs3";
-	const NATION_TROPHY_TOURNAMENT_TYPE_6VS6 = "6vs6";
+	const NATION_TROPHY_TOURNAMENT_TYPE_1VS1 = '1vs1';
+	const NATION_TROPHY_TOURNAMENT_TYPE_3VS3 = '3vs3';
+	const NATION_TROPHY_TOURNAMENT_TYPE_6VS6 = '6vs6';
 
 	/**
 	 * Collects nation trophy results for a given tournament.
@@ -27,46 +27,48 @@ class Ekc_Nation_Trophy_Helper {
 		if ( ! $tournament ) {
 			return;
 		}
-		$results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO, null, null );
-	
-		if ( $results ) {
-			$country_results = array(); // two dimensional map: country code => team_id => score of team
-			foreach ( $results as $result ) {
-				if ( $this->is_relevant_for_ranking( $result ) ) {
-					$team1 = $db->get_team_by_id( $result->get_team1_id() );
-					$team2 = $db->get_team_by_id( $result->get_team2_id() );
-					// could both be false, if not played yet
-					$winner_team1 = $result->get_team1_score() > $result->get_team2_score();
-					$winner_team2 = $result->get_team2_score() > $result->get_team1_score(); 
-					$team1_rank_description = $this->get_rank_description( $tournament_type, $result->get_result_type(), $team1->get_team_id(), $winner_team1 );
-					$team2_rank_description = $this->get_rank_description( $tournament_type, $result->get_result_type(), $team2->get_team_id(), $winner_team2 );
 
-					$this->update_country_results( $country_results, $team_description, $team1->get_country(), $team1_rank_description );
-					$this->update_country_results( $country_results, $team_description, $team2->get_country(), $team2_rank_description );
-				}
+		$results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO, null, null );
+		if ( ! $results ) {
+			return;
+		}
+
+		$country_results = array(); // two dimensional map: country code => team_id => score of team
+		foreach ( $results as $result ) {
+			if ( $this->is_relevant_for_ranking( $result ) ) {
+				$team1 = $db->get_team_by_id( $result->get_team1_id() );
+				$team2 = $db->get_team_by_id( $result->get_team2_id() );
+				// could both be false, if not played yet
+				$winner_team1 = $result->get_team1_score() > $result->get_team2_score();
+				$winner_team2 = $result->get_team2_score() > $result->get_team1_score(); 
+				$team1_rank_description = $this->get_rank_description( $tournament_type, $result->get_result_type(), $team1->get_team_id(), $winner_team1 );
+				$team2_rank_description = $this->get_rank_description( $tournament_type, $result->get_result_type(), $team2->get_team_id(), $winner_team2 );
+
+				$this->update_country_results( $country_results, $team_description, $team1->get_country(), $team1_rank_description );
+				$this->update_country_results( $country_results, $team_description, $team2->get_country(), $team2_rank_description );
 			}
-			
-			foreach ( $country_results as $country_code => $country_result ) {
-				arsort( $country_result ); // sort descending by value, i.e. sort teams by score
-				if ( ! array_key_exists( $country_code, $country_teams ) ) {
-					$country_teams[$country_code] = array();
+		}
+		
+		foreach ( $country_results as $country_code => $country_result ) {
+			arsort( $country_result ); // sort descending by value, i.e. sort teams by score
+			if ( ! array_key_exists( $country_code, $country_teams ) ) {
+				$country_teams[$country_code] = array();
+			}
+			if ( ! array_key_exists( $country_code, $country_total_score ) ) {
+				$country_total_score[$country_code] = 0;
+			}
+			$rank = 1;
+			foreach ( $country_result as $team_id => $team_score ) {
+				if ( $rank <= 1 // highest score counts for 1vs1, 3vs3, 6vs6
+					// highest 3 scores count for 1vs1, 3vs3
+					|| ( $tournament_type !== Ekc_Nation_Trophy_Helper::NATION_TROPHY_TOURNAMENT_TYPE_6VS6 && $rank <= 3 ) ) {
+					$country_total_score[$country_code] += $team_score;
 				}
-				if ( ! array_key_exists( $country_code, $country_total_score ) ) {
-					$country_total_score[$country_code] = 0;
+				else {
+					$team_description[$team_id]->set_score( 0 );
 				}
-				$rank = 1;
-				foreach ( $country_result as $team_id => $team_score ) {
-					if ( $rank <= 1 // highest score counts for 1vs1, 3vs3, 6vs6
-						// highest 3 scores count for 1vs1, 3vs3
-						|| ( $tournament_type !== Ekc_Nation_Trophy_Helper::NATION_TROPHY_TOURNAMENT_TYPE_6VS6 && $rank <= 3 ) ) {
-						$country_total_score[$country_code] += $team_score;
-					}
-					else {
-						$team_description[$team_id]->set_score( 0 );
-					}
-					$country_teams[$country_code][] = $team_id;
-					$rank++;
-				}
+				$country_teams[$country_code][] = $team_id;
+				$rank++;
 			}
 		}
 	}
@@ -76,11 +78,11 @@ class Ekc_Nation_Trophy_Helper {
 	 * $team_description: map from team_id to Ekc_Nation_Trophy_Rank_Description, populated by this function
 	 */
 	private function update_country_results( &$country_results, &$team_description, $country, $rank_description ) {
-		if ( $rank_description->get_score() > 0 ) {
+		if ( $country && $rank_description->get_score() > 0 ) {
 			if ( ! array_key_exists( $country, $country_results ) ) {
 				$country_results[$country] = array();
 			}
-			if ( !array_key_exists( $rank_description->get_team_id(), $country_results[$country] ) 
+			if ( ! array_key_exists( $rank_description->get_team_id(), $country_results[$country] ) 
 					|| $country_results[$country][$rank_description->get_team_id()] < $rank_description->get_score() ) {
 				$country_results[$country][$rank_description->get_team_id()] = $rank_description->get_score();
 				$team_description[$rank_description->get_team_id()] = $rank_description;
@@ -89,13 +91,14 @@ class Ekc_Nation_Trophy_Helper {
 	}
 
 	private function is_relevant_for_ranking( $result ) {
-		if ( !$result ) {
+		if ( ! $result || ! $result->get_team1_id() || ! $result->get_team2_id() ) {
 			return false;
 		}
+
 		$result_type = $result->get_result_type();
 		return Ekc_Elimination_Bracket_Helper::is_1_8_finals( $result_type )
 			|| Ekc_Elimination_Bracket_Helper::is_1_4_finals( $result_type )
-			|| Ekc_Elimination_Bracket_Helper::is_1_2_finals( $result_type )
+			// no score for semi finals needed here, finals will cover rank 1 to 4
 			|| Ekc_Elimination_Bracket_Helper::is_finals( $result_type );
 	}
 
