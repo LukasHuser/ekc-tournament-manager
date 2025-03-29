@@ -204,7 +204,8 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	const COUNTRY_TH = 'th';
 	const COUNTRY_US = 'us';
 
-	const COUNTRY_UNDEFINED = 'eu'; // use 'eu' as iso code, this corresponds to the european flag in the drop down
+	const COUNTRY_EU = 'eu'; // use 'eu' as iso code, this corresponds to the european flag in the drop down
+	const COUNTRY_HK = 'hk'; // iso code for Hong Kong
 
 	const COUNTRY_COMMON = array(
 		Ekc_Drop_Down_Helper::COUNTRY_AT => 'Austria',
@@ -246,7 +247,8 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 	);
 
 	const COUNTRY_SPECIAL = array(
-		Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED => 'Other',
+		Ekc_Drop_Down_Helper::COUNTRY_EU => 'Europe',
+		Ekc_Drop_Down_Helper::COUNTRY_HK => 'Hong Kong',
 	);
 
 
@@ -263,7 +265,9 @@ public static function teams_drop_down( $id, $selected_key, $selected_value ) {
 			<option class="flag-icon <?php echo esc_attr( 'flag-icon-' . $key ) ?>" <?php if ( $selected_value === $key ) echo 'selected' ?> value="<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $value ) ?></option>
 		<?php } ?>
 			<option disabled></option>
-			<option class="flag-icon <?php echo esc_attr( 'flag-icon-' . Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED ) ?>" value="<?php echo esc_attr( Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED ) ?>"><?php echo esc_html( Ekc_Drop_Down_Helper::COUNTRY_SPECIAL[Ekc_Drop_Down_Helper::COUNTRY_UNDEFINED] ) ?></option>
+		<?php foreach(Ekc_Drop_Down_Helper::COUNTRY_SPECIAL as $key => $value) { ?>
+				<option class="flag-icon <?php echo esc_attr( 'flag-icon-' . $key ) ?>" <?php if ( $selected_value === $key ) echo 'selected' ?> value="<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $value ) ?></option>
+		<?php } ?>	
 		</select>
 		<?php
 	}
