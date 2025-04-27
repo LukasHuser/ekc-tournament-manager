@@ -12,6 +12,7 @@ class Ekc_Tournaments_Backup_Page {
 		$action = $validation_helper->validate_get_text( 'action' );
 		$file_name = rawurldecode( $validation_helper->validate_get_text( 'backup' ) );
 		
+    $upload_error_message = null;
     if ( $action === 'delete' ) {
       if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'filename', $file_name ) ) ) {
         $this->delete_backup( $file_name );
@@ -21,10 +22,11 @@ class Ekc_Tournaments_Backup_Page {
       // handle POST
       if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         $helper = new Ekc_Backup_Helper();
-        $helper->upload_backup_file();
+        $upload_error_message = $helper->upload_backup_file();
       }
     }
     $this->show_wp_header();
+    $this->show_upload_error_message( $upload_error_message );
     if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
       if ( $action === 'showupload' ) {
         $this->show_upload();
@@ -47,6 +49,14 @@ class Ekc_Tournaments_Backup_Page {
       <hr class="wp-header-end">
     
     <?php 
+  }
+
+  private function show_upload_error_message( $upload_error_message ) {
+    if ( $upload_error_message ) {
+      ?>
+      <p><?php echo esc_html( $upload_error_message ) ?></p>
+      <?php
+    }
   }
 
   /**

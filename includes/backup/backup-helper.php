@@ -34,9 +34,12 @@ class Ekc_Backup_Helper {
 		if ( $backup_file ) { 
 			// Temporarily override upload_dir
 			add_filter( 'upload_dir', array( $this, 'upload_dir_backup_path' ) );
-			wp_handle_upload( $backup_file, array('test_form' => false, 'mimes' => array( 'csv' => 'text/csv', 'json' => 'application/json' ) ) );
+			$moved_file = wp_handle_upload( $backup_file, array('test_form' => false, 'mimes' => array( 'csv' => 'text/csv', 'json' => 'application/json' ) ) );
 			// Reset upload_dir
 			remove_filter( 'upload_dir', array( $this, 'upload_dir_backup_path' ) );
+			if ( $moved_file && isset( $moved_file['error'] ) ) {
+				return $moved_file['error'];
+			}
 		}
 	}
 
