@@ -1,6 +1,12 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.2.3 / 2025-04-27
+* Swiss system: Pre-fill results against BYEs with a configurable score value
+* Nation trophy: Fix loading results for partially filled elimination brackets
+* Add Hong Kong flag
+* Backups: Print error message to user, if file upload fails
+
 ## Version 2.2.2 / 2024-11-25
 * Security: Fix arbitrary file download issue when downloading backup files
 * Security: Use nonces against CSRF attacks
