@@ -1,6 +1,9 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.2.4 / 2025-04-29
+* Backups: Workaround for unreliable mime type detection for json files
+
 ## Version 2.2.3 / 2025-04-27
 * Swiss system: Pre-fill results against BYEs with a configurable score value
 * Nation trophy: Fix loading results for partially filled elimination brackets
