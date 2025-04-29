@@ -34,15 +34,28 @@ class Ekc_Backup_Helper {
 		if ( $backup_file ) { 
 			// Temporarily override upload_dir
 			add_filter( 'upload_dir', array( $this, 'upload_dir_backup_path' ) );
-			$moved_file = wp_handle_upload( $backup_file, array('test_form' => false, 'mimes' => array( 'csv' => 'text/csv', 'json' => 'application/json' ) ) );
+			// Temporarily override allowed mime types for upload
+			add_filter( 'upload_mimes', array( $this, 'filter_upload_mimes' ) );
+			// Fix unreliable mime type detection for json files
+			add_filter( 'wp_check_filetype_and_ext', array( $this, 'filter_wp_check_filetype_and_ext' ), 10, 5 );
+
+			$moved_file = wp_handle_upload( $backup_file, array('test_form' => false ) );
+						
 			// Reset upload_dir
 			remove_filter( 'upload_dir', array( $this, 'upload_dir_backup_path' ) );
+			// Reset upload mimes
+			remove_filter( 'upload_mimes', array( $this, 'filter_upload_mimes' ) );
+			remove_filter( 'wp_check_filetype_and_ext', array( $this, 'filter_wp_check_filetype_and_ext' ) );
+
 			if ( $moved_file && isset( $moved_file['error'] ) ) {
 				return $moved_file['error'];
 			}
 		}
 	}
 
+	/**
+	 * Override upload directory with backup directory.
+	 */
 	public function upload_dir_backup_path( $upload_dir ) {
 		$backup_dir = $upload_dir['basedir'] . self::BACKUP_SUB_DIRECTORY;
 		$this->ensure_backup_dir_exists( $backup_dir );
@@ -51,6 +64,24 @@ class Ekc_Backup_Helper {
 			'url'    => $upload_dir['baseurl'] . self::BACKUP_SUB_DIRECTORY,
 			'subdir' => self::BACKUP_SUB_DIRECTORY,
 		) + $upload_dir;
+	}
+
+	/**
+	 * Override allowed mime types to allow csv and json only.
+	 */
+	public function filter_upload_mimes( $mimes ) {
+		return array( 'csv' => 'text/csv', 'json' => 'application/json' );
+	}
+
+	/**
+	 * Mime type detection by file magic does not work reliably for json files.
+	 * Accept text/plain as well as the correct mime type application/json.
+	 */
+	public function filter_wp_check_filetype_and_ext( $filter, $file, $filename, $mimes, $real_mime ) {
+		if ( ! $filter['type'] && $filter['ext'] === 'json' && $real_mime === 'text/plain' ) {
+			$filter['type'] = 'application/json';
+		}
+		return $filter;
 	}
 
 	public function get_all_backup_file_names() {
