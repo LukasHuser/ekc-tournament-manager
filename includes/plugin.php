@@ -180,6 +180,7 @@ class Ekc_Tournament_Manager {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/widget-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/module-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shareable-links-helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/csv-helper.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/tournament.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/team.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/model/player.php';

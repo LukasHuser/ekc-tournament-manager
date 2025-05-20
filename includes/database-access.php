@@ -619,7 +619,7 @@ class Ekc_Database_Access {
 			        'active', 'email', 'phone', 'registration_date', 'order', 
 					'camping', 'breakfast', 'registration_fee_paid',
 					'wait_list', 'seeding_score', 'initial_score', 'virtual_rank',
-					'players'
+					'player1_first_name#!#player1_last_name#!#player2_first_name#!#player2_last_name#!#player3_first_name#!#player3_last_name#!#player4_first_name#!#player4_last_name#!#player5_first_name#!#player5_last_name#!#player6_first_name#!#player6_last_name' 
 			UNION ALL
 			SELECT	t.team_id, t.name, 
 			        LOWER(t.country) as country, t.club, 
@@ -629,7 +629,7 @@ class Ekc_Database_Access {
 					case when t.is_registration_fee_paid = 1 then 'yes' else 'no' end as registration_fee_paid,
 					case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list, 
 					t.seeding_score, t.initial_score, t.virtual_rank,
-                    GROUP_CONCAT( CONCAT(p.first_name, ' ', p.last_name, ' (', p.country, ')') SEPARATOR ', ') as players
+                    GROUP_CONCAT( CONCAT(p.first_name, '#!#', p.last_name) ORDER BY p.player_id ASC SEPARATOR '#!#' )
 			FROM   {$wpdb->prefix}ekc_team t
 			LEFT OUTER JOIN {$wpdb->prefix}ekc_player p
 			ON t.team_id = p.team_id

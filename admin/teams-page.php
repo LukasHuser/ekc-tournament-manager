@@ -46,6 +46,13 @@ class Ekc_Teams_Admin_Page {
       }
 			$this->show_teams( $tournament_id );
 		}
+    elseif ( $action === 'showimport' ) {
+        $this->show_import_teams( $tournament_id );
+    }
+    elseif ( $action === 'csvimport' ) {
+      $notice_text = $this->import_teams_from_csv( $tournament_id );
+      $this->show_teams( $tournament_id, $notice_text );
+    }
 		elseif ( ! $this->handle_post() ) {
       $this->show_teams( $tournament_id );
     }
@@ -161,7 +168,7 @@ class Ekc_Teams_Admin_Page {
 		return $player;
 	}
 
-	public function show_teams( $tournament_id ) {
+	public function show_teams( $tournament_id, $notice_text = null ) {
     if ( ! $tournament_id ) {
       return;
     }
@@ -173,12 +180,14 @@ class Ekc_Teams_Admin_Page {
     $page = $validation_helper->validate_get_text( 'page' );
     $new_team_url = sprintf( '?page=%s&tournamentid=%s&action=new', $page, $tournament_id );
     $csvexport_url = sprintf( '?page=%s&tournamentid=%s&action=csvexport', $page, $tournament_id );
+    $show_import_url = sprintf( '?page=%s&tournamentid=%s&action=showimport', $page, $tournament_id );
 ?>
 <div class="wrap">
 
   <h1 class="wp-heading-inline"><?php echo esc_html( $tournament->get_name() ) ?></h1>
   <a href="<?php echo esc_url( $new_team_url ) ?>" class="page-title-action"><?php esc_html_e( 'New team', 'ekc-tournament-manager' ) ?></a>
   <a href="<?php echo esc_url( $csvexport_url ) ?>" class="page-title-action"><?php esc_html_e( 'CSV export', 'ekc-tournament-manager' ) ?></a>
+  <a href="<?php echo esc_url( $show_import_url ) ?>" class="page-title-action"><?php esc_html_e( 'CSV import', 'ekc-tournament-manager' ) ?></a>
   <?php
   if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
     $shareable_links_url = sprintf( '?page=ekc-links&tournamentid=%s&action=shareable-links', $tournament_id );
@@ -188,6 +197,13 @@ class Ekc_Teams_Admin_Page {
   ?>
 
   <hr class="wp-header-end">
+
+  <?php
+  if ( $notice_text ) {
+    wp_admin_notice( $notice_text, array( 'type' => 'info', 'dismissible' => true ) );
+  }
+  ?>
+
   <form id="teams-filter" method="get" >
   <input id="page" name="page" type="hidden" value="<?php echo esc_attr( $page ) ?>" />
   <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament_id ) ?>" />
@@ -439,18 +455,144 @@ class Ekc_Teams_Admin_Page {
 			$tournament = $db->get_tournament_by_id( $tournament_id );
 			$file_name = sanitize_file_name( 'teams-' . $tournament->get_code_name() . '.csv' );
 
-			$fp = fopen('php://output', 'w');
-			if ($fp && $csv) {
-				header('Content-Type: text/csv');
-				header('Content-Disposition: attachment; filename="' . $file_name . '"');
-				header('Pragma: no-cache');
-				header('Expires: 0');
-				foreach ($csv as $row) {
-					fputcsv($fp, $row, ';', '"');
+			$fp = fopen( 'php://output', 'w' );
+			if ( $fp && $csv ) {
+				header( 'Content-Type: text/csv' );
+				header( 'Content-Disposition: attachment; filename="' . $file_name . '"' );
+				header( 'Pragma: no-cache' );
+				header( 'Expires: 0' );
+				foreach ( $csv as $row ) {
+          $raw_players = array_pop( $row );
+          $players = explode( '#!#', $raw_players );
+          $players_size = count( $players );
+          if ( $players_size < 12 ) {
+            // fill up to size 12: first name plus last name for 6 players
+            $players = array_merge( $players, array_fill( 0, 12 - $players_size, '' ) );
+          }
+          $csv_row = array_merge( $row, $players );
+					fputcsv($fp, $csv_row, ';', '"');
 				}
 				exit();
 			}
 		}
 	}
+
+  public function show_import_teams( $tournament_id ) {
+    if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
+		if ( $tournament_id ) {
+      $nonce_helper = new Ekc_Nonce_Helper();
+      $action_url = sprintf( '?page=ekc-teams&tournamentid=%s&action=csvimport', $tournament_id );
+  ?>
+    <div class="wrap">
+      <h1 class="wp-heading-inline"><?php esc_html_e( 'Teams CSV import', 'ekc-tournament-manager' ) ?></h1>
+      <hr class="wp-header-end">
+  
+      <h3><?php esc_html_e( 'Instructions', 'ekc-tournament-manager' ) ?></h3>
+      <p>
+      Column delimiter: semicolon (;)<br>
+      Encoding: UTF-8<br>
+      Text can be quoted (optional) with double quotes (&quot;)<br>
+      A header row defining the columns is required, the order of the columns can be arbitrary.<br>
+      Each team must be provided on a single line.<br>
+      For reference data and format, see the CSV export menu.
+      </p><p>
+      If the team_id column is present in the CSV data and the provided ID matches an existing team in the tournament, the existing team is overwritten with the provided CSV data.<br>
+      Columns which are not present in the CSV data will not override existing data.<br>
+      Mandatory columns are not verified for each row during import. If mandatory values are missing, they can be updated manually after the import.
+      </p><p>
+        <table class="ekc-table">
+          <caption>Columns available in the header row</caption>
+          <thead>
+            <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>team_id</th><td>Integer</td><td>Optional. Creates a new team if not provided. Overrides an existing team, if the ID matches.</td></tr>
+            <tr><th>name</th><td>Single line text</td><td>Mandatory for team tournaments</td></tr>
+            <tr><th>active</th><td>Values: no, false, yes, true</td><td>Optional</td></tr>
+            <tr><th>country</th><td>Two letter ISO code</td><td>Optional</td></tr>
+            <tr><th>email</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>phone</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>club</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>order</th><td>Decimal</td><td>Optional. Registration order.</td></tr>
+            <tr><th>registration_fee_paid</th><td>Values: no, false, yes, true</td><td>Optional</td></tr>
+            <tr><th>wait_list</th><td>Values: no, false, yes, true</td><td>Optional</td></tr>
+            <tr><th>seeding_score</th><td>Decimal</td><td>Optional</td></tr>
+            <tr><th>player1_first_name</th><td>Single line text</td><td>Mandatory for 1vs1 tournaments</td></tr>
+            <tr><th>player1_last_name</th><td>Single line text</td><td>Mandatory for 1vs1 tournaments</td></tr>
+            <tr><th>player2_first_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player2_last_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player3_first_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player3_last_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player4_first_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player4_last_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player5_first_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player5_last_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player6_first_name</th><td>Single line text</td><td>Optional</td></tr>
+            <tr><th>player6_last_name</th><td>Single line text</td><td>Optional</td></tr>
+          </tbody>
+        </table>
+      </p>
+      <form class="ekc-form" method="post" action="<?php echo esc_url( $action_url ) ?>" accept-charset="utf-8" enctype="multipart/form-data">
+        <fieldset>
+          <legend><h3><?php esc_html_e( 'Import teams', 'ekc-tournament-manager' ) ?></h3></legend>
+          <div class="ekc-control-group">
+            <label for="csvdata"><?php esc_html_e( 'CSV data (copy/paste)', 'ekc-tournament-manager' ) ?></label>
+            <textarea id="csvdata" name="csvdata" class="code" style="resize: both" rows="20" cols="60" wrap="off" maxlength="5000000"></textarea>
+          </div>
+        </fieldset>
+        <fieldset>
+          <div class="ekc-control-group">
+            <label for="csvfile"><?php esc_html_e( 'CSV file', 'ekc-tournament-manager' ) ?></label>
+            <input name="MAX_FILE_SIZE" type="hidden" value="5000000" />
+            <input id="csvfile" name="csvfile" type="file" accept="text/csv" />
+          </div>
+        </fieldset>
+        <fieldset>
+            <div class="ekc-controls">
+            <button type="submit" class="ekc-button ekc-button-primary button button-primary"><?php esc_html_e( 'Import', 'ekc-tournament-manager' ) ?></button>
+            <input id="action" name="action" type="hidden" value="csvimport" />
+            <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament_id ) ?>" />
+            <?php $nonce_helper->nonce_field( $nonce_helper->nonce_text( 'csvimport', 'tournament', $tournament_id ) ) ?>
+            </div>
+        </fieldset>
+      </form>
+    </div><!-- .wrap -->
+  <?php
+    }
+  }
+
+  public function import_teams_from_csv( $tournament_id ) {
+    $validation_helper = new Ekc_Validation_Helper();
+    $nonce_helper = new Ekc_Nonce_Helper();
+    $page = $validation_helper->validate_get_text( 'page' );
+		$action = $validation_helper->validate_get_text( 'action' );
+		if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
+      return;
+    }
+		if ( $page === 'ekc-teams' && $action === 'csvimport' && $tournament_id ) {
+      if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
+        return;
+      }
+      
+      // try text field first
+      $csv_data = $validation_helper->validate_post_text( 'csvdata' );
+      if ( strlen( trim( $csv_data ) ) === 0 ) {
+        // else, try uploaded file
+        $csv_file = isset( $_FILES['csvfile'] ) ? $_FILES['csvfile'] : null;
+        if ( $csv_file && $csv_file['type'] === 'text/csv' && $csv_file['size'] > 0 ) {
+          $csv_data = file_get_contents( $csv_file['tmp_name'] );
+        }
+      }
+      
+      if ( strlen( trim( $csv_data ) ) === 0 ) {
+        return;
+      }
+
+      $csv_helper = new Ekc_Csv_Helper();
+      return $csv_helper->import_teams( $tournament_id, $csv_data );
+    }
+  }
 }
 
