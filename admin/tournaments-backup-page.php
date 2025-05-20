@@ -75,7 +75,7 @@ class Ekc_Tournaments_Backup_Page {
 <form enctype="multipart/form-data" action="<?php echo esc_url( '?page=' . $page ) ?>" method="POST">
     <input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
     <?php esc_html_e( 'Backup file (JSON): ', 'ekc-tournament-manager' ) ?><input name="backup-file" type="file" accept="text/csv, application/json" />
-    <input type="submit" value="<?php esc_attr_e( 'Upload', 'ekc-tournament-manager' ) ?>" />
+    <input type="submit" class="ekc-button button"value="<?php esc_attr_e( 'Upload', 'ekc-tournament-manager' ) ?>" />
 </form>
 <?php
   }
