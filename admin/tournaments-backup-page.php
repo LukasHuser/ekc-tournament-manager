@@ -26,7 +26,11 @@ class Ekc_Tournaments_Backup_Page {
       }
     }
     $this->show_wp_header();
-    $this->show_upload_error_message( $upload_error_message );
+
+    if ( $upload_error_message ) {
+      wp_admin_notice( $upload_error_message, array( 'type' => 'error', 'dismissible' => true ) );
+    }
+
     if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_BACKUPS ) ) {
       if ( $action === 'showupload' ) {
         $this->show_upload();
@@ -49,14 +53,6 @@ class Ekc_Tournaments_Backup_Page {
       <hr class="wp-header-end">
     
     <?php 
-  }
-
-  private function show_upload_error_message( $upload_error_message ) {
-    if ( $upload_error_message ) {
-      ?>
-      <p><?php echo esc_html( $upload_error_message ) ?></p>
-      <?php
-    }
   }
 
   /**
