@@ -443,7 +443,7 @@ class Ekc_Swiss_System_Admin_Page {
 <form class="ekc-form" method="post" action="<?php echo esc_url( '?page=' . $page ) ?>" accept-charset="utf-8">
   <fieldset>
     <legend><h3><?php esc_html_e( 'Current ranking', 'ekc-tournament-manager' ) ?></h3></legend>
-    <table>
+    <table class="ekc-table">
       <thead>
         <tr>
           <th><?php esc_html_e( 'Rank', 'ekc-tournament-manager' ) ?></th>
