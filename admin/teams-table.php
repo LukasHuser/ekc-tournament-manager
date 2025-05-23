@@ -11,17 +11,18 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 	function get_columns(){
 		$columns = array(
-			'name'				=> esc_html__( 'Name', 'ekc-tournament-manager' ),
-			'is_active'			=> esc_html__( 'Active', 'ekc-tournament-manager' ),
-			'country'			=> esc_html__( 'Country', 'ekc-tournament-manager' ),
-			'club'              => esc_html__( 'Club / City', 'ekc-tournament-manager' ),
-			'email'				=> esc_html__( 'E-mail', 'ekc-tournament-manager' ),
-			'phone'				=> esc_html__( 'Phone', 'ekc-tournament-manager' ),
-			'registration_date'	=> esc_html__( 'Registered', 'ekc-tournament-manager' ),
+			'name' => esc_html__( 'Name', 'ekc-tournament-manager' ),
+			'is_active' => esc_html__( 'Active', 'ekc-tournament-manager' ),
+			'country' => esc_html__( 'Country', 'ekc-tournament-manager' ),
+			'club' => esc_html__( 'Club / City', 'ekc-tournament-manager' ),
+			'email' => esc_html__( 'E-mail', 'ekc-tournament-manager' ),
+			'phone' => esc_html__( 'Phone', 'ekc-tournament-manager' ),
+			'registration_date' => esc_html__( 'Registered', 'ekc-tournament-manager' ),
+			'is_registration_fee_paid' => esc_html__( 'Registration fee', 'ekc-tournament-manager' ),
 			'registration_order' => esc_html__( 'Order', 'ekc-tournament-manager' ),
-			'is_on_wait_list'	=> esc_html__( 'Waiting list', 'ekc-tournament-manager' ),
-			'seeding_score'		=> esc_html__( 'Seeding score', 'ekc-tournament-manager' ),
-			'players'			=> esc_html__( 'Players', 'ekc-tournament-manager' )
+			'is_on_wait_list' => esc_html__( 'Waiting list', 'ekc-tournament-manager' ),
+			'seeding_score' => esc_html__( 'Seeding score', 'ekc-tournament-manager' ),
+			'players' => esc_html__( 'Players', 'ekc-tournament-manager' )
 		);
 		return $columns;
 	}
@@ -31,14 +32,15 @@ class Ekc_Teams_Table extends WP_List_Table {
 	 */
 	function get_sortable_columns() {
 		$sortable_columns = array(
-		  'name' 		=> array('name', false),
-		  'is_active'	=> array('is_active', false),
-		  'country'		=> array('country', false),
-		  'club'        => array('club', false),
-		  'registration_date'	=> array('registration_date', true),
-		  'registration_order'	=> array('registration_order', false),
-		  'is_on_wait_list'	=> array('is_on_wait_list', false),
-		  'seeding_score'	=> array('seeding_score', false)
+		  'name' => array('name', false),
+		  'is_active' => array('is_active', false),
+		  'country' => array('country', false),
+		  'club' => array('club', false),
+		  'registration_date' => array('registration_date', true),
+      'is_registration_fee_paid' => array('is_registration_fee_paid', false),
+		  'registration_order' => array('registration_order', false),
+		  'is_on_wait_list' => array('is_on_wait_list', false),
+		  'seeding_score' => array('seeding_score', false)
 		);
 		return $sortable_columns;
 	  }
@@ -68,6 +70,14 @@ class Ekc_Teams_Table extends WP_List_Table {
 		}
 		elseif ( $filter_active === 'no' ) {
 			$filter['is_active'] = '0';
+		}
+
+    $filter_registration_fee = $validation_helper->validate_get_text( 'filter-registration-fee' );
+		if ( $filter_registration_fee === 'yes' ) {
+			$filter['is_registration_fee_paid'] = '1';
+		}
+		elseif ( $filter_registration_fee === 'no' ) {
+			$filter['is_registration_fee_paid'] = '0';
 		}
 		
 		$filter_wait_list =  $validation_helper->validate_get_text( 'filter-wait-list' );
@@ -120,6 +130,29 @@ class Ekc_Teams_Table extends WP_List_Table {
 			}
 		}
 		return sprintf( '%s %s', esc_html( $item['is_active'] ), $this->row_actions( $actions ) );
+	}
+
+  function column_is_registration_fee_paid( $item ) {
+		$actions = array();
+		$nonce_helper = new Ekc_Nonce_Helper();
+		$validation_helper = new Ekc_Validation_Helper();
+		$page = $validation_helper->validate_get_text( 'page' );
+		$tournament_id = $validation_helper->validate_get_key( 'tournamentid' );
+		$team_id = $item['team_id'];
+
+		if ( current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS, $tournament_id ) ) {
+			if ( filter_var( $item['is_registration_fee_paid'], FILTER_VALIDATE_BOOLEAN ) ) {
+				$fee_not_paid_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'feenotpaid', $team_id, $tournament_id );
+				$fee_not_paid_url = $nonce_helper->nonce_url( $fee_not_paid_url, $nonce_helper->nonce_text( 'feenotpaid', 'team', $team_id ) );
+				$actions['feenotpaid'] = sprintf( '<a href="%s">%s</a>', esc_url ( $fee_not_paid_url ), esc_html__( 'Fee not paid', 'ekc-tournament-manager' ) );
+			}
+			else {
+				$fee_paid_url = sprintf( '?page=%s&action=%s&teamid=%s&tournamentid=%s', $page, 'feepaid', $team_id, $tournament_id );
+				$fee_paid_url = $nonce_helper->nonce_url( $fee_paid_url, $nonce_helper->nonce_text( 'feepaid', 'team', $team_id ) );
+				$actions['feepaid'] = sprintf( '<a href="%s">%s</a>', $fee_paid_url, esc_html__( 'Fee paid', 'ekc-tournament-manager' ) );
+			}
+		}
+		return sprintf( '%s %s', esc_html( $item['is_registration_fee_paid'] ), $this->row_actions( $actions ) );
 	}
 
 	function column_is_on_wait_list( $item ) {
@@ -187,6 +220,7 @@ class Ekc_Teams_Table extends WP_List_Table {
 		if ( 'top' === $which ) {
 
 			$this->filter_active_dropdown();
+      $this->filter_registration_fee_dropdown();
 			$this->filter_wait_list_dropdown();
 			$this->filter_country_dropdown();
 			submit_button( __( 'Filter', 'ekc-tournament-manager' ), '', 'filter_action', false, array( 'id' => 'filter-submit' ) );
@@ -198,6 +232,10 @@ class Ekc_Teams_Table extends WP_List_Table {
 
 	protected function filter_active_dropdown() {
 		$this->filter_yes_no_dropdown( __( 'Active', 'ekc-tournament-manager' ), 'filter-active' );
+	}
+
+  protected function filter_registration_fee_dropdown() {
+		$this->filter_yes_no_dropdown( __( 'Registration fee', 'ekc-tournament-manager' ), 'filter-registration-fee' );
 	}
 
 	protected function filter_wait_list_dropdown() {

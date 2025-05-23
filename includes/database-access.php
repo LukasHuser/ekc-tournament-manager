@@ -567,9 +567,10 @@ class Ekc_Database_Access {
 			"
 			SELECT t.team_id, t.name, 
 			       LOWER(t.country) as country, t.club,
-				   case when t.is_active = 1 then 'yes' else 'no' end as is_active, 
-				   t.email, t.phone, t.registration_date, t.registration_order, 
-				   t.seeding_score, 
+				   case when t.is_active = 1 then 'yes' else 'no' end as is_active,
+				   t.email, t.phone, t.registration_date,
+				   case when t.is_registration_fee_paid = 1 then 'yes' else 'no' end as is_registration_fee_paid,
+				   t.registration_order, t.seeding_score,
 				   case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list,
                    GROUP_CONCAT( CONCAT(p.first_name, ' ', p.last_name, ' (', p.country, ')') SEPARATOR ', ') as players
 			FROM   {$wpdb->prefix}ekc_team t
@@ -589,8 +590,8 @@ class Ekc_Database_Access {
 	private function create_team_table_sort_column_sql( $column, $table_alias ) {
 		$sql_alias = $table_alias ? $table_alias . '.' : '';
 		$valid_columns = array(
-		  'name', 'is_active', 'country', 'club', 'registration_date', 'registration_order',
-		  'is_on_wait_list', 'seeding_score'
+		  'name', 'is_active', 'country', 'club', 'registration_date', 'is_registration_fee_paid',
+		  'registration_order', 'is_on_wait_list', 'seeding_score'
 		);
 		if ( in_array( $column, $valid_columns, true) ) {
 			return $sql_alias . $column;
@@ -602,7 +603,7 @@ class Ekc_Database_Access {
 		$sql_alias = $table_alias ? $table_alias . '.' : '';
 		$sql_filter = '';
 		foreach ( $filter as $key => $value ) {
-			if ( $key === 'is_active' || $key === 'is_on_wait_list' ) {
+			if ( $key === 'is_active' || $key === 'is_registration_fee_paid' || $key === 'is_on_wait_list' ) {
 				if ( $value === '1' || $value === '0') {
 					$sql_filter .= ' AND ' . $sql_alias . $key . ' = ' . $value;
 				}
@@ -755,6 +756,19 @@ class Ekc_Database_Access {
 			$wpdb->prefix . 'ekc_team', 
 			array( 
 				'is_active'		=> intval( $is_active ),
+			),
+			array( 'team_id'		=> $team_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+	}
+
+	public function set_registration_fee_paid( $team_id, $is_registration_fee_paid ) {
+		global $wpdb;
+		$wpdb->update( 
+			$wpdb->prefix . 'ekc_team', 
+			array( 
+				'is_registration_fee_paid'	=> intval( $is_registration_fee_paid ),
 			),
 			array( 'team_id'		=> $team_id ),
 			array( '%d' ),

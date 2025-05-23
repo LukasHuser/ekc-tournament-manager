@@ -34,6 +34,18 @@ class Ekc_Teams_Admin_Page {
       }
 			$this->show_teams( $tournament_id );
     }
+    elseif ( $action === 'feepaid' ) {
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
+        $this->set_registration_fee_paid( $team_id, true );
+      }
+			$this->show_teams( $tournament_id );
+		}
+		elseif ( $action === 'feenotpaid' ) {
+      if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
+        $this->set_registration_fee_paid( $team_id, false );
+      }
+			$this->show_teams( $tournament_id );
+    }
 		elseif ( $action === 'onwaitlist' ) {
       if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
         $this->set_team_on_wait_list( $team_id, true );
@@ -433,6 +445,11 @@ class Ekc_Teams_Admin_Page {
   public function set_team_active( $team_id, $is_active ) {
 		$db = new Ekc_Database_Access();
 		$db->set_team_active( $team_id, $is_active );
+	}
+
+  public function set_registration_fee_paid( $team_id, $is_registration_fee_paid ) {
+		$db = new Ekc_Database_Access();
+		$db->set_registration_fee_paid( $team_id, $is_registration_fee_paid );
 	}
 
 	public function set_team_on_wait_list( $team_id, $is_on_wait_list ) {
