@@ -17,6 +17,7 @@ class Ekc_Tournament implements JsonSerializable {
 	private $is_auto_backup_enabled;
 	private $tournament_system;
 	private $elimination_rounds;
+	private $elimination_silver_rounds;
 	private $elimination_max_points_per_round;
 	private $swiss_system_rounds;
 	private $swiss_system_max_points_per_round;
@@ -126,6 +127,14 @@ class Ekc_Tournament implements JsonSerializable {
 	
 	public function set_elimination_rounds(string $elimination_rounds) {
 		$this->elimination_rounds = $elimination_rounds;
+	}
+
+	public function get_elimination_silver_rounds() {
+		return $this->elimination_silver_rounds;
+	}
+	
+	public function set_elimination_silver_rounds(string $elimination_silver_rounds) {
+		$this->elimination_silver_rounds = $elimination_silver_rounds;
 	}
 	
 	public function get_elimination_max_points_per_round() {

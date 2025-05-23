@@ -5,6 +5,9 @@
  */
 class Ekc_Elimination_Bracket_Helper {
 
+  const BRACKET_TYPE_GOLD = 'gold';
+  const BRACKET_TYPE_SILVER = 'silver';
+
 	// Result type constants
 	// See: ekc_result.result_type 
 	const BRACKET_FINALS_1 		= "ko-finals-1";
@@ -41,86 +44,91 @@ class Ekc_Elimination_Bracket_Helper {
 	const BRACKET_1_16_FINALS_16	= "ko-1/16-finals-16";
 
 	const BRACKET_RESULT_TYPES_1_16_FINALS = array(	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_1,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_2,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_3,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_4,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_5,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_6,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_7,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_8,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_9,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_10,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_11,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_12,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_13,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_14,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_15,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_16);
+		self::BRACKET_1_16_FINALS_1,	
+		self::BRACKET_1_16_FINALS_2,	
+		self::BRACKET_1_16_FINALS_3,	
+		self::BRACKET_1_16_FINALS_4,	
+		self::BRACKET_1_16_FINALS_5,	
+		self::BRACKET_1_16_FINALS_6,	
+		self::BRACKET_1_16_FINALS_7,	
+		self::BRACKET_1_16_FINALS_8,	
+		self::BRACKET_1_16_FINALS_9,	
+		self::BRACKET_1_16_FINALS_10,	
+		self::BRACKET_1_16_FINALS_11,	
+		self::BRACKET_1_16_FINALS_12,	
+		self::BRACKET_1_16_FINALS_13,	
+		self::BRACKET_1_16_FINALS_14,	
+		self::BRACKET_1_16_FINALS_15,	
+		self::BRACKET_1_16_FINALS_16);
 
 	const BRACKET_RESULT_TYPES_1_8_FINALS = array(	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_1,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_2,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_3,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_4,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_5,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_6,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_7,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_8);
+		self::BRACKET_1_8_FINALS_1,	
+		self::BRACKET_1_8_FINALS_2,	
+		self::BRACKET_1_8_FINALS_3,	
+		self::BRACKET_1_8_FINALS_4,	
+		self::BRACKET_1_8_FINALS_5,	
+		self::BRACKET_1_8_FINALS_6,	
+		self::BRACKET_1_8_FINALS_7,	
+		self::BRACKET_1_8_FINALS_8);
 		
 	const BRACKET_RESULT_TYPES_1_4_FINALS = array(	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_1,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_2,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_3,	
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_4);
+		self::BRACKET_1_4_FINALS_1,	
+		self::BRACKET_1_4_FINALS_2,	
+		self::BRACKET_1_4_FINALS_3,	
+		self::BRACKET_1_4_FINALS_4);
 
 	const BRACKET_RESULT_TYPES_1_2_FINALS = array(
-		Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_1, 	
-		Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_2);	
+		self::BRACKET_SEMIFINALS_1, 	
+		self::BRACKET_SEMIFINALS_2);	
 
 	const BRACKET_RESULT_TYPES_FINALS = array(
-		Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_1,		
-		Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_2);
+		self::BRACKET_FINALS_1,		
+		self::BRACKET_FINALS_2);
 
 	const RANK_NUMBERS_BY_RESULT_TYPE = array(
 		// semifinals
-		Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_1 => array(1, 4),
-		Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_2 => array(3, 2),
+		self::BRACKET_SEMIFINALS_1 => array(1, 4),
+		self::BRACKET_SEMIFINALS_2 => array(3, 2),
 
 		// round of 8
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_1 => array(1, 8),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_2 => array(5, 4),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_3 => array(3, 6),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_4 => array(7, 2),
+		self::BRACKET_1_4_FINALS_1 => array(1, 8),
+		self::BRACKET_1_4_FINALS_2 => array(5, 4),
+		self::BRACKET_1_4_FINALS_3 => array(3, 6),
+		self::BRACKET_1_4_FINALS_4 => array(7, 2),
 		
 		// round of 16
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_1 => array(1, 16),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_2 => array(9, 8),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_3 => array(5, 12),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_4 => array(13, 4),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_5 => array(3, 14),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_6 => array(11, 6),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_7 => array(7, 10),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_8 => array(15, 2),
+		self::BRACKET_1_8_FINALS_1 => array(1, 16),
+		self::BRACKET_1_8_FINALS_2 => array(9, 8),
+		self::BRACKET_1_8_FINALS_3 => array(5, 12),
+		self::BRACKET_1_8_FINALS_4 => array(13, 4),
+		self::BRACKET_1_8_FINALS_5 => array(3, 14),
+		self::BRACKET_1_8_FINALS_6 => array(11, 6),
+		self::BRACKET_1_8_FINALS_7 => array(7, 10),
+		self::BRACKET_1_8_FINALS_8 => array(15, 2),
 
 		// round of 32
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_1 => array(1, 32),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_2 => array(17, 16),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_3 => array(9, 24),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_4 => array(25, 8),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_5 => array(5, 28),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_6 => array(21, 12),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_7 => array(13, 20),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_8 => array(29, 4),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_9 => array(3, 30),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_10 => array(19, 14),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_11 => array(11, 22),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_12 => array(27, 6),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_13 => array(7, 26),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_14 => array(23, 10),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_15 => array(15, 18),
-		Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_16 => array(31, 2)
-	);
+		self::BRACKET_1_16_FINALS_1 => array(1, 32),
+		self::BRACKET_1_16_FINALS_2 => array(17, 16),
+		self::BRACKET_1_16_FINALS_3 => array(9, 24),
+		self::BRACKET_1_16_FINALS_4 => array(25, 8),
+		self::BRACKET_1_16_FINALS_5 => array(5, 28),
+		self::BRACKET_1_16_FINALS_6 => array(21, 12),
+		self::BRACKET_1_16_FINALS_7 => array(13, 20),
+		self::BRACKET_1_16_FINALS_8 => array(29, 4),
+		self::BRACKET_1_16_FINALS_9 => array(3, 30),
+		self::BRACKET_1_16_FINALS_10 => array(19, 14),
+		self::BRACKET_1_16_FINALS_11 => array(11, 22),
+		self::BRACKET_1_16_FINALS_12 => array(27, 6),
+		self::BRACKET_1_16_FINALS_13 => array(7, 26),
+		self::BRACKET_1_16_FINALS_14 => array(23, 10),
+		self::BRACKET_1_16_FINALS_15 => array(15, 18),
+		self::BRACKET_1_16_FINALS_16 => array(31, 2));
+
+  const RANK_OFFSET = array(
+    Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2   => 4,
+    Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_4   => 8,
+    Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_8   => 16,
+    Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16  => 32);
 
 	public static function has_1_16_finals( $elimination_bracket ) {
 		return $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16;
@@ -147,51 +155,65 @@ class Ekc_Elimination_Bracket_Helper {
 	public static function get_result_types ( $elimination_bracket ) {
 		if ( $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2 ) {
 			return array_merge(
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS );
+				self::BRACKET_RESULT_TYPES_FINALS,
+				self::BRACKET_RESULT_TYPES_1_2_FINALS );
 		}
 		if ( $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_4 ) {
 			return array_merge(
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS); 
+				self::BRACKET_RESULT_TYPES_FINALS,
+				self::BRACKET_RESULT_TYPES_1_2_FINALS,
+				self::BRACKET_RESULT_TYPES_1_4_FINALS); 
 		}
 		if ( $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_8 ) {
 			return array_merge(
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS);
+				self::BRACKET_RESULT_TYPES_FINALS,
+				self::BRACKET_RESULT_TYPES_1_2_FINALS,
+				self::BRACKET_RESULT_TYPES_1_4_FINALS,
+				self::BRACKET_RESULT_TYPES_1_8_FINALS);
 		}
 		if ( $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16 ) {
 			return array_merge(
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS,
-				Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS);
+				self::BRACKET_RESULT_TYPES_FINALS,
+				self::BRACKET_RESULT_TYPES_1_2_FINALS,
+				self::BRACKET_RESULT_TYPES_1_4_FINALS,
+				self::BRACKET_RESULT_TYPES_1_8_FINALS,
+				self::BRACKET_RESULT_TYPES_1_16_FINALS);
 		}
 		return array();
 	}
 
 	public static function is_1_16_finals( $result_type ) {
-		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_18_FINALS );
+		return in_array( $result_type, self::BRACKET_RESULT_TYPES_1_18_FINALS );
 	}
 
 	public static function is_1_8_finals( $result_type ) {
-		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS );
+		return in_array( $result_type, self::BRACKET_RESULT_TYPES_1_8_FINALS );
 	}
 
 	public static function is_1_4_finals( $result_type ) {
-		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS );
+		return in_array( $result_type, self::BRACKET_RESULT_TYPES_1_4_FINALS );
 	}
 
 	public static function is_1_2_finals( $result_type ) {
-		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS );
+		return in_array( $result_type, self::BRACKET_RESULT_TYPES_1_2_FINALS );
 	}
 
 	public static function is_finals( $result_type ) {
-		return in_array( $result_type, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS );
+		return in_array( $result_type, self::BRACKET_RESULT_TYPES_FINALS );
+	}
+
+  public static function get_stage_for_bracket_type( $bracket_type ) {
+		if ( $bracket_type === self::BRACKET_TYPE_SILVER ) {
+      return Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO_SILVER;
+    }
+    return Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO; // default is gold bracket
+	}
+
+  public static function get_elimination_rounds_for_bracket_type( $tournament, $bracket_type ) {
+		if ( $bracket_type === self::BRACKET_TYPE_SILVER ) {
+      return $tournament->get_elimination_silver_rounds();
+    }
+    return $tournament->get_elimination_rounds(); // default is gold bracket
 	}
 
 	public static function get_result_for_result_type( $results, $result_type ) {
@@ -204,45 +226,55 @@ class Ekc_Elimination_Bracket_Helper {
 	}
 
 	public static function get_rank_numbers_for_result_type( $result_type ) {
-		if ( array_key_exists( $result_type, Ekc_Elimination_Bracket_Helper::RANK_NUMBERS_BY_RESULT_TYPE ) ) {
-			return Ekc_Elimination_Bracket_Helper::RANK_NUMBERS_BY_RESULT_TYPE[$result_type];
+		if ( array_key_exists( $result_type, self::RANK_NUMBERS_BY_RESULT_TYPE ) ) {
+			return self::RANK_NUMBERS_BY_RESULT_TYPE[$result_type];
 		}
 		// unknown result type
 		return array();
 	}
 
-	public function elimination_bracket_from_swiss_system_ranking( $tournament_id ) {
+  public static function get_rank_offset( $tournament, $bracket_type ) {
+    if ( $bracket_type === self::BRACKET_TYPE_SILVER && $tournament->get_elimination_rounds() ) {
+      return self::RANK_OFFSET[$tournament->get_elimination_rounds()];
+    }
+    return 0;
+	}
+
+	public function elimination_bracket_from_swiss_system_ranking( $tournament_id, $bracket_type ) {
 		$db = new Ekc_Database_Access();
 		$tournament = $db->get_tournament_by_id( $tournament_id );
-		
-		if ( $tournament->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16 ) {
-			$this->insert_elimination_bracket_results( Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS, $tournament_id );
+    $rank_offset = self::get_rank_offset( $tournament, $bracket_type );
+    $stage = self::get_stage_for_bracket_type( $bracket_type );
+    $elimination_rounds = self::get_elimination_rounds_for_bracket_type( $tournament, $bracket_type );
+    
+		if ( $elimination_rounds === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16 ) {
+			$this->insert_elimination_bracket_results( self::BRACKET_RESULT_TYPES_1_16_FINALS, $tournament_id, $stage, $rank_offset );
 		}
-		elseif ( $tournament->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_8 ) {
-			$this->insert_elimination_bracket_results( Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS, $tournament_id );
+		elseif ( $elimination_rounds === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_8 ) {
+			$this->insert_elimination_bracket_results( self::BRACKET_RESULT_TYPES_1_8_FINALS, $tournament_id, $stage, $rank_offset );
 		}
-		elseif ( $tournament->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_4 ) {
-			$this->insert_elimination_bracket_results( Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS, $tournament_id );
+		elseif ( $elimination_rounds === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_4 ) {
+			$this->insert_elimination_bracket_results( self::BRACKET_RESULT_TYPES_1_4_FINALS, $tournament_id, $stage, $rank_offset );
 		}
-		elseif ( $tournament->get_elimination_rounds() === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2 ) {
-			$this->insert_elimination_bracket_results( Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS, $tournament_id );
+		elseif ( $elimination_rounds === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2 ) {
+			$this->insert_elimination_bracket_results( self::BRACKET_RESULT_TYPES_1_2_FINALS, $tournament_id, $stage, $rank_offset );
 		}
 	}
 
-	private function insert_elimination_bracket_results( $result_types, $tournament_id ) {
+	private function insert_elimination_bracket_results( $result_types, $tournament_id, $stage, $rank_offset ) {
 		$db = new Ekc_Database_Access();
 		$ranking = $db->get_current_swiss_system_ranking( $tournament_id );
 
-		$pitch = 1;
+		$pitch = 1 + ($rank_offset / 2);
 		foreach( $result_types as $result_type ) {
 			$rank_numbers = Ekc_Elimination_Bracket_Helper::get_rank_numbers_for_result_type( $result_type );
 
 			// ranking array is 0 based, rank numbers are 1 based
-			$team1_rank_index = $rank_numbers[0] - 1;
-			$team2_rank_index = $rank_numbers[1] - 1;
+			$team1_rank_index = $rank_numbers[0] - 1 + $rank_offset;
+			$team2_rank_index = $rank_numbers[1] - 1 + $rank_offset;
 			
 			$result = new Ekc_Result();
-			$result->set_stage( Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO );
+			$result->set_stage( $stage );
 			$result->set_result_type( $result_type );
 			$result->set_tournament_id( $tournament_id );
 			$result->set_team1_id( array_key_exists( $team1_rank_index, $ranking ) ? $ranking[$team1_rank_index]->get_team_id() : null );

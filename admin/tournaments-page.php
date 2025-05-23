@@ -74,6 +74,7 @@ class Ekc_Tournaments_Admin_Page {
         $tournament->set_auto_backup_enabled( $validation_helper->validate_post_boolean( 'backup' ) );
         $tournament->set_tournament_system( $validation_helper->validate_post_dropdown_text( 'system' ) );
         $tournament->set_elimination_rounds( $validation_helper->validate_post_dropdown_text( 'eliminationrounds' ) );
+        $tournament->set_elimination_silver_rounds( $validation_helper->validate_post_dropdown_text( 'eliminationsilverrounds' ) );
         $tournament->set_elimination_max_points_per_round( $validation_helper->validate_post_integer( 'eliminationmaxpoints' ) );
         $tournament->set_swiss_system_rounds( $validation_helper->validate_post_integer( 'swissrounds' ) );
         $tournament->set_swiss_system_max_points_per_round( $validation_helper->validate_post_integer( 'swissmaxpoints' ) );
@@ -226,8 +227,12 @@ class Ekc_Tournaments_Admin_Page {
         <fieldset>
         <legend><h3><?php esc_html_e( 'Elimination Bracket', 'ekc-tournament-manager' ) ?></h3></legend>
           <div class="ekc-control-group">
-            <label for="eliminationrounds"><?php esc_html_e( 'Elimination bracket', 'ekc-tournament-manager' ) ?></label>
+            <label for="eliminationrounds"><?php esc_html_e( 'Gold bracket', 'ekc-tournament-manager' ) ?></label>
             <?php Ekc_Drop_Down_Helper::elimination_bracket_drop_down( 'eliminationrounds', $tournament ? $tournament->get_elimination_rounds() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
+          </div>
+          <div class="ekc-control-group">
+            <label for="eliminationsilverrounds"><?php esc_html_e( 'Silver bracket', 'ekc-tournament-manager' ) ?></label>
+            <?php Ekc_Drop_Down_Helper::elimination_bracket_drop_down( 'eliminationsilverrounds', $tournament ? $tournament->get_elimination_silver_rounds() : Ekc_Drop_Down_Helper::SELECTION_NONE ) ?>
           </div>
           <div class="ekc-control-group">
             <label for="eliminationmaxpoints"><?php esc_html_e( 'Points per round', 'ekc-tournament-manager' ) ?></label>

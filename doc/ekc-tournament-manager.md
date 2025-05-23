@@ -84,6 +84,7 @@ Prints the elimination bracket of a given tournament.
 | Parameter | Description | Default Value |
 | --------- | ----------- | ------------- |
 | **`tournament`** | Tournament code name (as defined in tournament registration). Mandatory. | none |
+| **`bracket`** | Should the gold bracket or the silver bracket be shown? <br>Allowed values are `gold` and `silver`. | `gold` |
 | **`country`** | Should the country flag for each team be shown?<br>Allowed values are `false` and `true`. | `true` |
 
 #### Examples

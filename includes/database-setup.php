@@ -42,6 +42,7 @@ class Ekc_Database_Setup {
 			is_auto_backup_enabled bit(1),
 			tournament_system varchar(20),
 			elimination_rounds varchar(20),
+			elimination_silver_rounds varchar(20),
 			elimination_max_points_per_round integer(10),
 			swiss_system_rounds integer(10),
 			swiss_system_max_points_per_round integer(10),

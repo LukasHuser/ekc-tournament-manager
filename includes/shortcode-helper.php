@@ -238,12 +238,14 @@ class Ekc_Shortcode_Helper {
 		$atts = shortcode_atts(
 			array(
 				'tournament' => '',
+				'bracket'    => Ekc_Elimination_Bracket_Helper::BRACKET_TYPE_GOLD,
 				'country'    => 'true',
 			),
 			$atts,
 			'ekc-elimination-bracket'
 		);
 		$tournament_code_name = $atts['tournament'];
+		$bracket_type = $atts['bracket'];
 		$show_country = filter_var( $atts['country'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( trim( $tournament_code_name ) === '' ) {
@@ -255,24 +257,26 @@ class Ekc_Shortcode_Helper {
 		if ( ! $tournament ) {
 			return '';
 		}
-		$results = $db->get_tournament_results( $tournament->get_tournament_id(), Ekc_Drop_Down_Helper::TOURNAMENT_STAGE_KO, null, null );
-		$elimination_bracket = $tournament->get_elimination_rounds();
+
+        $stage = Ekc_Elimination_Bracket_Helper::get_stage_for_bracket_type( $bracket_type );
+		$elimination_rounds = Ekc_Elimination_Bracket_Helper::get_elimination_rounds_for_bracket_type( $tournament, $bracket_type );
+		$results = $db->get_tournament_results( $tournament->get_tournament_id(), $stage, null, null );
 
 		$html = '';
-		if ( Ekc_Elimination_Bracket_Helper::has_1_16_finals( $elimination_bracket ) ) {
+		if ( Ekc_Elimination_Bracket_Helper::has_1_16_finals( $elimination_rounds ) ) {
 			$html = $html . $this->bracket_round_of_32_div( $results, $show_country );
 		}
-		if ( Ekc_Elimination_Bracket_Helper::has_1_8_finals( $elimination_bracket ) ) {
+		if ( Ekc_Elimination_Bracket_Helper::has_1_8_finals( $elimination_rounds ) ) {
 			$html = $html . $this->bracket_round_of_16_div( $results, $show_country );
 		}
-		if ( Ekc_Elimination_Bracket_Helper::has_1_4_finals( $elimination_bracket ) ) {
+		if ( Ekc_Elimination_Bracket_Helper::has_1_4_finals( $elimination_rounds ) ) {
 			$html = $html . $this->bracket_quarterfinals_div( $results, $show_country );
 		}
-		if ( Ekc_Elimination_Bracket_Helper::has_1_2_finals( $elimination_bracket ) ) {
+		if ( Ekc_Elimination_Bracket_Helper::has_1_2_finals( $elimination_rounds ) ) {
 			$html = $html . $this->bracket_semifinals_div( $results, $show_country );
 		}
 		$html = $html . $this->bracket_finals_div( $results, $show_country );
-		return $this->bracket_main_div( $this->elimination_bracket_to_css_class( $elimination_bracket ), $html );
+		return $this->bracket_main_div( $this->elimination_bracket_to_css_class( $elimination_rounds ), $html );
 	}
 
 	private function bracket_main_div( $participants_css_class, $inner ) {

@@ -45,9 +45,10 @@ class Ekc_Drop_Down_Helper {
 		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16
 	);
 
-	const TOURNAMENT_STAGE_KO		= 'elimination';
-	const TOURNAMENT_STAGE_SWISS	= 'swiss';
-	const TOURNAMENT_STAGE_GROUP	= 'group';
+	const TOURNAMENT_STAGE_KO			= 'elimination';
+	const TOURNAMENT_STAGE_KO_SILVER	= 'elimination-silver';
+	const TOURNAMENT_STAGE_SWISS		= 'swiss';
+	const TOURNAMENT_STAGE_GROUP		= 'group';
 
 	const FILTER_ALL	= 'all';
 	const FILTER_YES	= 'yes';

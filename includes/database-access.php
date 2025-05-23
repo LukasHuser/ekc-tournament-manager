@@ -16,7 +16,10 @@ class Ekc_Database_Access {
 			"
 			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, 
                     case when is_wait_list_enabled = 1 then 'yes' else 'no' end as is_wait_list_enabled, 
-					tournament_system, elimination_rounds, swiss_system_rounds,
+					tournament_system,
+					case when elimination_silver_rounds is null then elimination_rounds
+					else concat(elimination_rounds, ' (gold) | ', elimination_silver_rounds, ' (silver)') end as elimination_rounds, 
+					swiss_system_rounds,
 					coalesce(display_name, user_login) as owner_user
 			FROM   {$wpdb->prefix}ekc_tournament t
 			LEFT OUTER JOIN {$wpdb->prefix}users u ON t.owner_user_id = u.ID
@@ -54,6 +57,7 @@ class Ekc_Database_Access {
 				'is_auto_backup_enabled'	=> intval( $tournament->is_auto_backup_enabled() ),
 				'tournament_system'			=> $this->truncate_string( $tournament->get_tournament_system(), 20 ),
 				'elimination_rounds'		=> $this->truncate_string( $tournament->get_elimination_rounds(), 20 ),
+				'elimination_silver_rounds'	=> $this->truncate_string( $tournament->get_elimination_silver_rounds(), 20 ),
 				'elimination_max_points_per_round'		=> $tournament->get_elimination_max_points_per_round(),
 				'swiss_system_rounds'		=> $tournament->get_swiss_system_rounds(),
 				'swiss_system_max_points_per_round'		=> $tournament->get_swiss_system_max_points_per_round(),
@@ -66,7 +70,7 @@ class Ekc_Database_Access {
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
-			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
@@ -88,6 +92,7 @@ class Ekc_Database_Access {
 				'is_auto_backup_enabled'	=> intval( $tournament->is_auto_backup_enabled() ),
 				'tournament_system'			=> $this->truncate_string( $tournament->get_tournament_system(), 20 ),
 				'elimination_rounds'		=> $this->truncate_string( $tournament->get_elimination_rounds(), 20 ),
+				'elimination_silver_rounds'	=> $this->truncate_string( $tournament->get_elimination_silver_rounds(), 20 ),
 				'elimination_max_points_per_round'		=> $tournament->get_elimination_max_points_per_round(),
 				'swiss_system_rounds'		=> $tournament->get_swiss_system_rounds(),
 				'swiss_system_max_points_per_round'		=> $tournament->get_swiss_system_max_points_per_round(),
@@ -101,7 +106,7 @@ class Ekc_Database_Access {
 				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
@@ -140,8 +145,8 @@ class Ekc_Database_Access {
 			"
 			SELECT tournament_id, code_name, name, owner_user_id, 
 			       tournament_date,team_size, max_teams, is_wait_list_enabled,
-				   is_player_names_required, is_auto_backup_enabled,
-				   tournament_system, elimination_rounds, elimination_max_points_per_round,
+				   is_player_names_required, is_auto_backup_enabled, tournament_system, 
+				   elimination_rounds, elimination_silver_rounds, elimination_max_points_per_round,
 				   swiss_system_rounds, swiss_system_max_points_per_round,
 				   swiss_system_bye_points, swiss_system_virtual_result_points, swiss_system_additional_rounds,
 				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time,
@@ -166,8 +171,8 @@ class Ekc_Database_Access {
 			"
 			SELECT tournament_id, code_name, name, owner_user_id,
 			       tournament_date,team_size, max_teams, is_wait_list_enabled,
-				   is_player_names_required, is_auto_backup_enabled,
-				   tournament_system, elimination_rounds, elimination_max_points_per_round,
+				   is_player_names_required, is_auto_backup_enabled, tournament_system, 
+				   elimination_rounds, elimination_silver_rounds, elimination_max_points_per_round,
 				   swiss_system_rounds, swiss_system_max_points_per_round,
 				   swiss_system_bye_points, swiss_system_virtual_result_points, swiss_system_additional_rounds,
 				   swiss_system_slide_match_rounds, swiss_system_round_time, swiss_system_tiebreak_time,
@@ -200,6 +205,7 @@ class Ekc_Database_Access {
 		$tournament->set_auto_backup_enabled( boolval( $row->is_auto_backup_enabled ) );
 		$tournament->set_tournament_system( strval( $row->tournament_system ) );
 		$tournament->set_elimination_rounds( strval( $row->elimination_rounds ) );
+		$tournament->set_elimination_silver_rounds( strval( $row->elimination_silver_rounds ) );
 		$tournament->set_elimination_max_points_per_round( $row->elimination_max_points_per_round );
 		$tournament->set_swiss_system_rounds( $row->swiss_system_rounds );
 		$tournament->set_swiss_system_max_points_per_round( $row->swiss_system_max_points_per_round );
