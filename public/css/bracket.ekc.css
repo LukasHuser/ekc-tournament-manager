@@ -153,13 +153,8 @@
   height: 8rem;
 }
 @media screen and (min-width: 30rem) {
-  .tournament-bracket.participants-8 .round.finals .single-bracket {
+  .tournament-bracket.participants-8 .round.finals {
     margin-top: 10rem;
-  }
-}
-@media screen and (max-width: 30rem) {
-  .tournament-bracket.participants-8 .round.finals .single-bracket {
-    margin-bottom: 2rem;
   }
 }
 @media screen and (min-width: 30rem) {
@@ -310,13 +305,8 @@
   height: 32rem;
 }
 @media screen and (min-width: 30rem) {
-  .tournament-bracket.participants-32 .round.finals .single-bracket {
+  .tournament-bracket.participants-32 .round.finals {
     margin-top: 10rem;
-  }
-}
-@media screen and (max-width: 30rem) {
-  .tournament-bracket.participants-32 .round.finals .single-bracket {
-    margin-bottom: 2rem;
   }
 }
 @media screen and (min-width: 30rem) {

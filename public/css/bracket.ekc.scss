@@ -202,13 +202,10 @@ $font-content:          "EKC Font", sans-serif;
                 }
             }
             &.finals {
+              @media screen and (min-width: 30rem) {
+                margin-top: 10rem;
+              }
                 .single-bracket {
-                    @media screen and (min-width: 30rem) {
-                        margin-top: 10rem;
-                    }
-                    @media screen and (max-width: 30rem) {
-                        margin-bottom: 2rem;
-                    }
                     .matchups {
                         .matchup {
                             &:not(:last-child) {
@@ -425,13 +422,10 @@ $font-content:          "EKC Font", sans-serif;
                 }
             }
             &.finals {
+              @media screen and (min-width: 30rem) {
+                margin-top: 10rem;
+              }
                 .single-bracket {
-                    @media screen and (min-width: 30rem) {
-                        margin-top: 10rem;
-                    }
-                    @media screen and (max-width: 30rem) {
-                        margin-bottom: 2rem;
-                    }
                     .matchups {
                         .matchup {
                             &:not(:last-child) {
