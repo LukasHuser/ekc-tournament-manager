@@ -52,6 +52,24 @@
 .tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.loser {
   color: #888888;
 }
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.gold .label::before, .tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.silver .label::before, .tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.bronze .label::before {
+  content: "";
+  border-radius: 50%;
+  width: 0.8rem;
+  height: 0.8rem;
+  display: inline-block;
+  vertical-align: baseline;
+  margin-right: 0.4rem;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.gold .label::before {
+  background: #d6af36;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.silver .label::before {
+  background: #a7a7ad;
+}
+.tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant.bronze .label::before {
+  background: #a77044;
+}
 .tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant span {
   line-height: 3rem;
   font-size: 1rem;
@@ -67,7 +85,7 @@
 }
 .tournament-bracket .round .single-bracket > div.matchups .matchup .participants .participant .score {
   float: right;
-  padding-right: 1em;
+  padding-right: 1rem;
 }
 @media screen and (max-width: 30rem) {
   .tournament-bracket .round .single-bracket > div.connector {

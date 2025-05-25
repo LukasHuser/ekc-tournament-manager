@@ -5,6 +5,9 @@ $color-background:      #ffffff;
 $color-lose:            #888888;
 $color-win:             #000000;
 $color-border:          #000000;
+$color-gold:            #d6af36;
+$color-silver:          #a7a7ad;
+$color-bronze:          #a77044;
 $font-content:          "EKC Font", sans-serif;
 
 
@@ -56,6 +59,24 @@ $font-content:          "EKC Font", sans-serif;
                                 &.loser {
                                     color: $color-lose;
                                 }
+                                &.gold .label::before, &.silver .label::before, &.bronze .label::before {
+                                    content: "";
+                                    border-radius: 50%;
+                                    width: 0.8rem;
+                                    height: 0.8rem;
+                                    display: inline-block;
+                                    vertical-align: baseline;
+                                    margin-right: 0.4rem;
+                                }
+                                &.gold .label::before {
+                                  background: $color-gold;
+                                }
+                                &.silver .label::before {
+                                  background: $color-silver;
+                                }
+                                &.bronze .label::before {
+                                  background: $color-bronze;
+                                }
                                 span {
                                     line-height: 3rem;
                                     font-size: 1rem;
@@ -71,7 +92,7 @@ $font-content:          "EKC Font", sans-serif;
                                 }
                                 .score {
                                     float: right;
-                                    padding-right: 1em;
+                                    padding-right: 1rem;
                                 }
                             }
                         }

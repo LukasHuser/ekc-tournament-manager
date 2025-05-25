@@ -288,7 +288,7 @@ class Ekc_Shortcode_Helper {
 		$result_final = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_1);
 		$result_3rd = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_FINALS_2);
 
-		$html = $this->bracket_matchups( $db, $result_final, $result_3rd, $show_country, false );
+		$html = $this->bracket_matchups_finals( $db, $result_final, $result_3rd, $show_country );
 		return $this->bracket_round( 'finals', __( 'Finals', 'ekc-tournament-manager' ), $html );
 	}
 
@@ -297,7 +297,7 @@ class Ekc_Shortcode_Helper {
 		$result_semi_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_1);
 		$result_semi_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_SEMIFINALS_2);
 		
-		$html = $this->bracket_matchups( $db, $result_semi_1, $result_semi_2, $show_country, true );
+		$html = $this->bracket_matchups( $db, $result_semi_1, $result_semi_2, $show_country );
 		return $this->bracket_round( 'semifinals', __( 'Semifinals', 'ekc-tournament-manager' ), $html );
 	}
 
@@ -308,8 +308,8 @@ class Ekc_Shortcode_Helper {
 		$result_quarter_3 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_3);
 		$result_quarter_4 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_4_FINALS_4);
 		
-		$html = $this->bracket_matchups( $db, $result_quarter_1, $result_quarter_2, $show_country, true )
-		      . $this->bracket_matchups( $db, $result_quarter_3, $result_quarter_4, $show_country, true );
+		$html = $this->bracket_matchups( $db, $result_quarter_1, $result_quarter_2, $show_country )
+		      . $this->bracket_matchups( $db, $result_quarter_3, $result_quarter_4, $show_country );
 		return $this->bracket_round( 'quarterfinals', __( '1/4 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
@@ -325,10 +325,10 @@ class Ekc_Shortcode_Helper {
 		$result_1_8_7 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_7);
 		$result_1_8_8 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_8_FINALS_8);
 		
-		$html = $this->bracket_matchups( $db, $result_1_8_1, $result_1_8_2, $show_country, true )
-			  . $this->bracket_matchups( $db, $result_1_8_3, $result_1_8_4, $show_country, true )
-			  . $this->bracket_matchups( $db, $result_1_8_5, $result_1_8_6, $show_country, true )
-		      . $this->bracket_matchups( $db, $result_1_8_7, $result_1_8_8, $show_country, true );
+		$html = $this->bracket_matchups( $db, $result_1_8_1, $result_1_8_2, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_8_3, $result_1_8_4, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_8_5, $result_1_8_6, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_8_7, $result_1_8_8, $show_country );
 		return $this->bracket_round( 'round-of-16', __( '1/8 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
@@ -352,14 +352,14 @@ class Ekc_Shortcode_Helper {
 		$result_1_16_15 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_15);
 		$result_1_16_16 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_16_FINALS_16);
 		
-		$html = $this->bracket_matchups( $db, $result_1_16_1, $result_1_16_2, $show_country, true )
-			  . $this->bracket_matchups( $db, $result_1_16_3, $result_1_16_4, $show_country, true )
-		      . $this->bracket_matchups( $db, $result_1_16_5, $result_1_16_6, $show_country, true )
-			  . $this->bracket_matchups( $db, $result_1_16_7, $result_1_16_8, $show_country, true )
-			  . $this->bracket_matchups( $db, $result_1_16_9, $result_1_16_10, $show_country, true )
-			  . $this->bracket_matchups( $db, $result_1_16_11, $result_1_16_12, $show_country, true )
-		      . $this->bracket_matchups( $db, $result_1_16_13, $result_1_16_14, $show_country, true )
-		      . $this->bracket_matchups( $db, $result_1_16_15, $result_1_16_16, $show_country, true );
+		$html = $this->bracket_matchups( $db, $result_1_16_1, $result_1_16_2, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_16_3, $result_1_16_4, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_16_5, $result_1_16_6, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_16_7, $result_1_16_8, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_16_9, $result_1_16_10, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_16_11, $result_1_16_12, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_16_13, $result_1_16_14, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_16_15, $result_1_16_16, $show_country );
   		return $this->bracket_round( 'round-of-32', __( '1/16 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
@@ -371,9 +371,7 @@ class Ekc_Shortcode_Helper {
 		</div>';
 	}
 
-	private function bracket_matchups( $db, $result1, $result2, $show_country, $connector = true ) {
-		$html_connector = $connector ? $this->bracket_connector() : '';
-
+	private function bracket_matchups( $db, $result1, $result2, $show_country ) {
 		return
 		'<div class="single-bracket">
 		  <div class="matchups">
@@ -384,11 +382,25 @@ class Ekc_Shortcode_Helper {
 			' . $this->bracket_participants( $db, $result2, $show_country ) . '
 			</div>
 		  </div>
-		  ' . $html_connector  . '
+		  ' . $this->bracket_connector()  . '
 	    </div>';
 	}
 
-	private function bracket_participants( $db, $result, $show_country ) {
+	private function bracket_matchups_finals( $db, $result1, $result2, $show_country ) {
+		return
+		'<div class="single-bracket">
+		  <div class="matchups">
+			<div class="matchup">
+			' . $this->bracket_participants( $db, $result1, $show_country, 'gold', 'silver' ) . '
+			</div>
+			<div class="matchup">
+			' . $this->bracket_participants( $db, $result2, $show_country, 'bronze', '' ) . '
+			</div>
+		  </div>
+	    </div>';
+	}
+
+	private function bracket_participants( $db, $result, $show_country, $winner_css_class = null, $loser_css_class = null ) {		
 		$team1_name = '';
 		$team1_country = '';
 		$team1_score = '';
@@ -413,14 +425,29 @@ class Ekc_Shortcode_Helper {
 			}	
 		}
 
+		$winner_css_class = is_null( $winner_css_class ) ? 'winner' : $winner_css_class;
+		$loser_css_class = is_null( $loser_css_class ) ? 'loser' : $loser_css_class;
+
+		$team1_css_class = '';
+		$team2_css_class = '';
+		if ( $team1_score < $team2_score ) {
+			$team1_css_class = $loser_css_class;
+			$team2_css_class = $winner_css_class;
+		}
+		elseif ( $team2_score < $team1_score ) {
+			$team1_css_class = $winner_css_class;
+			$team2_css_class = $loser_css_class;
+		}
+		// else: no css classes defined
+
 		return
 		'<div class="participants">
-		  <div class="participant ' . ($team1_score < $team2_score ? 'loser' : 'winner') . '">
+		  <div class="participant ' . $team1_css_class . '">
 		    <span class="flag-icon flag-icon-' . esc_attr( $team1_country ) . $this->css_class_hidden( $show_country ) . '"></span>
 		    <span class="label">' . esc_html( $team1_name ) . '</span>
 		    <span class="score"> ' . esc_html( $team1_score ) . '</span>
 		  </div>
-		  <div class="participant ' . ($team2_score < $team1_score ? 'loser' : 'winner') . '">
+		  <div class="participant ' . $team2_css_class . '">
 		    <span class="flag-icon flag-icon-' . esc_attr( $team2_country ) . $this->css_class_hidden( $show_country ) . '"></span>
 		    <span class="label">' . esc_html( $team2_name ) . '</span>
 		    <span class="score"> ' . esc_html( $team2_score ) . '</span>
