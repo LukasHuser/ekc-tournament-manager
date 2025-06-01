@@ -70,15 +70,14 @@ class Ekc_Elimination_Bracket_Admin_Page {
       if ( ! $bracket_type ) {
         $bracket_type = Ekc_Elimination_Bracket_Helper::BRACKET_TYPE_GOLD; // default is gold bracket
       }
+      $stage = Ekc_Elimination_Bracket_Helper::get_stage_for_bracket_type( $bracket_type );
 
       if ( $action === 'elimination-bracket-store'
         && $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'tournament', $tournament_id ) ) ) {
         $db = new Ekc_Database_Access();
         $tournament = $db->get_tournament_by_id( $tournament_id );
-        $stage = Ekc_Elimination_Bracket_Helper::get_stage_for_bracket_type( $bracket_type );
         $elimination_rounds = Ekc_Elimination_Bracket_Helper::get_elimination_rounds_for_bracket_type( $tournament, $bracket_type );
         $results = $db->get_tournament_results( $tournament_id, $stage, '', null );
-        
         
         foreach ( Ekc_Elimination_Bracket_Helper::get_result_types( $elimination_rounds ) as $result_type ) {
           $this->insert_or_update_result( $db, $stage, $results, $result_type );
@@ -87,6 +86,20 @@ class Ekc_Elimination_Bracket_Admin_Page {
           $helper = new Ekc_Backup_Helper();
           $helper->store_backup( $tournament_id );
         }
+      }
+      elseif ( $action === 'ekc_admin_bracket_advance' ) {
+        // asynchronous ajax request
+        $result_type = $validation_helper->validate_post_text( 'result-type' );
+        $team_id_advance = $validation_helper->validate_post_key( 'team-id-advance' );
+
+        if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'result', $result_type ) ) ) {
+          echo( '{"html": "<span class=\"dashicons dashicons-no\"></span>"}' );
+          wp_die();
+        }
+
+        [$next_round_result_type, $next_round_team_index] = $this->elimination_bracket_advance( $tournament_id, $stage, $result_type, $team_id_advance );
+        echo( '{"result_type": "' . $next_round_result_type . '", "team_index": ' . $next_round_team_index . ', "html": "<span class=\"dashicons dashicons-yes\"></span>"}' );
+        wp_die();
       }
       $admin_helper->elimination_bracket_redirect( $tournament_id );
 		}
@@ -151,30 +164,34 @@ class Ekc_Elimination_Bracket_Admin_Page {
     $action_url = sprintf( '?page=ekc-bracket&tournamentid=%s&bracket=%s', $tournament->get_tournament_id(), $bracket_type );
     ?>
 
-    <form class="ekc-form" method="post" action="<?php echo esc_url( $action_url ) ?>" accept-charset="utf-8">
+    <form class="ekc-form" id="elimination-bracket-form" method="post" action="<?php echo esc_url( $action_url ) ?>" accept-charset="utf-8">
       <fieldset>
         <div class="columns">
 <?php 
 
     $elimination_rounds = Ekc_Elimination_Bracket_Helper::get_elimination_rounds_for_bracket_type( $tournament, $bracket_type );
     $rank_offset = Ekc_Elimination_Bracket_Helper::get_rank_offset( $tournament, $bracket_type );
-    $show_rank_numbers = true; 
-    if (Ekc_Elimination_Bracket_Helper::has_1_16_finals( $elimination_rounds ) ) {
-      $this->show_column( __( '1/16 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS, $teams, $max_points_per_round, $show_rank_numbers, $rank_offset );
+    $show_rank_numbers = true;
+    if ( Ekc_Elimination_Bracket_Helper::has_1_32_finals( $elimination_rounds ) ) {
+      $this->show_column( __( '1/32 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_32_FINALS, $teams, $max_points_per_round, true, $show_rank_numbers, $rank_offset );
       $show_rank_numbers = false;
     }
-    if (Ekc_Elimination_Bracket_Helper::has_1_8_finals( $elimination_rounds ) ) {
-      $this->show_column( __( '1/8 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS, $teams, $max_points_per_round, $show_rank_numbers, $rank_offset );
+    if ( Ekc_Elimination_Bracket_Helper::has_1_16_finals( $elimination_rounds ) ) {
+      $this->show_column( __( '1/16 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_16_FINALS, $teams, $max_points_per_round, true, $show_rank_numbers, $rank_offset );
       $show_rank_numbers = false;
     }
-    if (Ekc_Elimination_Bracket_Helper::has_1_4_finals( $elimination_rounds ) ) {
-      $this->show_column( __( '1/4 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS, $teams, $max_points_per_round, $show_rank_numbers, $rank_offset );
+    if ( Ekc_Elimination_Bracket_Helper::has_1_8_finals( $elimination_rounds ) ) {
+      $this->show_column( __( '1/8 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_8_FINALS, $teams, $max_points_per_round, true, $show_rank_numbers, $rank_offset );
+      $show_rank_numbers = false;
+    }
+    if ( Ekc_Elimination_Bracket_Helper::has_1_4_finals( $elimination_rounds ) ) {
+      $this->show_column( __( '1/4 Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_4_FINALS, $teams, $max_points_per_round, true, $show_rank_numbers, $rank_offset );
     }
     // never show rank numbers for semifinals and finals
-    if (Ekc_Elimination_Bracket_Helper::has_1_2_finals( $elimination_rounds ) ) {
-      $this->show_column( __( 'Semifinals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS, $teams, $max_points_per_round, false, 0 );
+    if ( Ekc_Elimination_Bracket_Helper::has_1_2_finals( $elimination_rounds ) ) {
+      $this->show_column( __( 'Semifinals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_1_2_FINALS, $teams, $max_points_per_round, false, false, 0 );
     }
-    $this->show_column( __( 'Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS, $teams, $max_points_per_round, false, 0 );
+    $this->show_column( __( 'Finals', 'ekc-tournament-manager' ), $results, Ekc_Elimination_Bracket_Helper::BRACKET_RESULT_TYPES_FINALS, $teams, $max_points_per_round, false, false, 0 );
 ?>
 
         </div>
@@ -228,7 +245,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
     }
   }
 
-  private function show_column( $column_name, $results, $result_types, $teams, $max_points_per_round, $show_rank_numbers, $rank_offset ) {
+  private function show_column( $column_name, $results, $result_types, $teams, $max_points_per_round, $show_advance_link, $show_rank_numbers, $rank_offset ) {
     ?>
     <h3><?php echo esc_html( $column_name ) ?></h3>
     <table>
@@ -238,7 +255,7 @@ class Ekc_Elimination_Bracket_Admin_Page {
       <tbody>
     <?php
         foreach ( $result_types as $result_type ) {
-          $this->show_result_if_exists( $results, $result_type, $teams, $max_points_per_round, $show_rank_numbers, $rank_offset );
+          $this->show_result_if_exists( $results, $result_type, $teams, $max_points_per_round, $show_advance_link, $show_rank_numbers, $rank_offset );
         }
     ?>
       </tbody>
@@ -246,21 +263,21 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <?php
   }
 
-  private function show_result_if_exists( $results, $result_type, $teams, $max_points_per_round, $show_rank_numbers, $rank_offset ) {
+  private function show_result_if_exists( $results, $result_type, $teams, $max_points_per_round, $show_advance_link, $show_rank_numbers, $rank_offset ) {
     $result = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, $result_type);
     $rank_numbers = [];
     if ( $show_rank_numbers ) {
       $rank_numbers = Ekc_Elimination_Bracket_Helper::get_rank_numbers_for_result_type( $result_type );
     }
     if ( $result ) {
-      $this->show_result( $result, $teams, $max_points_per_round, $rank_numbers, $rank_offset );
+      $this->show_result( $result, $teams, $max_points_per_round, $show_advance_link, $rank_numbers, $rank_offset );
     }
     else {
-      $this->empty_result( $result_type, $max_points_per_round, $rank_numbers, $rank_offset );
+      $this->empty_result( $result_type, $max_points_per_round, $show_advance_link, $rank_numbers, $rank_offset );
     }
   }
 
-  private function show_result( $result, $teams, $max_points_per_round, $rank_numbers, $rank_offset ) {
+  private function show_result( $result, $teams, $max_points_per_round, $show_advance_link, $rank_numbers, $rank_offset ) {
     $result_type = $result->get_result_type();
 ?>
 <tr>
@@ -278,7 +295,11 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <?php 
         if ( count( $rank_numbers ) > 0 ) { ?>
           <span>(<?php echo esc_html( $rank_numbers[0] + $rank_offset ) ?>)</span><?php
-        } ?>
+        }
+        if ( $show_advance_link ) { ?>
+          <td><?php $this->show_elimination_bracket_advance_link( $result_type, '1' ) ?></td> <?php
+        }
+    ?>
   </td>
 </tr>
 <tr>
@@ -296,14 +317,18 @@ class Ekc_Elimination_Bracket_Admin_Page {
     <?php 
         if ( count( $rank_numbers ) > 0 ) { ?>
           <span>(<?php echo esc_html( $rank_numbers[1] + $rank_offset ) ?>)</span><?php
-        } ?>
+        }
+        if ( $show_advance_link ) { ?>
+          <td><?php $this->show_elimination_bracket_advance_link( $result_type, '2' ) ?></td> <?php
+        }
+    ?>
   </td>
 </tr>
 
 <?php
   }
 
-  private function empty_result( $result_type, $max_points_per_round, $rank_numbers, $rank_offset ) {
+  private function empty_result( $result_type, $max_points_per_round, $show_advance_link, $rank_numbers, $rank_offset ) {
     ?>
     <tr>
       <td><input id="<?php echo esc_attr( 'pitch-' . $result_type ) ?>" name="<?php echo esc_attr( 'pitch-' . $result_type ) ?>" type="text" maxlength="20" size="5" /></td>
@@ -315,7 +340,11 @@ class Ekc_Elimination_Bracket_Admin_Page {
         <?php
           if ( count( $rank_numbers ) > 0 ) { ?>
             <span>(<?php echo esc_html( $rank_numbers[0] + $rank_offset ) ?>)</span><?php
-          } ?>
+          }
+          if ( $show_advance_link ) { ?>
+            <td><?php $this->show_elimination_bracket_advance_link( $result_type, '1' ) ?></td> <?php
+          }
+      ?>
       </td>
     </tr>
     <tr>
@@ -328,11 +357,61 @@ class Ekc_Elimination_Bracket_Admin_Page {
         <?php
           if ( count( $rank_numbers ) > 0 ) { ?>
             <span>(<?php echo esc_html( $rank_numbers[1] + $rank_offset ) ?>)</span><?php
-          } ?>
+          }
+          if ( $show_advance_link ) { ?>
+            <td><?php $this->show_elimination_bracket_advance_link( $result_type, '2' ) ?></td> <?php
+          }
+      ?>
       </td>
     </tr>
     
     <?php
+  }
+
+  private function show_elimination_bracket_advance_link( $result_type, $team_index_advance ) {
+    $nonce_helper = new Ekc_Nonce_Helper();
+    ?>
+    <a class="ekc-bracket-advance ekc-icon-link" href="javascript:void(0);" 
+       data-result-type="<?php echo esc_attr( $result_type ) ?>" 
+       data-team-index-advance="<?php echo esc_attr( $team_index_advance ) ?>"
+       data-nonce="<?php echo esc_attr( wp_create_nonce( $nonce_helper->nonce_text( 'ekc_admin_bracket_advance', 'result', $result_type  ) ) ) ?>"
+       title="<?php esc_html_e( 'advance to next round', 'ekc-tournament-manager' ) ?>">
+       <span class="dashicons dashicons-controls-forward"></span>
+    </a> <!-- see admin.js for onClick handler -->
+    <span id="<?php echo esc_attr( 'bracket-advance-' . $result_type ) ?>"></span> 
+    <?php  
+  }
+
+  private function elimination_bracket_advance( $tournament_id, $stage, $result_type, $team_id_advance ) {
+    $db = new Ekc_Database_Access();
+    $existing_results = $db->get_tournament_results( $tournament_id, $stage, $result_type, null );
+    // store current round result
+    $this->insert_or_update_result( $db, $stage, $existing_results, $result_type );
+
+    // store next round result
+    [$next_round_result_type, $next_round_team_index] = Ekc_Elimination_Bracket_Helper::get_next_round_result( $result_type );
+    $existing_results = $db->get_tournament_results( $tournament_id, $stage, $next_round_result_type, null );
+    $next_round_result = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $existing_results, $next_round_result_type );
+
+    if ( ! $next_round_result ) {
+      // create new result for next round
+      $next_round_result = new Ekc_Result();
+      $next_round_result->set_stage( $stage );
+      $next_round_result->set_result_type( $next_round_result_type );
+      $next_round_result->set_tournament_id( $tournament_id );
+    }
+
+    // advance team to next round
+    if ( $next_round_team_index === 1 ) {
+      $next_round_result->set_team1_id( $team_id_advance );
+    }
+    elseif ( $next_round_team_index === 2 ) {
+      $next_round_result->set_team2_id( $team_id_advance );
+    }
+
+    $db->insert_or_update_tournament_result( $next_round_result );
+
+    return [$next_round_result_type, $next_round_team_index];
   }
 
   private function delete_results( $tournament_id, $bracket_type ) {

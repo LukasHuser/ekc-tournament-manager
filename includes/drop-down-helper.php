@@ -37,12 +37,14 @@ class Ekc_Drop_Down_Helper {
 	const ELIMINATION_BRACKET_1_4 	= '1/4-finals';
 	const ELIMINATION_BRACKET_1_8 	= '1/8-finals';
 	const ELIMINATION_BRACKET_1_16	= '1/16-finals';
+	const ELIMINATION_BRACKET_1_32	= '1/32-finals';
 
 	const ELIMINATION_BRACKET = array(
 		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_2,
 		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_4,
 		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_8,
-		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16
+		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16,
+		Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_32
 	);
 
 	const TOURNAMENT_STAGE_KO			= 'elimination';

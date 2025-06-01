@@ -263,6 +263,9 @@ class Ekc_Shortcode_Helper {
 		$results = $db->get_tournament_results( $tournament->get_tournament_id(), $stage, null, null );
 
 		$html = '';
+		if ( Ekc_Elimination_Bracket_Helper::has_1_32_finals( $elimination_rounds ) ) {
+			$html = $html . $this->bracket_round_of_64_div( $results, $show_country );
+		}
 		if ( Ekc_Elimination_Bracket_Helper::has_1_16_finals( $elimination_rounds ) ) {
 			$html = $html . $this->bracket_round_of_32_div( $results, $show_country );
 		}
@@ -361,6 +364,61 @@ class Ekc_Shortcode_Helper {
 		      . $this->bracket_matchups( $db, $result_1_16_13, $result_1_16_14, $show_country )
 		      . $this->bracket_matchups( $db, $result_1_16_15, $result_1_16_16, $show_country );
   		return $this->bracket_round( 'round-of-32', __( '1/16 Finals', 'ekc-tournament-manager' ), $html );
+	}
+
+	private function bracket_round_of_64_div( $results, $show_country ) {
+		$db = new Ekc_Database_Access();
+
+		$result_1_32_1 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_1 );
+		$result_1_32_2 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_2 );
+		$result_1_32_3 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_3 );
+		$result_1_32_4 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_4 );
+		$result_1_32_5 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_5 );
+		$result_1_32_6 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_6 );
+		$result_1_32_7 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_7 );
+		$result_1_32_8 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_8 );
+		$result_1_32_9 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_9 );
+		$result_1_32_10 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_10 );
+		$result_1_32_11 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_11 );
+		$result_1_32_12 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_12 );
+		$result_1_32_13 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_13 );
+		$result_1_32_14 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_14 );
+		$result_1_32_15 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_15 );
+		$result_1_32_16 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_16 );
+		$result_1_32_17 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_17 );
+		$result_1_32_18 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_18 );
+		$result_1_32_19 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_19 );
+		$result_1_32_20 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_20 );
+		$result_1_32_21 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_21 );
+		$result_1_32_22 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_22 );
+		$result_1_32_23 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_23 );
+		$result_1_32_24 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_24 );
+		$result_1_32_25 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_25 );
+		$result_1_32_26 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_26 );
+		$result_1_32_27 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_27 );
+		$result_1_32_28 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_28 );
+		$result_1_32_29 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_29 );
+		$result_1_32_30 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_30 );
+		$result_1_32_31 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_31 );
+		$result_1_32_32 = Ekc_Elimination_Bracket_Helper::get_result_for_result_type( $results, Ekc_Elimination_Bracket_Helper::BRACKET_1_32_FINALS_32 );
+		
+		$html = $this->bracket_matchups( $db, $result_1_32_1, $result_1_32_2, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_3, $result_1_32_4, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_5, $result_1_32_6, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_7, $result_1_32_8, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_9, $result_1_32_10, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_11, $result_1_32_12, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_13, $result_1_32_14, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_15, $result_1_32_16, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_17, $result_1_32_18, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_19, $result_1_32_20, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_32_21, $result_1_32_22, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_23, $result_1_32_24, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_25, $result_1_32_26, $show_country )
+			  . $this->bracket_matchups( $db, $result_1_32_27, $result_1_32_28, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_32_29, $result_1_32_30, $show_country )
+		      . $this->bracket_matchups( $db, $result_1_32_31, $result_1_32_32, $show_country );
+  		return $this->bracket_round( 'round-of-64', __( '1/32 Finals', 'ekc-tournament-manager' ), $html );
 	}
 
 	private function bracket_round( $round_css_class, $round_label, $inner_html ) {
@@ -480,6 +538,9 @@ class Ekc_Shortcode_Helper {
 	}
 
 	private function elimination_bracket_to_css_class ( $elimination_bracket ) {
+		if ( $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_32) {
+			return 'participants-64';
+		}
 		if ( $elimination_bracket === Ekc_Drop_Down_Helper::ELIMINATION_BRACKET_1_16) {
 			return 'participants-32';
 		}

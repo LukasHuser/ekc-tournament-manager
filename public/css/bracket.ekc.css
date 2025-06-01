@@ -337,3 +337,118 @@
     margin-bottom: 2rem;
   }
 }
+.tournament-bracket.participants-64 .round.round-of-64 .single-bracket:not(:last-child) {
+  margin-bottom: 2rem;
+}
+.tournament-bracket.participants-64 .round.round-of-64 .single-bracket .matchups .matchup:not(:last-child) {
+  margin-bottom: 2rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-32 .single-bracket:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-32 .single-bracket:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-32 .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 10rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-32 .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-64 .round.round-of-32 .single-bracket .connector .merger {
+  height: 16rem;
+}
+.tournament-bracket.participants-64 .round.round-of-32 .single-bracket .connector .line {
+  height: 8rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-16 .single-bracket:not(:last-child) {
+    margin-bottom: 26rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-16 .single-bracket:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-16 .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 26rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.round-of-16 .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-64 .round.round-of-16 .single-bracket .connector .merger {
+  height: 32rem;
+}
+.tournament-bracket.participants-64 .round.round-of-16 .single-bracket .connector .line {
+  height: 16rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.quarterfinals .single-bracket:not(:last-child) {
+    margin-bottom: 58rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.quarterfinals .single-bracket:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 58rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.quarterfinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-64 .round.quarterfinals .single-bracket .connector .merger {
+  height: 64rem;
+}
+.tournament-bracket.participants-64 .round.quarterfinals .single-bracket .connector .line {
+  height: 32rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 122rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.semifinals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+.tournament-bracket.participants-64 .round.semifinals .single-bracket .connector .merger {
+  height: 128rem;
+}
+.tournament-bracket.participants-64 .round.semifinals .single-bracket .connector .line {
+  height: 64rem;
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.finals {
+    margin-top: 10rem;
+  }
+}
+@media screen and (min-width: 30rem) {
+  .tournament-bracket.participants-64 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 4rem;
+  }
+}
+@media screen and (max-width: 30rem) {
+  .tournament-bracket.participants-64 .round.finals .single-bracket .matchups .matchup:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}

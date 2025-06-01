@@ -117,6 +117,8 @@ class Ekc_Tournament_Manager {
 		// Admin ajax calls
 		// use wp_ajax prefix (but not wp_ajax_nopriv prefix) to allow the REST call to work for logged-in users but not for non-logged-in users
 		$this->loader->add_action( 'wp_ajax_ekc_admin_swiss_system_store_result', $plugin_admin, 'create_swiss_system_page' );
+		$this->loader->add_action( 'wp_ajax_ekc_admin_bracket_advance', $plugin_admin, 'create_bracket_page' );
+
 
 		// for the redirect pattern to work, we need to write http headers before any output is written
 		// we use the admin_init hook 

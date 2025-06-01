@@ -11,6 +11,11 @@ table.ekc-table th, table.ekc-table td {
   padding-right: 1em;
 }
 
+/* icon link */
+.ekc-icon-link {
+  text-decoration: none;
+  color: #000;
+}
 
 /* forms */
 label.ekc-required::after {

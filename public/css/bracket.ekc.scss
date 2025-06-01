@@ -223,9 +223,9 @@ $font-content:          "EKC Font", sans-serif;
                 }
             }
             &.finals {
-              @media screen and (min-width: 30rem) {
-                margin-top: 10rem;
-              }
+                @media screen and (min-width: 30rem) {
+                  margin-top: 10rem;
+                }
                 .single-bracket {
                     .matchups {
                         .matchup {
@@ -352,8 +352,6 @@ $font-content:          "EKC Font", sans-serif;
                     }
                 }
             }
-        }
-        .round {
             &.round-of-16 {
                 .single-bracket {
                     &:not(:last-child) {
@@ -443,9 +441,9 @@ $font-content:          "EKC Font", sans-serif;
                 }
             }
             &.finals {
-              @media screen and (min-width: 30rem) {
-                margin-top: 10rem;
-              }
+                @media screen and (min-width: 30rem) {
+                  margin-top: 10rem;
+                }
                 .single-bracket {
                     .matchups {
                         .matchup {
@@ -463,4 +461,161 @@ $font-content:          "EKC Font", sans-serif;
             }
         }
     }
+    &.participants-64 {
+      .round {
+          &.round-of-64 {
+              .single-bracket {
+                  &:not(:last-child) {
+                      margin-bottom: 2rem;
+                  }
+                  .matchups {
+                      .matchup {
+                          &:not(:last-child) {
+                              margin-bottom: 2rem;
+                          }
+                      }
+                  }
+              }
+          }
+          &.round-of-32 {
+            .single-bracket {
+                &:not(:last-child) {
+                    @media screen and (min-width: 30rem) {
+                        margin-bottom: 10rem;
+                    }
+                    @media screen and (max-width: 30rem) {
+                        margin-bottom: 2rem;
+                    }
+                }
+                .matchups {
+                    .matchup {
+                        &:not(:last-child) {
+                            @media screen and (min-width: 30rem) {
+                               margin-bottom: 10rem;
+                            }
+                            @media screen and (max-width: 30rem) {
+                                margin-bottom: 2rem;
+                            }
+                        }
+                    }
+                }
+                .connector {
+                    .merger {
+                        height: 16rem;
+                    }
+                    .line {
+                        height: 8rem;
+                    }
+                }
+            }
+        }
+          &.round-of-16 {
+              .single-bracket {
+                  &:not(:last-child) {
+                      @media screen and (min-width: 30rem) {
+                          margin-bottom: 26rem;
+                      }
+                      @media screen and (max-width: 30rem) {
+                          margin-bottom: 2rem;
+                      }
+                  }
+                  .matchups {
+                      .matchup {
+                          &:not(:last-child) {
+                              @media screen and (min-width: 30rem) {
+                                 margin-bottom: 26rem;
+                              }
+                              @media screen and (max-width: 30rem) {
+                                  margin-bottom: 2rem;
+                              }
+                          }
+                      }
+                  }
+                  .connector {
+                      .merger {
+                          height: 32rem;
+                      }
+                      .line {
+                          height: 16rem;
+                      }
+                  }
+              }
+          }
+          &.quarterfinals {
+              .single-bracket {
+                  &:not(:last-child) {
+                      @media screen and (min-width: 30rem) {
+                          margin-bottom: 58rem;
+                      }
+                      @media screen and (max-width: 30rem) {
+                          margin-bottom: 2rem;
+                      }
+                  }
+                  .matchups {
+                      .matchup {
+                          &:not(:last-child) {
+                              @media screen and (min-width: 30rem) {
+                                  margin-bottom: 58rem;
+                              }
+                              @media screen and (max-width: 30rem) {
+                                  margin-bottom: 2rem;
+                              }
+                          }
+                      }
+                  }
+                  .connector {
+                      .merger {
+                          height: 64rem;
+                      }
+                      .line {
+                          height: 32rem;
+                      }
+                  }
+              }
+          }
+          &.semifinals {
+              .single-bracket {
+                  .matchups {
+                      .matchup {
+                          &:not(:last-child) {
+                              @media screen and (min-width: 30rem) {
+                                  margin-bottom: 122rem;
+                              }
+                              @media screen and (max-width: 30rem) {
+                                  margin-bottom: 2rem;
+                              }
+                          }
+                      }
+                  }
+                  .connector {
+                      .merger {
+                          height: 128rem;
+                      }
+                      .line {
+                          height: 64rem;
+                      }
+                  }
+              }
+          }
+          &.finals {
+              @media screen and (min-width: 30rem) {
+                margin-top: 10rem;
+              }
+              .single-bracket {
+                  .matchups {
+                      .matchup {
+                          &:not(:last-child) {
+                              @media screen and (min-width: 30rem) {
+                                  margin-bottom: 4rem;
+                              }
+                              @media screen and (max-width: 30rem) {
+                                  margin-bottom: 2rem;
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  }
 }

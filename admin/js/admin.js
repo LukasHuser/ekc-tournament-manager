@@ -351,6 +351,70 @@
 
       $( "#swiss-system-new-round-form" ).submit(function(event){
         return validateResults();
+      });
+
+      /***************************************************************************/
+
+      /* store a single result and advance a team to the next elimination round (do not submit the whole form) */
+      var eliminationBracketAdvance = function( a ) {
+        var result_type = $(a).data("result-type");
+        var nonce = $(a).data("nonce");
+
+        var team_index_advance = $(a).data("team-index-advance"); // returns an integer (1 or 2), not a string
+        var team1_id = $("#team1-" + result_type).val();
+        var team2_id = $("#team2-" + result_type).val();
+        var team_id_advance = null;
+        if (team_index_advance === 1) {
+          team_id_advance = team1_id;
+        }
+        else if (team_index_advance === 2) {
+          team_id_advance = team2_id;
+        }
+
+        var elimination_bracket_form = $("#elimination-bracket-form");
+        var tournament_id = elimination_bracket_form.find("input#tournamentid").val();
+        var bracket_type = elimination_bracket_form.find("input#bracket").val();
+
+        var post_data = {
+          "action": "ekc_admin_bracket_advance",
+          "tournamentid": tournament_id,
+          "bracket": bracket_type,
+          "team-id-advance": team_id_advance,
+          "result-type": result_type,
+          "ekc-nonce": nonce
+        };
+        post_data["pitch-" + result_type] = $("#pitch-" + result_type).val();
+        post_data["team1-" + result_type] = team1_id;
+        post_data["team2-" + result_type] = team2_id;
+        post_data["team1-score-" + result_type] = $("#team1-score-" + result_type).val();
+        post_data["team2-score-" + result_type] = $("#team2-score-" + result_type).val();
+        post_data["team1-placeholder-" + result_type] = $("#team1-placeholder-" + result_type).val();
+        post_data["team2-placeholder-" + result_type] = $("#team2-placeholder-" + result_type).val();
+
+        $.post(ekc_ajax.ajax_url, post_data, function( json_result ) {
+          var result = $.parseJSON(json_result);
+          $( "#bracket-advance-" + result_type ).html( result.html );
+
+          // advance to next round
+          if (result.hasOwnProperty("team_index") && result.hasOwnProperty("result_type") && ekc.teamsDropDownData) {
+            var selectNode = $( "#team" + result.team_index + "-" + result.result_type );
+            var combobox_widget = selectNode.teams_combobox("instance");
+            if (!combobox_widget.dataLoaded) {
+              $("<option>")
+                .appendTo( selectNode )
+                .attr( "value", team_id_advance )
+                .attr( "selected", "")
+                .text( ekc.teamsDropDownData[team_id_advance] );
+            }
+            selectNode.val(team_id_advance);
+            combobox_widget.input.val(ekc.teamsDropDownData[team_id_advance]);
+          }
+        });
+      };
+
+      $( ".ekc-bracket-advance" ).click(function(){
+        eliminationBracketAdvance( $(this) );
+        return false;
       }); 
       
   });
