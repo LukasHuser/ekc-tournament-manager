@@ -1,6 +1,16 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.3.0 / 2025-06-01
+* CSV import for teams
+* CSV import for seeding scores
+* Elimination bracket: Support for silver bracket
+* Elimination bracket: Support for round of 64
+* Elimination bracket: Added button to advance team to next round
+* Elimination bracket: Fix finals label offset
+* Elimination bracket: Gold, silver, bronze icons added for podium
+* Teams page: Registration fee column added
+
 ## Version 2.2.4 / 2025-04-29
 * Backups: Workaround for unreliable mime type detection for json files
 
