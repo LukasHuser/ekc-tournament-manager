@@ -16,7 +16,10 @@ class Ekc_Teams_Admin_Page {
       return;
     }
 
-    if ( $action === 'new' ) {
+    if ( $action === 'teams' ) {
+			$this->show_teams( $tournament_id );
+		}
+    elseif ( $action === 'new' ) {
 			$this->show_new_team( $tournament_id );
 		}
 		elseif ( $action === 'edit' ) {
@@ -65,8 +68,8 @@ class Ekc_Teams_Admin_Page {
       $notice_text = $this->import_teams_from_csv( $tournament_id );
       $this->show_teams( $tournament_id, $notice_text );
     }
-		elseif ( ! $this->handle_post() ) {
-      $this->show_teams( $tournament_id );
+		else {
+      $this->handle_post();
     }
 	}
 
@@ -80,7 +83,7 @@ class Ekc_Teams_Admin_Page {
     $tournament_id = $validation_helper->validate_post_key( 'tournamentid' );
     if ( $tournament_id ) {
       if ( ! current_user_can( Ekc_Role_Helper::CAPABILITY_EKC_EDIT_TOURNAMENTS, $tournament_id ) ) {
-        return true;
+        return;
       } 
       $team->set_tournament_id( $tournament_id );
       $has_data = true;
@@ -159,8 +162,6 @@ class Ekc_Teams_Admin_Page {
 
       $this->show_teams( $tournament_id );
 		}
-
-    return $has_data;
 	}
 
 	private function extract_player( $first_name_id, $last_name_id, $country_id ) {
@@ -219,6 +220,7 @@ class Ekc_Teams_Admin_Page {
   <form id="teams-filter" method="get" >
   <input id="page" name="page" type="hidden" value="<?php echo esc_attr( $page ) ?>" />
   <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament_id ) ?>" />
+  <input id="action" name="action" type="hidden" value="teams" />
 <?php 
   $teams_table->prepare_items();
   $teams_table->display();

@@ -46,7 +46,7 @@ class Ekc_Shareable_links_Admin_Page {
     if ( $action === 'shareable-links' ) {
       $this->show_shareable_links( $tournament_id );
     }
-    if ( $action === 'generate' ) {
+    elseif ( $action === 'generate' ) {
       if ( $nonce_helper->validate_nonce( $nonce_helper->nonce_text( $action, 'team', $team_id ) ) ) {
         $this->generate_shareable_link( $team_id );
       }
@@ -222,6 +222,7 @@ class Ekc_Shareable_links_Admin_Page {
     <form id="links-filter" method="get" >
     <input id="page" name="page" type="hidden" value="<?php echo esc_attr( $page ) ?>" />
     <input id="tournamentid" name="tournamentid" type="hidden" value="<?php echo esc_attr( $tournament_id ) ?>" />
+    <input id="action" name="action" type="hidden" value="shareable-links" />
     <?php
 	$links_table->prepare_items();
 	$links_table->display();
