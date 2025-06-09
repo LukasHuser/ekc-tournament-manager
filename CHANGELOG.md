@@ -1,6 +1,11 @@
 CHANGELOG EKC Tournament Manager
 ================================
 
+## Version 2.4.0 / 2025-06-09
+* Check-in page for teams in tournament admin
+* Self-check-in for teams on shareable link pages
+* Admin tables: do not use fixed column widths
+
 ## Version 2.3.0 / 2025-06-01
 * CSV import for teams
 * CSV import for seeding scores
