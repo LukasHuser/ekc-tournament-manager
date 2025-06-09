@@ -9,6 +9,12 @@ class Ekc_Tournaments_Backup_Table extends WP_List_Table {
 		$this->tournaments_backup_data = $tournaments_backup_data;
 	}
 
+	protected function get_table_classes() {
+		$table_classes = parent::get_table_classes();
+		// remove 'fixed' css class
+		return array_filter( $table_classes, fn( $table_class ) => $table_class !== 'fixed' );
+	}
+
 	function get_columns(){
 		$columns = array(
 			'file_name'		=> esc_html__( 'Backup File', 'ekc-tournament-manager' ),

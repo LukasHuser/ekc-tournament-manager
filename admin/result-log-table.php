@@ -9,6 +9,12 @@ class Ekc_Result_Log_Table extends WP_List_Table {
 		$this->tournament_id = $tournament_id;
 	}
 
+	protected function get_table_classes() {
+		$table_classes = parent::get_table_classes();
+		// remove 'fixed' css class
+		return array_filter( $table_classes, fn( $table_class ) => $table_class !== 'fixed' );
+	}
+
 	function get_columns(){
 		$columns = array(
 			'log_time'		=> esc_html__( 'Timestamp', 'ekc-tournament-manager' ),
