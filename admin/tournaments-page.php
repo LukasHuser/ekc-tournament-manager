@@ -72,6 +72,7 @@ class Ekc_Tournaments_Admin_Page {
         $tournament->set_wait_list_enabled( $validation_helper->validate_post_boolean( 'waitlist') );
         $tournament->set_player_names_required( $validation_helper->validate_post_boolean( 'playernames' ) );
         $tournament->set_auto_backup_enabled( $validation_helper->validate_post_boolean( 'backup' ) );
+        $tournament->set_check_in_enabled( $validation_helper->validate_post_boolean( 'checkin' ) );
         $tournament->set_tournament_system( $validation_helper->validate_post_dropdown_text( 'system' ) );
         $tournament->set_elimination_rounds( $validation_helper->validate_post_dropdown_text( 'eliminationrounds' ) );
         $tournament->set_elimination_silver_rounds( $validation_helper->validate_post_dropdown_text( 'eliminationsilverrounds' ) );
@@ -212,6 +213,11 @@ class Ekc_Tournaments_Admin_Page {
             <div></div>
             <div><input id="waitlist" name="waitlist" type="checkbox" value="true" <?php if ( $tournament && $tournament->is_wait_list_enabled() ) echo 'checked' ?> />
                  <label for="waitlist"><?php esc_html_e( 'Wait list available', 'ekc-tournament-manager' ) ?></label></div>
+          </div>
+          <div class="ekc-control-group">
+            <div></div>
+            <div><input id="checkin" name="checkin" type="checkbox" value="true" <?php if ( $tournament && $tournament->is_check_in_enabled() ) echo 'checked' ?> />
+                 <label for="checkin"><?php esc_html_e( 'Check-in available', 'ekc-tournament-manager' ) ?></label></div>
           </div>
           <div class="ekc-control-group">
             <div></div>

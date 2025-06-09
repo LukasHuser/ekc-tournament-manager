@@ -97,6 +97,8 @@ class Ekc_Tournament_Manager {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/shareable-links-table.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/result-log-page.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/result-log-table.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/check-in-page.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/check-in-table.php';
 
 		$plugin_admin = new Ekc_Tournament_Manager_Admin( $this->get_plugin_name(), $this->get_version() );
 
@@ -125,6 +127,7 @@ class Ekc_Tournament_Manager {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_swiss_system_redirect' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_elimination_bracket_redirect' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_shareable_links_redirect' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'intercept_check_in_redirect' );
 	}
 
 	/**
@@ -144,6 +147,8 @@ class Ekc_Tournament_Manager {
 		// use both wp_ajax and wp_ajax_nopriv prefixes to allow the REST call to work for logged-in users as well as non-logged-in users
 		$this->loader->add_action( 'wp_ajax_ekc_public_swiss_system_store_result', $plugin_public, 'shareable_link_handle_post' );
 		$this->loader->add_action( 'wp_ajax_nopriv_ekc_public_swiss_system_store_result', $plugin_public, 'shareable_link_handle_post' );
+		$this->loader->add_action( 'wp_ajax_ekc_public_team_check_in', $plugin_public, 'shareable_link_handle_post' );
+		$this->loader->add_action( 'wp_ajax_nopriv_ekc_public_team_check_in', $plugin_public, 'shareable_link_handle_post' );
 	}
 
 	private function add_shortcodes() {

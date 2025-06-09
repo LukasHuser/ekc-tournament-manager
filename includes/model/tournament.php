@@ -15,6 +15,7 @@ class Ekc_Tournament implements JsonSerializable {
 	private $is_wait_list_enabled;
 	private $is_player_names_required;
 	private $is_auto_backup_enabled;
+	private $is_check_in_enabled;
 	private $tournament_system;
 	private $elimination_rounds;
 	private $elimination_silver_rounds;
@@ -111,6 +112,14 @@ class Ekc_Tournament implements JsonSerializable {
 
 	public function set_auto_backup_enabled(bool $is_auto_backup_enabled) {
 		$this->is_auto_backup_enabled = $is_auto_backup_enabled;
+	}
+
+	public function is_check_in_enabled() {
+		return $this->is_check_in_enabled;
+	}
+
+	public function set_check_in_enabled(bool $is_check_in_enabled) {
+		$this->is_check_in_enabled = $is_check_in_enabled;
 	}
 
 	public function get_tournament_system() {

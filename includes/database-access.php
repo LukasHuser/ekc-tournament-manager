@@ -14,11 +14,12 @@ class Ekc_Database_Access {
 		$sql_sort = $this->validate_tournament_table_sort_column( $sort_column ) . ' ' . ($sort === 'asc' ? 'ASC' : 'DESC');
 		$results = $wpdb->get_results( 
 			"
-			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams, 
-                    case when is_wait_list_enabled = 1 then 'yes' else 'no' end as is_wait_list_enabled, 
+			SELECT tournament_id, code_name, name, tournament_date, team_size, max_teams,
+					case when is_check_in_enabled = 1 then 'yes' else 'no' end as is_check_in_enabled,
+                    case when is_wait_list_enabled = 1 then 'yes' else 'no' end as is_wait_list_enabled,
 					tournament_system,
-					case when elimination_silver_rounds is null then elimination_rounds
-					else concat(elimination_rounds, ' (gold) | ', elimination_silver_rounds, ' (silver)') end as elimination_rounds, 
+					case when coalesce(elimination_silver_rounds, '') = '' then elimination_rounds
+					else concat(elimination_rounds, ' (gold) | ', elimination_silver_rounds, ' (silver)') end as elimination_rounds,
 					swiss_system_rounds,
 					coalesce(display_name, user_login) as owner_user
 			FROM   {$wpdb->prefix}ekc_tournament t
@@ -41,7 +42,7 @@ class Ekc_Database_Access {
 		return 'tournament_date'; // default sort column
 	}
 
-	public function insert_tournament($tournament) {
+	public function insert_tournament( $tournament ) {
 		global $wpdb;
 		$wpdb->insert( 
 			$wpdb->prefix . 'ekc_tournament', 
@@ -55,6 +56,7 @@ class Ekc_Database_Access {
 				'is_wait_list_enabled'		=> intval( $tournament->is_wait_list_enabled() ),
 				'is_player_names_required'	=> intval( $tournament->is_player_names_required() ),
 				'is_auto_backup_enabled'	=> intval( $tournament->is_auto_backup_enabled() ),
+				'is_check_in_enabled'		=> intval( $tournament->is_check_in_enabled() ),
 				'tournament_system'			=> $this->truncate_string( $tournament->get_tournament_system(), 20 ),
 				'elimination_rounds'		=> $this->truncate_string( $tournament->get_elimination_rounds(), 20 ),
 				'elimination_silver_rounds'	=> $this->truncate_string( $tournament->get_elimination_silver_rounds(), 20 ),
@@ -70,13 +72,13 @@ class Ekc_Database_Access {
 				'swiss_system_start_pitch'	=> $tournament->get_swiss_system_start_pitch(),
 				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
-			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
+			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ) 
 		);
 
 		return $wpdb->insert_id;
 	}
 
-	public function update_tournament($tournament) {
+	public function update_tournament( $tournament ) {
 		global $wpdb;
 		$wpdb->update( 
 			$wpdb->prefix . 'ekc_tournament', 
@@ -90,6 +92,7 @@ class Ekc_Database_Access {
 				'is_wait_list_enabled'		=> intval( $tournament->is_wait_list_enabled() ),
 				'is_player_names_required'	=> intval( $tournament->is_player_names_required() ),
 				'is_auto_backup_enabled'	=> intval( $tournament->is_auto_backup_enabled() ),
+				'is_check_in_enabled'		=> intval( $tournament->is_check_in_enabled() ),
 				'tournament_system'			=> $this->truncate_string( $tournament->get_tournament_system(), 20 ),
 				'elimination_rounds'		=> $this->truncate_string( $tournament->get_elimination_rounds(), 20 ),
 				'elimination_silver_rounds'	=> $this->truncate_string( $tournament->get_elimination_silver_rounds(), 20 ),
@@ -106,12 +109,12 @@ class Ekc_Database_Access {
 				'swiss_system_pitch_limit'	=> $tournament->get_swiss_system_pitch_limit(),
 			), 
 			array( 'tournament_id'		=> $tournament->get_tournament_id() ),
-			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
+			array( '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d' ),
 			array( '%d' )
 		);
 	}
 
-	public function delete_tournament($tournament_id) {
+	public function delete_tournament( $tournament_id ) {
 		global $wpdb;
 		$team_ids = $wpdb->get_col( $wpdb->prepare( 
 			"
@@ -139,13 +142,13 @@ class Ekc_Database_Access {
 		$wpdb->delete( $wpdb->prefix . 'ekc_tournament', array( 'tournament_id' => $tournament_id ) );
 	}
 
-	public function get_tournament_by_id($tournament_id) {
+	public function get_tournament_by_id( $tournament_id ) {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
 			SELECT tournament_id, code_name, name, owner_user_id, 
 			       tournament_date,team_size, max_teams, is_wait_list_enabled,
-				   is_player_names_required, is_auto_backup_enabled, tournament_system, 
+				   is_player_names_required, is_auto_backup_enabled, is_check_in_enabled, tournament_system,
 				   elimination_rounds, elimination_silver_rounds, elimination_max_points_per_round,
 				   swiss_system_rounds, swiss_system_max_points_per_round,
 				   swiss_system_bye_points, swiss_system_virtual_result_points, swiss_system_additional_rounds,
@@ -165,13 +168,13 @@ class Ekc_Database_Access {
 		return $this->create_tournament_from_table_row( $row );
 	}
 
-	public function get_tournament_by_code_name($code_name) {
+	public function get_tournament_by_code_name( $code_name ) {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( 
 			"
 			SELECT tournament_id, code_name, name, owner_user_id,
 			       tournament_date,team_size, max_teams, is_wait_list_enabled,
-				   is_player_names_required, is_auto_backup_enabled, tournament_system, 
+				   is_player_names_required, is_auto_backup_enabled, is_check_in_enabled, tournament_system,
 				   elimination_rounds, elimination_silver_rounds, elimination_max_points_per_round,
 				   swiss_system_rounds, swiss_system_max_points_per_round,
 				   swiss_system_bye_points, swiss_system_virtual_result_points, swiss_system_additional_rounds,
@@ -203,6 +206,7 @@ class Ekc_Database_Access {
 		$tournament->set_wait_list_enabled( boolval( $row->is_wait_list_enabled ) );
 		$tournament->set_player_names_required( boolval( $row->is_player_names_required ) );
 		$tournament->set_auto_backup_enabled( boolval( $row->is_auto_backup_enabled ) );
+		$tournament->set_check_in_enabled( boolval( $row->is_check_in_enabled ) );
 		$tournament->set_tournament_system( strval( $row->tournament_system ) );
 		$tournament->set_elimination_rounds( strval( $row->elimination_rounds ) );
 		$tournament->set_elimination_silver_rounds( strval( $row->elimination_silver_rounds ) );
@@ -234,7 +238,6 @@ class Ekc_Database_Access {
 		// else add <p> and <br>
 		return wpautop( $email_text );
 	}
-
 
 	public function is_wait_list_enabled( $tournament_id ) {
 		global $wpdb;
@@ -590,7 +593,7 @@ class Ekc_Database_Access {
 	private function create_team_table_sort_column_sql( $column, $table_alias ) {
 		$sql_alias = $table_alias ? $table_alias . '.' : '';
 		$valid_columns = array(
-		  'name', 'is_active', 'country', 'club', 'registration_date', 'is_registration_fee_paid',
+		  'name', 'is_active', 'is_checked_in', 'country', 'club', 'registration_date', 'is_registration_fee_paid',
 		  'registration_order', 'is_on_wait_list', 'seeding_score'
 		);
 		if ( in_array( $column, $valid_columns, true) ) {
@@ -603,9 +606,9 @@ class Ekc_Database_Access {
 		$sql_alias = $table_alias ? $table_alias . '.' : '';
 		$sql_filter = '';
 		foreach ( $filter as $key => $value ) {
-			if ( $key === 'is_active' || $key === 'is_registration_fee_paid' || $key === 'is_on_wait_list' ) {
+			if ( $key === 'is_active' || $key === 'is_checked_in' || $key === 'is_registration_fee_paid' || $key === 'is_on_wait_list' ) {
 				if ( $value === '1' || $value === '0') {
-					$sql_filter .= ' AND ' . $sql_alias . $key . ' = ' . $value;
+					$sql_filter .= ' AND coalesce(' . $sql_alias . $key . ', 0) = ' . $value;
 				}
 			}
 			elseif ( $key === 'country' ) {
@@ -754,10 +757,8 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$wpdb->update( 
 			$wpdb->prefix . 'ekc_team', 
-			array( 
-				'is_active'		=> intval( $is_active ),
-			),
-			array( 'team_id'		=> $team_id ),
+			array( 'is_active' => intval( $is_active ) ),
+			array( 'team_id' => $team_id ),
 			array( '%d' ),
 			array( '%d' )
 		);
@@ -767,10 +768,8 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$wpdb->update( 
 			$wpdb->prefix . 'ekc_team', 
-			array( 
-				'is_registration_fee_paid'	=> intval( $is_registration_fee_paid ),
-			),
-			array( 'team_id'		=> $team_id ),
+			array( 'is_registration_fee_paid' => intval( $is_registration_fee_paid ) ),
+			array( 'team_id' => $team_id ),
 			array( '%d' ),
 			array( '%d' )
 		);
@@ -780,10 +779,8 @@ class Ekc_Database_Access {
 		global $wpdb;
 		$wpdb->update( 
 			$wpdb->prefix . 'ekc_team', 
-			array( 
-				'is_on_wait_list'	=> intval( $is_on_wait_list ),
-			),
-			array( 'team_id'		=> $team_id ),
+			array( 'is_on_wait_list' => intval( $is_on_wait_list ) ),
+			array( 'team_id' => $team_id ),
 			array( '%d' ),
 			array( '%d' )
 		);
@@ -930,12 +927,12 @@ class Ekc_Database_Access {
 			"
 			SELECT t.team_id, t.name, LOWER(t.country) as country, case when t.is_active = 1 then 'yes' else 'no' end as is_active, t.email as email, t.shareable_link_id
 			FROM   {$wpdb->prefix}ekc_team t
-			WHERE t.tournament_id = %d
-			      {$sql_filter} 
+			WHERE  t.tournament_id = %d
+			       {$sql_filter} 
 			ORDER BY {$sql_sort}
 			",
 			$tournament_id),
-		ARRAY_A );
+			ARRAY_A );
 
 		return $results;
 	}
@@ -962,6 +959,122 @@ class Ekc_Database_Access {
 		}
 
 		return $this->create_team_from_table_row( $row );
+	}
+
+	/***************************************************************************************************************************
+	 * Check-in
+	 ***************************************************************************************************************************/
+	
+	 public function get_check_in_teams_as_table( $tournament_id, $sort_column = 'registration_date', $sort = 'asc', $filter ) {
+		global $wpdb;
+		$sql_sort = $this->create_team_table_sort_column_sql( $sort_column, 't') . ' ' . ($sort === 'desc' ? 'DESC' : 'ASC');
+		$sql_filter = $this->create_team_table_filter( $filter, 't' );
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT t.team_id, t.name,
+			       LOWER(t.country) as country, t.club,
+				   case when t.is_active = 1 then 'yes' else 'no' end as is_active,
+				   case when t.is_checked_in = 1 then 'yes' else 'no' end as is_checked_in,
+				   t.email, t.phone, t.registration_date,
+				   case when t.is_registration_fee_paid = 1 then 'yes' else 'no' end as is_registration_fee_paid,
+				   t.registration_order,
+				   case when t.is_on_wait_list = 1 then 'yes' else 'no' end as is_on_wait_list,
+				   t.shareable_link_id
+			FROM   {$wpdb->prefix}ekc_team t
+			WHERE  t.tournament_id = %d
+			       {$sql_filter} 
+			ORDER BY {$sql_sort}
+			",
+			$tournament_id),
+			ARRAY_A );
+
+		return $results;
+	}
+	 
+	 public function is_check_in_active( $tournament_id ) {
+		global $wpdb;
+		$result = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COALESCE(t.is_check_in_active, 0)
+			 FROM   {$wpdb->prefix}ekc_tournament t
+			 WHERE  t.tournament_id = %d
+            ",
+			$tournament_id
+		));		
+		return boolval( $result );
+	}
+
+	public function set_check_in_active( $tournament_id, $is_check_in_active ) {
+		global $wpdb;
+		$wpdb->update( 
+			$wpdb->prefix . 'ekc_tournament',
+			array( 'is_check_in_active' => intval( $is_check_in_active ) ), 
+			array( 'tournament_id' => $tournament_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+	}
+
+	public function is_team_checked_in( $team_id ) {
+		global $wpdb;
+		$result = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COALESCE(t.is_checked_in, 0)
+			 FROM   {$wpdb->prefix}ekc_team t
+			 WHERE  t.team_id = %d
+            ",
+			$team_id
+		));		
+		return boolval( $result );
+	}
+
+	public function set_team_checked_in( $team_id, $is_checked_in ) {
+		global $wpdb;
+		$wpdb->update( 
+			$wpdb->prefix . 'ekc_team', 
+			array( 'is_checked_in' => intval( $is_checked_in ) ),
+			array( 'team_id' => $team_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+	}
+
+	public function get_check_in_summary( $tournament_id ) {
+		global $wpdb;
+		$total_teams = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*)
+			 FROM   {$wpdb->prefix}ekc_team t
+			 WHERE  t.tournament_id = %d
+            ",
+			$tournament_id
+		));
+
+		$active_teams = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*)
+			 FROM   {$wpdb->prefix}ekc_team t
+			 WHERE  t.tournament_id = %d
+			 AND    t.is_active = 1
+            ",
+			$tournament_id
+		));
+
+		$checked_in_teams = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*)
+			 FROM   {$wpdb->prefix}ekc_team t
+			 WHERE  t.tournament_id = %d
+			 AND    t.is_checked_in = 1
+            ",
+			$tournament_id
+		));
+
+		$registration_fee_paid_teams = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*)
+			 FROM   {$wpdb->prefix}ekc_team t
+			 WHERE  t.tournament_id = %d
+			 AND    t.is_registration_fee_paid = 1
+            ",
+			$tournament_id
+		));
+
+		return [$total_teams, $active_teams, $checked_in_teams, $registration_fee_paid_teams];
 	}
 
 	/***************************************************************************************************************************

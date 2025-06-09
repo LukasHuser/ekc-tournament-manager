@@ -55,11 +55,12 @@
         return is_valid;
       };
 
-      $( "#ekc-result-form" ).submit(function(event){
+      $( "#ekc-result-form" ).submit(function(event) {
         if (validateResult()) {
-			var nonce = $("#ekc-result-form").data("nonce");
-			var link_id = $("#ekc-result-form").data("linkid");
-			var result_id = $("#ekc-result-form").data("resultid");
+			var result_form = $("#ekc-result-form");
+			var nonce = result_form.data("nonce");
+			var link_id = result_form.data("linkid");
+			var result_id = result_form.data("resultid");
             var team1_score_id = "team1-score-" + result_id;
 			var team2_score_id = "team2-score-" + result_id;
 			var team1_score = $('#' + team1_score_id).val();
@@ -78,7 +79,25 @@
 			});
 		}
 		return false;
-      }); 
+      });
+
+      $( "#ekc-check-in-form" ).submit(function(event) {
+		var check_in_form = $("#ekc-check-in-form");
+		var nonce = check_in_form.data("nonce");
+		var link_id = check_in_form.data("linkid");
+
+		var post_data = {
+			"action": "ekc_public_team_check_in",
+			"linkid": link_id,
+			"ekc-nonce": nonce
+		};
+
+		$.post(ekc_ajax.ajax_url, post_data, function( result ) {
+			// reload page after checking in
+			window.location.reload();
+		});
+		return false;
+      });
 
   });
 

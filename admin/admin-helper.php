@@ -92,6 +92,19 @@ class Ekc_Admin_Helper {
         $this->redirect_internal( 'shareable-links', $tournament_id, null );
 	}
 
+    /**
+	 * Redirect to same url and enforce a GET reload to avoid re-sending form data through POST,
+     * or re-executing an action trough GET parameter 'action'. 
+     *
+     * Tournament id is added as get parameters (if provided).
+	 * 
+     * return HTTP 303 See Other
+	 * see https://en.wikipedia.org/wiki/HTTP_303
+	 */
+	public function check_in_redirect( $tournament_id ) {
+        $this->redirect_internal( 'check-in', $tournament_id, null );
+	}
+
     private function redirect_internal( $action, $tournament_id, $tournament_round ) {
         $validation_helper = new Ekc_Validation_Helper();
         $redirect_url = $validation_helper->validate_server_request_uri();

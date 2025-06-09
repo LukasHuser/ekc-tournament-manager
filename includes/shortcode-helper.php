@@ -851,7 +851,7 @@ class Ekc_Shortcode_Helper {
 		// else: type == team-results
 
 		if ( ! $team ) {
-			return esc_html__( 'No data found.', 'ekc-tournament-manager' );
+			return esc_html__( 'Uh oh, something went wrong. Please contact the tournament administration for advice.', 'ekc-tournament-manager' );
 		}
 
 		$tournament = $db->get_tournament_by_id( $team->get_tournament_id() );
@@ -859,8 +859,24 @@ class Ekc_Shortcode_Helper {
 		$current_round = $db->get_current_swiss_system_round( $tournament->get_tournament_id() );
 		$current_round_result = $this->get_results_for_round( $all_results, $current_round, $team->get_team_id() );	
 		
+		// reload page link
 		$html = '<p><a href="' . esc_url( $validation_helper->validate_server_request_uri() ) . '">' . esc_html__( 'Reload page', 'ekc-tournament-manager' ) . '</a></p>';
-		if (count( $current_round_result ) > 0) {
+		
+		// self-check-in
+		if ( count( $all_results ) <= 0 && $tournament->is_check_in_enabled() ) {
+			// no results available, the tournament has not started yet
+			if ( $db->is_team_checked_in( $team->get_team_id() ) ) {
+				// team is already checked in
+				$html .= '<p><strong>' . esc_html__( 'Yay, you are checked in!', 'ekc-tournament-manager' ) . '</strong> ' . esc_html__( 'The tournament will be starting soon...', 'ekc-tournament-manager' ) . '</p>';
+			}
+			elseif ( $db->is_check_in_active( $tournament->get_tournament_id() ) ) {
+				// show check-in button
+				$html .= $this->create_check_in_button( $link_id );
+			}
+			// else: check-in is not active
+		}
+		
+		if ( count( $current_round_result ) > 0 ) {
 			$html .= '<h3>' . sprintf( /* translators: %s: tournament round number */ esc_html__( 'Round %s', 'ekc-tournament-manager' ), esc_html( $current_round ) ) . '</h3>';
 			$earliest_reported_result_time = $db->get_earliest_result_log_time( $tournament->get_tournament_id(), $current_round );
 			$report_end_date = DateTime::createFromFormat( 'Y-m-d H:i:s', $earliest_reported_result_time );
@@ -886,6 +902,20 @@ class Ekc_Shortcode_Helper {
 				$html .= $this->create_swiss_round_table( $tournament, $result_for_round, $round, $show_country );
 			}
 		}
+		return $html;
+	}
+
+	private function create_check_in_button( $link_id ) {
+		$html = '<p><strong>' . esc_html__( 'Check-in is in progress...', 'ekc-tournament-manager' ) . '</strong></p>';
+		$html .= '<p>' . esc_html__( 'Please check in, when you are present on the tournament ground and ready to start the tournament!', 'ekc-tournament-manager' ) . '</p>';
+		
+		$nonce_helper = new Ekc_Nonce_Helper();
+		// onsubmit handler for form defined in public.js
+		$html .= '<form id="ekc-check-in-form" class="ekc-form" data-linkid="' . esc_attr( $link_id ) . '" data-nonce="' . esc_attr( wp_create_nonce( $nonce_helper->nonce_text( 'ekc_public_team_check_in', 'link', $link_id ) ) ) . '">';
+		$html .= '<div class="ekc-controls">';
+		$html .= '<button class="ekc-button ekc-button-primary">' . esc_html__( 'Check in!', 'ekc-tournament-manager' ) . '</button>';
+		$html .= '</div>';
+		$html .= '</form>';
 		return $html;
 	}
 
@@ -934,6 +964,18 @@ class Ekc_Shortcode_Helper {
 
 			// Fallback
 			echo '<span class="dashicons dashicons-no"></span>' . esc_html__( 'Failed to store result', 'ekc-tournament-manager' );
+			wp_die();
+	  	}
+		elseif ( $action === 'ekc_public_team_check_in' ) {
+			if ( ! $nonce_helper->validate_nonce( $nonce_helper->nonce_text( 'ekc_public_team_check_in', 'link', $link_id ) ) ) {
+			  	wp_die();
+			}
+			
+			$db = new Ekc_Database_Access();
+			$team = $db->get_team_by_shareable_link_id( $link_id );
+			if ( $team ) {
+				$db->set_team_checked_in( $team->get_team_id(), true );
+			}
 			wp_die();
 	  	}
 	}

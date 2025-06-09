@@ -112,6 +112,14 @@ class Ekc_Tournament_Manager_Admin {
 	        'ekc-swiss',
 			array( $this, 'create_swiss_system_page' ) );
 
+		add_submenu_page(
+			NULL,
+			'Check-in',
+			'EKC Check-in',
+			Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
+			'ekc-check-in',
+			array( $this, 'create_check_in_page' ) );
+
 	    add_submenu_page(
 	        NULL,
 			'Shareable Links',
@@ -129,12 +137,12 @@ class Ekc_Tournament_Manager_Admin {
 	        array( $this, 'create_tournaments_backup_page' ) );
 
 		add_submenu_page(
-				NULL,
-				'Result Log',
-				'EKC Result Log',
-				Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
-				'ekc-result-log',
-				array( $this, 'create_result_log_page' ) );
+			NULL,
+			'Result Log',
+			'EKC Result Log',
+			Ekc_Role_Helper::CAPABILITY_EKC_MANAGE_TOURNAMENTS,
+			'ekc-result-log',
+			array( $this, 'create_result_log_page' ) );
 	}
 
 	public function create_tournaments_page() {
@@ -160,6 +168,11 @@ class Ekc_Tournament_Manager_Admin {
 	public function create_shareable_links_page() {
 		$links_page = new Ekc_Shareable_Links_Admin_Page();
 		return $links_page->create_shareable_links_page();
+	}
+
+	public function create_check_in_page() {
+		$check_in_page = new Ekc_Check_In_Page();
+		return $check_in_page->create_check_in_page();
 	}
 
 	public function create_tournaments_backup_page() {
@@ -195,5 +208,10 @@ class Ekc_Tournament_Manager_Admin {
 	public function intercept_shareable_links_redirect() {
 		$shareable_links_page = new Ekc_Shareable_Links_Admin_Page();
 		return $shareable_links_page->intercept_redirect();
+	}
+
+	public function intercept_check_in_redirect() {
+		$check_in_page = new Ekc_Check_In_Page();
+		return $check_in_page->intercept_redirect();
 	}
 }
